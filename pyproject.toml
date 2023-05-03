@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "querychains"
+version = "0.1.0"
+description = ""
+authors = ["Tomas Gavenciak <gavento@gmail.com>"]
+#readme = "README.md"
+packages = [{include = "querychains"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+langchain = "^0.0.136"
+openai = "^0.27.4"
+numpy = "^1.24.2"
+tqdm = "^4.65.0"
+jupyter = "^1.0.0"
+clearml = "^1.10.3"
+pandas = "^2.0.0"
+textstat = "^0.7.3"
+spacy = "^3.5.2"
+addict = "^2.4.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+pytest = "^7.3.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
