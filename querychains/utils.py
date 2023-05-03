@@ -21,3 +21,12 @@ def into_data(d: IntoData):
         d = dict(text=d)
     assert isinstance(d, dict)
     return Dict(d)
+
+
+def shorten_str(s: str | None, max_len=32) -> str:
+    if s is None:
+        return "None"
+    r = repr(s)
+    if len(r) <= max_len:
+        return r
+    return r[: max_len - 5] + "[...]"
