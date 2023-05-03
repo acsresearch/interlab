@@ -3,7 +3,7 @@ from typing import Union
 
 from addict import Dict
 
-log = logging.getLogger("tracing")
+LOG = logging.getLogger("querychains")
 
 
 class QueryFailure(Exception):
