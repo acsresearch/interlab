@@ -1,5 +1,6 @@
 from .context import with_new_context
-from .utils import IntoData, QueryFailure
+from .utils import QueryFailure
+from .data import IntoData
 
 
 def repeat_on_failure(fn, input: IntoData, max_repeats=3) -> IntoData:
