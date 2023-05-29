@@ -1,7 +1,7 @@
 import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-export const Item = styled(Paper)(({ theme }) => ({
+export const Item = styled(Paper)(({ theme }:any) => ({
     backgroundColor: '#fff',
     ...theme.typography.body2,
     padding: theme.spacing(1),
