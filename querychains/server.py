@@ -12,7 +12,7 @@ from .storage import Storage
 
 
 class ServerHandle:
-    def __init__(self, storage: Optional[Storage], port=0):
+    def __init__(self, storage: Optional[Storage] = None, port=0):
         self.port = port
         self.storage = storage
         self.contexts = {}
@@ -86,7 +86,7 @@ async def _server_main(handle: ServerHandle):
             return f"{addr}:{port}"
 
 
-def start_server(*, storage: Optional[Storage], port=0):
+def start_server(*, storage: Optional[Storage] = None, port: int = 0):
     handle = ServerHandle(storage=storage, port=port)
     handle.start()
     return handle
