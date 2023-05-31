@@ -21,6 +21,6 @@ export function DataRenderer(props: { data: any, hideType?: string }) {
     }
 
     return (<>{(props.hideType !== type && type) && <span>{type}</span>}<ul>
-        {children.map(({ property, value }) => <li><strong>{property}</strong>: <DataRenderer data={value} /></li>)}
+        {children.map(({ property, value }) => <li key={property}><strong>{property}</strong>: <DataRenderer data={value} /></li>)}
     </ul></>);
 }

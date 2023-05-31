@@ -4,6 +4,8 @@ import { ContextNode } from "./ContextNode"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVICE_PREFIX } from "../config";
+import { callGuard } from "../common/guard";
+import { AddInfo } from "../common/info";
 
 type Root = {
     name: string,
@@ -11,27 +13,33 @@ type Root = {
 }
 
 
-export function DataBrowser() {
+export function DataBrowser(props: { addInfo: AddInfo }) {
     const [roots, setRoots] = useState<Root[]>([]);
     const [selectedCtx, setSelectedCtx] = useState<Context | null>(null);
 
     function refresh() {
-        axios.get(SERVICE_PREFIX + "/contexts/list").then((response) => {
+        callGuard(async () => {
+            const response = await axios.get(SERVICE_PREFIX + "/contexts/list");
+            if (response === null) {
+                return;
+            }
             const rs = response.data as Root[];
             setRoots(rs);
             if (rs.length > 0) {
                 selectRoot(rs[0]);
             }
-        })
+        }, props.addInfo);
     }
 
     function selectRoot(root: Root) {
-        axios.get(SERVICE_PREFIX + "/contexts/uuid/" + root.uuid).then((response) => {
+        callGuard(async () => {
+            const response = await axios.get(SERVICE_PREFIX + "/contexts/uuid/" + root.uuid);
             const ctx = response.data as Context;
             setSelectedCtx(ctx);
-        })
+        }, props.addInfo)
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(refresh, []);
 
     return <Grid container>
