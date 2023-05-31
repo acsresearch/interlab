@@ -41,6 +41,7 @@ class Context:
         inputs: Optional[Dict[str, Any]] = None,
         meta: Optional[Dict[str, Data]] = None,
         tags: Optional[List[str]] = None,
+        storage: Optional["Storage"] = None,
     ):
         if inputs:
             inputs = serialize_with_type(inputs)
@@ -59,7 +60,7 @@ class Context:
         self.start_time = None
         self.end_time = None
         self.meta = meta
-
+        self.storage = storage
         self._token = None
         self._depth = 0
 
@@ -112,6 +113,8 @@ class Context:
         self.end_time = datetime.datetime.now()
         _CONTEXT_STACK.reset(self._token)
         self._token = None
+        if self.storage:
+            self.storage.write_context(self)
         return False  # Propagate any exception
 
     def add_event(self, name: str, payload: any) -> Event:

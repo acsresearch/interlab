@@ -7,14 +7,14 @@ import { SERVICE_PREFIX } from "../config";
 import { callGuard } from "../common/guard";
 import { AddInfo } from "../common/info";
 
-type Root = {
-    name: string,
-    uuid: string,
-}
+// type Root = {
+//     name: string,
+//     uuid: string,
+// }
 
 
 export function DataBrowser(props: { addInfo: AddInfo }) {
-    const [roots, setRoots] = useState<Root[]>([]);
+    const [roots, setRoots] = useState<string[]>([]);
     const [selectedCtx, setSelectedCtx] = useState<Context | null>(null);
 
     function refresh() {
@@ -23,7 +23,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             if (response === null) {
                 return;
             }
-            const rs = response.data as Root[];
+            const rs = response.data as string[];
             setRoots(rs);
             if (rs.length > 0) {
                 selectRoot(rs[0]);
@@ -31,9 +31,9 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
         }, props.addInfo);
     }
 
-    function selectRoot(root: Root) {
+    function selectRoot(root: string) {
         callGuard(async () => {
-            const response = await axios.get(SERVICE_PREFIX + "/contexts/uuid/" + root.uuid);
+            const response = await axios.get(SERVICE_PREFIX + "/contexts/uuid/" + root);
             const ctx = response.data as Context;
             setSelectedCtx(ctx);
         }, props.addInfo)
@@ -46,8 +46,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
         <Grid item xs={2}>
             <Paper>
                 {roots.map((root) =>
-                    <ListItemButton key={root.uuid} component="a" onClick={() => selectRoot(root)}>
-                        <ListItemText primary={root.name} />
+                    <ListItemButton key={root} component="a" onClick={() => selectRoot(root)}>
+                        <ListItemText primary={root.slice(0, 8)} />
                     </ListItemButton>
                 )}
             </Paper>
