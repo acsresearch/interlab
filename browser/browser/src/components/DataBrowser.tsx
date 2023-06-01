@@ -46,7 +46,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
         <Grid item xs={2}>
             <Paper>
                 {roots.map((root) =>
-                    <ListItemButton key={root} component="a" onClick={() => selectRoot(root)}>
+                    <ListItemButton selected={selectedCtx !== null && root === selectedCtx.uuid} key={root} component="a" onClick={() => selectRoot(root)}>
                         <ListItemText primary={root.slice(0, 8)} />
                     </ListItemButton>
                 )}
