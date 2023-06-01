@@ -1,14 +1,17 @@
 import asyncio
-from typing import Annotated, Optional
+import os
+from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 
 from .context import Context
 from .storage import Storage
+
+PATH_TO_STATIC_FILES = "browser/build/"
 
 
 class ServerHandle:
@@ -47,7 +50,7 @@ async def _server_main(handle: ServerHandle):
 
     @app.get("/")
     async def root():
-        return FileResponse("browser/browser/build/index.html")
+        return FileResponse(os.path.join(PATH_TO_STATIC_FILES, "index.html"))
 
     @app.get("/contexts/list")
     async def list_of_contexts():
@@ -71,7 +74,7 @@ async def _server_main(handle: ServerHandle):
 
         raise HTTPException(status_code=404)
 
-    app.mount("/", StaticFiles(directory="browser/browser/build/"), name="static")
+    app.mount("/", StaticFiles(directory=PATH_TO_STATIC_FILES), name="static")
 
     config = uvicorn.Config(app, port=handle.port, log_level="info")
     server = uvicorn.Server(config)

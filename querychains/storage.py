@@ -4,8 +4,8 @@ import os
 from os import PathLike
 from typing import List
 
-from . import Data
 from .context import Context
+from .data import Data
 
 
 class Storage:

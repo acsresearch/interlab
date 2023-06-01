@@ -179,3 +179,7 @@ def get_current_context(check: bool = True) -> Optional[Context]:
 
 def add_event(name: str, value: any) -> Event:
     return get_current_context().add_event(name, value)
+
+
+# Solving circular dependencies
+from .storage import Storage  # noqa
