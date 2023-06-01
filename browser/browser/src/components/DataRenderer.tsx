@@ -1,6 +1,8 @@
+import { Button } from "@mui/material";
+import { UUID } from "crypto";
 
 
-export function DataRenderer(props: { data: any, hideType?: string }) {
+export function DataRenderer(props: { data: any, uuid: string, opened: Set<string>, toggleOpen: (uuid: string) => void, hideType?: string }) {
     let d = props.data;
     if (typeof d === 'boolean') {
         return <span>{d ? "true" : "false"}</span>
@@ -20,7 +22,19 @@ export function DataRenderer(props: { data: any, hideType?: string }) {
         children.push({ property: property, value: value });
     }
 
-    return (<>{(props.hideType !== type && type) && <span>{type}</span>}<ul>
-        {children.map(({ property, value }) => <li key={property}><strong>{property}</strong>: <DataRenderer data={value} /></li>)}
-    </ul></>);
+    const isLong = children.length > 3;
+
+    if (isLong && !props.opened.has(props.uuid)) {
+        return <>
+            {(props.hideType !== type && type) && <span>{type}</span>}
+            <Button onClick={() => props.toggleOpen(props.uuid)}>Show {children.length} items</Button>
+        </>
+    }
+
+    return (<>
+        {(props.hideType !== type && type) && <span>{type}</span>}
+        {isLong && <Button onClick={() => props.toggleOpen(props.uuid)}>Hide items</Button>}
+        <ul>
+            {children.map(({ property, value }) => <li key={property}><strong>{property}</strong>: <DataRenderer uuid={props.uuid + "/" + property} data={value} opened={props.opened} toggleOpen={props.toggleOpen} /></li>)}
+        </ul></>);
 }

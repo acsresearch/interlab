@@ -19,10 +19,11 @@ import { useState } from "react";
 //const DEFAULT_COLORS = [grey[100], grey[200], grey[300], grey[400], grey[500]];
 const DEFAULT_COLORS = [grey[100], grey[300]];
 
-export function ContextNode(props: { context: Context, depth: number }) {
-    let [open, setOpen] = useState<boolean>(props.depth < 1);
+export function ContextNode(props: { context: Context, depth: number, opened: Set<string>, toggleOpen: (uuid: string) => void }) {
+    //let [open, setOpen] = useState<boolean>(props.depth < 1);
 
     let c = props.context;
+    let open = props.opened.has(c.uuid);
     //let depth = props.depth <= 4 ? props.depth : 4;
     let color = DEFAULT_COLORS[props.depth % 2];
 
@@ -43,21 +44,22 @@ export function ContextNode(props: { context: Context, depth: number }) {
             {(c.inputs || c.result || c.error) && <Divider />}
             {c.inputs && <p>
                 <strong>Inputs</strong><br />
-                <DataRenderer data={c.inputs} />
+                <DataRenderer uuid={c.uuid + "/inputs"} data={c.inputs} opened={props.opened} toggleOpen={props.toggleOpen} />
             </p>}
             {c.result &&
                 <p>
                     <strong>Result</strong><br />
-                    <DataRenderer data={c.result} />
+                    <DataRenderer uuid={c.uuid + "/result"} data={c.result} opened={props.opened} toggleOpen={props.toggleOpen} />
                 </p>
             }
             {c.error &&
                 <p>
                     <strong>Error</strong><br />
-                    <DataRenderer data={c.error} hideType="error" />
+                    <DataRenderer uuid={c.uuid + "/error"} data={c.error} hideType="error" opened={props.opened} toggleOpen={props.toggleOpen} />
                 </p>
             }
-            {c.children?.map((ctx) => <div style={{ paddingLeft: 15 }}><ContextNode key={ctx.uuid} context={ctx} depth={props.depth + 1} /></div>)}
+            {c.children?.map((ctx) => <div style={{ paddingLeft: 15 }}>
+                <ContextNode key={ctx.uuid} context={ctx} depth={props.depth + 1} opened={props.opened} toggleOpen={props.toggleOpen} /></div>)}
         </>
     }
 
@@ -68,7 +70,7 @@ export function ContextNode(props: { context: Context, depth: number }) {
             alignItems: 'center',
             flexWrap: 'wrap',
         }}>
-            <IconButton onClick={() => setOpen(!open)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
+            <IconButton onClick={() => props.toggleOpen(c.uuid)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
             {c.name} {c.kind ? ": " + c.kind : ""}
         </div>
         {open && body()}
