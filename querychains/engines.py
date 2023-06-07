@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 from typing import Optional
+from serde import serde, field
 
 import anthropic
 import backoff
@@ -65,7 +66,12 @@ async def _make_openai_chat_async_query(api_key: str, api_org: str, prompt, conf
     return m.content.strip()
 
 
-class OpenAiEngine(QueryEngine):
+@serde
+class OpenAiChatEngine(QueryEngine):
+
+    model: str
+    temperature: float
+
     def __init__(
             self,
             api_key: Optional[str] = None,
@@ -119,7 +125,12 @@ class OpenAiEngine(QueryEngine):
             return result
 
 
+@serde
 class AnthropicEngine(QueryEngine):
+
+    model: str
+    temperature: float
+
     def __init__(
             self, api_key: str = None, model="claude-v1", temperature: float = 1.0
     ):
