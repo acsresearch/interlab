@@ -137,35 +137,36 @@ class Context:
         self.error = serialize_with_type(exc)
 
 
-def with_context(fn: Callable = None, *, name=None, kind="call"):
+def with_context(fn: Callable = None, *, name=None, kind=None):
     name = name or fn.__name__
 
     def helper(func):
-        signature = inspect.signature(fn)
+        signature = inspect.signature(func)
 
         def wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
-            with Context(name=name, kind=kind, inputs=binding.arguments) as ctx:
+            with Context(name=name, kind=kind or "call", inputs=binding.arguments) as ctx:
                 result = func(*a, **kw)
                 ctx.set_result(result)
                 return result
 
-        return wrapper
+        async def async_wrapper(*a, **kw):
+            binding = signature.bind(*a, **kw)
+            with Context(name=name, kind=kind or "acall", inputs=binding.arguments) as ctx:
+                result = await func(*a, **kw)
+                ctx.set_result(result)
+                return result
+
+        if inspect.iscoroutinefunction(func):
+            return async_wrapper
+        else:
+            return wrapper
 
     if fn is not None:
         assert callable(fn)
         return helper(fn)
     else:
         return helper
-
-
-def with_new_context(kind_code, fn: Callable[[Data], Data], input: Data) -> Data:
-    c = Context(kind=kind_code)
-    c.input = Data(input)
-    with c:
-        r = fn(input)
-        c.set_result(r)
-        return r
 
 
 def get_current_context(check: bool = True) -> Optional[Context]:

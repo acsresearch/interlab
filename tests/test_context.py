@@ -128,3 +128,37 @@ def test_context_events():
             }
         ],
     }
+
+
+@pytest.mark.asyncio
+async def test_async_context():
+    @with_context
+    async def make_queries():
+        return "a"
+
+    with Context("root") as c:
+        q1 = make_queries()
+        q2 = make_queries()
+
+        await q1
+        await q2
+
+    output = strip_tree(c.to_dict())
+    assert output == {
+        "_type": "Context",
+        "name": "root",
+        "children": [
+            {
+                "_type": "Context",
+                "name": "make_queries",
+                "kind": "acall",
+                "result": "a",
+            },
+            {
+                "_type": "Context",
+                "name": "make_queries",
+                "kind": "acall",
+                "result": "a",
+            },
+        ],
+    }

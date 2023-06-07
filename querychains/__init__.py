@@ -1,4 +1,4 @@
-from .context import Context, with_context, with_new_context  # noqa: F401
+from .context import Context, with_context # noqa: F401
 from .data import Data  # noqa: F401
 from .engines import AnthropicEngine, OpenAiEngine, QueryEngine  # noqa: F401
 from .parsing import ParsingFailure, parse_tag  # noqa: F401

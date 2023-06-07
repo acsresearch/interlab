@@ -5,6 +5,7 @@ from typing import Optional
 import anthropic
 import backoff
 import openai
+import asyncio
 
 from .context import Context
 from .data import Data
@@ -12,10 +13,11 @@ from .utils import LOG, shorten_str
 
 
 class QueryEngine:
-    def query(self, prompt: str) -> Data:
+
+    def query(self, prompt: str, max_tokens: Optional[int]) -> Data:
         raise NotImplementedError()
 
-    async def aquery(self, prompt: str) -> Data:
+    async def aquery(self, prompt: str, max_tokens: Optional[int]) -> Data:
         raise NotImplementedError()
 
 
@@ -25,6 +27,10 @@ class QueryConf:
     model: str
     temperature: float
     max_tokens: int
+
+
+_openai_semaphore = asyncio.Semaphore(12)
+_anthropic_semaphore = asyncio.Semaphore(12)
 
 
 @backoff.on_exception(backoff.expo, openai.error.RateLimitError)
@@ -44,13 +50,28 @@ def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: QueryConf)
     return m.content.strip()
 
 
+@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+async def _make_openai_chat_async_query(api_key: str, api_org: str, prompt, conf: QueryConf):
+    r = await openai.ChatCompletion.acreate(
+        api_key=api_key,
+        organization=api_org,
+        model=conf.model,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=conf.max_tokens,
+        temperature=conf.temperature,
+    )
+    m = r.choices[0].message
+    assert m.role == "assistant"
+    return m.content.strip()
+
+
 class OpenAiEngine(QueryEngine):
     def __init__(
-        self,
-        api_key: Optional[str] = None,
-        api_org: Optional[str] = None,
-        model="gpt-3.5-turbo",
-        temperature: float = 0.7,
+            self,
+            api_key: Optional[str] = None,
+            api_org: Optional[str] = None,
+            model="gpt-3.5-turbo",
+            temperature: float = 0.7,
     ):
         if not api_key:
             api_key = os.getenv("OPENAI_API_KEY")
@@ -69,7 +90,7 @@ class OpenAiEngine(QueryEngine):
     def test(self):
         openai.Model.list(api_key=self.api_key, organization=self.api_org)
 
-    def query(self, prompt: str, max_tokens=1024) -> str:
+    def _prepare_inputs(self, prompt, max_tokens):
         conf = QueryConf(
             api="OpenAiChat",
             model=self.model,
@@ -80,16 +101,27 @@ class OpenAiEngine(QueryEngine):
             "prompt": prompt,
             "conf": conf,
         }
+        return inputs
 
+    def query(self, prompt: str, max_tokens=1024) -> str:
+        inputs = self._prepare_inputs(prompt, max_tokens)
         with Context(f"OpenAiChat {self.model}", kind="query", inputs=inputs) as c:
-            result = _make_openai_chat_query(self.api_key, self.api_org, prompt, conf)
+            result = _make_openai_chat_query(self.api_key, self.api_org, prompt, inputs["conf"])
+            c.set_result(result)
+            return result
+
+    async def aquery(self, prompt: str, max_tokens=1024) -> str:
+        inputs = self._prepare_inputs(prompt, max_tokens)
+        with Context(f"OpenAiChat {self.model}", kind="query", inputs=inputs) as c:
+            async with _openai_semaphore:  # !!!  acquire semaphore outside of @backoff function is intensional
+                result = await _make_openai_chat_async_query(self.api_key, self.api_org, prompt, inputs["conf"])
             c.set_result(result)
             return result
 
 
 class AnthropicEngine(QueryEngine):
     def __init__(
-        self, api_key: str = None, model="claude-v1", temperature: float = 1.0
+            self, api_key: str = None, model="claude-v1", temperature: float = 1.0
     ):
         if not api_key:
             api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -104,7 +136,7 @@ class AnthropicEngine(QueryEngine):
             f"Created AnthropicEngine with API_KEY={shorten_str(self.api_key, 17)}, default model={self.model}"
         )
 
-    def query(self, prompt: str, max_tokens=1024) -> str:
+    def _prepare_inputs(self, prompt: str, max_tokens: int):
         conf = QueryConf(
             api="Anthropic",
             model=self.model,
@@ -115,6 +147,10 @@ class AnthropicEngine(QueryEngine):
             "prompt": prompt,
             "conf": conf,
         }
+        return inputs
+
+    def query(self, prompt: str, max_tokens=1024) -> str:
+        inputs = self._prepare_inputs(prompt, max_tokens)
         with Context(f"Anthropic {self.model}", inputs=inputs) as c:
             r = self.client.completion(
                 prompt=f"{anthropic.HUMAN_PROMPT} {prompt}{anthropic.AI_PROMPT}",
@@ -126,3 +162,18 @@ class AnthropicEngine(QueryEngine):
             d = r["completion"].strip()
             c.set_result(d)
             return d
+
+    async def aquery(self, prompt: str, max_tokens=1024) -> str:
+        inputs = self._prepare_inputs(prompt, max_tokens)
+        with Context(f"Anthropic {self.model}", inputs=inputs) as c:
+            async with _anthropic_semaphore:
+                r = await self.client.acompletion(
+                    prompt=f"{anthropic.HUMAN_PROMPT} {prompt}{anthropic.AI_PROMPT}",
+                    stop_sequences=[anthropic.HUMAN_PROMPT],
+                    max_tokens_to_sample=max_tokens,
+                    temperature=self.temperature,
+                    model=self.model,
+                )
+                d = r["completion"].strip()
+                c.set_result(d)
+                return d
