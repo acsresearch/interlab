@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 LOG = logging.getLogger("querychains")
 
@@ -14,3 +15,11 @@ def shorten_str(s: str | None, max_len=32) -> str:
     if len(r) <= max_len:
         return r
     return r[: max_len - 5] + "[...]"
+
+
+def short_repr(obj: Any) -> str:
+    if isinstance(obj, str):
+        s = obj
+    else:
+        s = repr(obj)
+    return shorten_str(s)

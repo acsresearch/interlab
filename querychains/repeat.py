@@ -1,11 +1,10 @@
-from typing import Callable
+from typing import Callable, Awaitable
 
 from .context import Context
-from .data import Data
 from .utils import QueryFailure
 
 
-def repeat_on_failure(fn: Callable, max_repeats=3, use_context=True) -> Data:
+def repeat_on_failure(fn: Callable, max_repeats=3, use_context=True):
     for i in range(max_repeats):
         try:
             if use_context:
@@ -19,3 +18,22 @@ def repeat_on_failure(fn: Callable, max_repeats=3, use_context=True) -> Data:
         except QueryFailure:
             continue
     raise QueryFailure(f"Subqueries failed on all {max_repeats} repetitions")
+
+
+async def async_repeat_on_failure(fn: Awaitable, max_repeats=3, use_context=True, throw_if_fail=True, fail_value=None):
+    for i in range(max_repeats):
+        try:
+            if use_context:
+                name = f"{i + 1}/{max_repeats}"
+                with Context(name=name, kind="async_repeat_on_failure") as c:
+                    result = await fn()
+                    c.set_result(result)
+                    return result
+            else:
+                return await fn()
+        except QueryFailure:
+            continue
+    if throw_if_fail:
+        raise QueryFailure(f"Subqueries failed on all {max_repeats} repetitions")
+    else:
+        return fail_value

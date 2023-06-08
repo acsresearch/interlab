@@ -13,8 +13,10 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import ErrorIcon from '@mui/icons-material/Error';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 
 import { useState } from "react";
+import { shorten_string } from "../common/utils";
 
 //const DEFAULT_COLORS = [grey[100], grey[200], grey[300], grey[400], grey[500]];
 const DEFAULT_COLORS = [grey[100], grey[300]];
@@ -25,7 +27,12 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
     let c = props.context;
     let open = props.opened.has(c.uuid);
     //let depth = props.depth <= 4 ? props.depth : 4;
-    let color = DEFAULT_COLORS[props.depth % 2];
+    //if (props.context.meta)
+    let color = props.context.meta?.color;
+
+    if (!color) {
+        color = DEFAULT_COLORS[props.depth % 2];
+    }
 
     let icon;
 
@@ -63,6 +70,8 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
         </>
     }
 
+    let short_result = c.result ? shorten_string(c.result) : null;
+
     return <Item style={{ backgroundColor: color }} variant="outlined">
 
         <div style={{
@@ -71,7 +80,7 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
             flexWrap: 'wrap',
         }}>
             <IconButton onClick={() => props.toggleOpen(c.uuid)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
-            {c.name} {c.kind ? ": " + c.kind : ""}
+            {c.name} {short_result && <><ArrowRightAltIcon /> {short_result}</>} {c.kind ? " [" + c.kind + "]" : ""}
         </div>
         {open && body()}
     </Item >

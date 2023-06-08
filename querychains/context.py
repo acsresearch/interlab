@@ -19,18 +19,22 @@ class ContextState(Enum):
 
 
 class Event:
-    def __init__(self, name: str, data: Optional[Any]):
+    def __init__(self, name: str, kind: Optional[str] = None, data: Optional[Any] = None):
         self.name = name
-        self.data = serialize_with_type(data)
+        self.kind = kind
+        self.data = data
         self.time = datetime.datetime.now()
 
     def to_dict(self):
-        return {
+        result = {
             "_type": "Event",
             "name": self.name,
             "time": self.time.isoformat(),
-            "data": self.data,
         }
+        if self.kind:
+            result["kind"] = self.kind
+        if self.data:
+            result["data"] = self.data
 
 
 class Context:
@@ -78,6 +82,8 @@ class Context:
             result["start_time"] = self.start_time.isoformat()
         if self.end_time:
             result["end_time"] = self.end_time.isoformat()
+        if self.meta:
+            result["meta"] = self.meta
         return result
 
     @property
@@ -119,8 +125,8 @@ class Context:
             self.storage.write_context(self)
         return False  # Propagate any exception
 
-    def add_event(self, name: str, payload: any) -> Event:
-        event = Event(name=name, data=serialize_with_type(payload))
+    def add_event(self, name: str, kind: Optional[str] = None, data: Optional[Any] = None) -> Event:
+        event = Event(name=name, data=data, kind=kind)
         self.children.append(event)
         return event
 
@@ -184,8 +190,8 @@ def get_current_context(check: bool = True) -> Optional[Context]:
     return stack[-1]
 
 
-def add_event(name: str, value: any) -> Event:
-    return get_current_context().add_event(name, value)
+def add_event(name: str, kind: Optional[str] = None, data: Optional[Any] = None) -> Event:
+    return get_current_context().add_event(name, kind=kind, data=data)
 
 
 # Solving circular dependencies

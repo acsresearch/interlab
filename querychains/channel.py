@@ -6,11 +6,13 @@
 # from querychains.context import add_event
 #
 #
-from typing import Optional, List
+from typing import Optional, List, Sequence, Dict
 
 from dataclasses import field, dataclass
 
 import uuid
+
+from .context import add_event
 
 
 @dataclass
@@ -19,28 +21,34 @@ class Actor:
     kind: Optional[str] = field(default=None)
     uuid: str = field(default_factory=lambda: str(uuid.uuid4()))
 
-    def add_message(self, message: "Message"):
-        pass
-
 
 @dataclass
 class Message:
     sender: Actor
     receivers: List["Actor"]
     content: str
+    kind: Optional[str] = None
+    uuid: str = field(default_factory=lambda: str(uuid.uuid4()))
 
 
 class Channel:
     def __init__(
         self,
+        *,
+        actors: Sequence[Actor]
     ):
-        self.uuid = str(uuid.uuid4)
-        self.actors: List[Actor] = []
+        self.uuid = str(uuid.uuid4())
+        self.actors: Dict[Actor] = {actor.uuid: actor for actor in actors}
+        self.messages = []
 
     def __log__(self):
         return {"uuid": self.uuid}
 
-    # def send_message(self, ):
+    def send(self, message: Message):
+        assert message.sender.uuid in self.actors
+        assert [actor.uuid in self.actors for actor in message.receivers]
+        add_event(f"Message -> {message.sender.name} -> {','.join(a.name for a in message.receivers)}", kind="message",
+                  data={"channel": self.uuid, "message": message})
 
 
 #
