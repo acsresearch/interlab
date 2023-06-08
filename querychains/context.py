@@ -65,8 +65,6 @@ class Context:
         self._depth = 0
 
     def to_dict(self):
-        # TODO: Add start & stop times
-
         result = {"_type": "Context", "name": self.name, "uuid": self.uuid}
         if self.state != ContextState.FINISHED:
             result["state"] = self.state.value
@@ -76,6 +74,10 @@ class Context:
                 result[name] = value
         if self.children:
             result["children"] = [c.to_dict() for c in self.children]
+        if self.start_time:
+            result["start_time"] = self.start_time.isoformat()
+        if self.end_time:
+            result["end_time"] = self.end_time.isoformat()
         return result
 
     @property

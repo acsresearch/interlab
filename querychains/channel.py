@@ -23,6 +23,7 @@ class Actor:
         pass
 
 
+@dataclass
 class Message:
     sender: Actor
     receivers: List["Actor"]
