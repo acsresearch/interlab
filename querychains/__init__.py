@@ -6,3 +6,4 @@ from .repeat import repeat_on_failure  # noqa: F401
 from .server import start_server  # noqa: F401
 from .storage import FileStorage, Storage  # noqa: F401
 from .utils import LOG, QueryFailure  # noqa: F401
+from .channel import Channel, Actor, Message # noqa: F401
