@@ -6,12 +6,42 @@
 # from querychains.context import add_event
 #
 #
-# @dataclass
-# class Actor:
-#     name: str
-#
-#     def add_message(self, message: "Message"):
-#         raise NotImplementedError
+from typing import Optional, List
+
+from dataclasses import field, dataclass
+
+import uuid
+
+
+@dataclass
+class Actor:
+    name: str
+    kind: Optional[str] = field(default=None)
+    uuid: str = field(default_factory=lambda: str(uuid.uuid4()))
+
+    def add_message(self, message: "Message"):
+        pass
+
+
+class Message:
+    sender: Actor
+    receivers: List["Actor"]
+    content: str
+
+
+class Channel:
+    def __init__(
+        self,
+    ):
+        self.uuid = str(uuid.uuid4)
+        self.actors: List[Actor] = []
+
+    def __log__(self):
+        return {"uuid": self.uuid}
+
+    # def send_message(self, ):
+
+
 #
 #
 # @dataclass

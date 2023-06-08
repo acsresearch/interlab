@@ -145,14 +145,18 @@ def with_context(fn: Callable = None, *, name=None, kind=None):
 
         def wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
-            with Context(name=name, kind=kind or "call", inputs=binding.arguments) as ctx:
+            with Context(
+                name=name, kind=kind or "call", inputs=binding.arguments
+            ) as ctx:
                 result = func(*a, **kw)
                 ctx.set_result(result)
                 return result
 
         async def async_wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
-            with Context(name=name, kind=kind or "acall", inputs=binding.arguments) as ctx:
+            with Context(
+                name=name, kind=kind or "acall", inputs=binding.arguments
+            ) as ctx:
                 result = await func(*a, **kw)
                 ctx.set_result(result)
                 return result

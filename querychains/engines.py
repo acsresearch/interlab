@@ -1,7 +1,6 @@
 import os
 from dataclasses import dataclass
 from typing import Optional
-from serde import serde, field
 
 import anthropic
 import backoff
@@ -14,7 +13,6 @@ from .utils import LOG, shorten_str
 
 
 class QueryEngine:
-
     def query(self, prompt: str, max_tokens: Optional[int]) -> Data:
         raise NotImplementedError()
 
@@ -52,7 +50,9 @@ def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: QueryConf)
 
 
 @backoff.on_exception(backoff.expo, openai.error.RateLimitError)
-async def _make_openai_chat_async_query(api_key: str, api_org: str, prompt, conf: QueryConf):
+async def _make_openai_chat_async_query(
+    api_key: str, api_org: str, prompt, conf: QueryConf
+):
     r = await openai.ChatCompletion.acreate(
         api_key=api_key,
         organization=api_org,
@@ -66,18 +66,18 @@ async def _make_openai_chat_async_query(api_key: str, api_org: str, prompt, conf
     return m.content.strip()
 
 
-@serde
+@dataclass
 class OpenAiChatEngine(QueryEngine):
 
     model: str
     temperature: float
 
     def __init__(
-            self,
-            api_key: Optional[str] = None,
-            api_org: Optional[str] = None,
-            model="gpt-3.5-turbo",
-            temperature: float = 0.7,
+        self,
+        api_key: Optional[str] = None,
+        api_org: Optional[str] = None,
+        model="gpt-3.5-turbo",
+        temperature: float = 0.7,
     ):
         if not api_key:
             api_key = os.getenv("OPENAI_API_KEY")
@@ -112,7 +112,9 @@ class OpenAiChatEngine(QueryEngine):
     def query(self, prompt: str, max_tokens=1024) -> str:
         inputs = self._prepare_inputs(prompt, max_tokens)
         with Context(f"OpenAiChat {self.model}", kind="query", inputs=inputs) as c:
-            result = _make_openai_chat_query(self.api_key, self.api_org, prompt, inputs["conf"])
+            result = _make_openai_chat_query(
+                self.api_key, self.api_org, prompt, inputs["conf"]
+            )
             c.set_result(result)
             return result
 
@@ -120,19 +122,21 @@ class OpenAiChatEngine(QueryEngine):
         inputs = self._prepare_inputs(prompt, max_tokens)
         with Context(f"OpenAiChat {self.model}", kind="query", inputs=inputs) as c:
             async with _openai_semaphore:  # !!!  acquire semaphore outside of @backoff function is intensional
-                result = await _make_openai_chat_async_query(self.api_key, self.api_org, prompt, inputs["conf"])
+                result = await _make_openai_chat_async_query(
+                    self.api_key, self.api_org, prompt, inputs["conf"]
+                )
             c.set_result(result)
             return result
 
 
-@serde
+@dataclass
 class AnthropicEngine(QueryEngine):
 
     model: str
     temperature: float
 
     def __init__(
-            self, api_key: str = None, model="claude-v1", temperature: float = 1.0
+        self, api_key: str = None, model="claude-v1", temperature: float = 1.0
     ):
         if not api_key:
             api_key = os.getenv("ANTHROPIC_API_KEY")

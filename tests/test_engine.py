@@ -1,11 +1,11 @@
-from serde import serde
+from dataclasses import dataclass
 
 from querychains import OpenAiChatEngine, AnthropicEngine
 from querychains.data import serialize_with_type
 
 
 def test_serialize_engines():
-    @serde
+    @dataclass
     class Engines:
         first: AnthropicEngine
         second: OpenAiChatEngine

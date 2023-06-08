@@ -54,9 +54,8 @@ async def _server_main(handle: ServerHandle):
 
     @app.get("/contexts/list")
     async def list_of_contexts():
-        return (
-            list(handle.contexts.keys()) + (handle.storage.list() if handle.storage
-            else [])
+        return list(handle.contexts.keys()) + (
+            handle.storage.list() if handle.storage else []
         )
 
     @app.get("/contexts/uuid/{uuid}")
