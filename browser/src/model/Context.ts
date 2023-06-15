@@ -6,6 +6,7 @@ export type Context = {
     kind?: string,
     uuid: string,
     state?: string,
+    meta?: { color?: string }
     children?: Context[]
     inputs?: any,
     result?: any,

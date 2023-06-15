@@ -82,6 +82,8 @@ class Context:
             result["start_time"] = self.start_time.isoformat()
         if self.end_time:
             result["end_time"] = self.end_time.isoformat()
+        if self.meta:
+            result["meta"] = self.meta
         return result
 
     @property
