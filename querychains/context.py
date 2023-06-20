@@ -46,6 +46,7 @@ class Context:
         meta: Optional[Dict[str, Data]] = None,
         tags: Optional[List[str]] = None,
         storage: Optional["Storage"] = None,
+        directory=False,
     ):
         if inputs:
             inputs = serialize_with_type(inputs)
@@ -65,10 +66,11 @@ class Context:
         self.end_time = None
         self.meta = meta
         self.storage = storage
+        self.directory = directory
         self._token = None
         self._depth = 0
 
-    def to_dict(self):
+    def to_dict(self, with_children=True):
         result = {"_type": "Context", "name": self.name, "uuid": self.uuid}
         if self.state != ContextState.FINISHED:
             result["state"] = self.state.value
@@ -76,7 +78,7 @@ class Context:
             value = getattr(self, name)
             if value:
                 result[name] = value
-        if self.children:
+        if with_children and self.children:
             result["children"] = [c.to_dict() for c in self.children]
         if self.start_time:
             result["start_time"] = self.start_time.isoformat()

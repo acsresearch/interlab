@@ -9,8 +9,9 @@ from .data import Data
 
 
 class Storage:
+
     def write_context(self, context: Context):
-        self.write(context.uuid, context.to_dict())
+        raise NotImplementedError
 
     def write(self, uuid: str, data: Data):
         raise NotImplementedError
@@ -28,12 +29,27 @@ class FileStorage(Storage):
         os.makedirs(directory, exist_ok=True)
         self.directory = directory
 
-    def _path(self, uuid: str) -> str:
-        return os.path.join(self.directory, f"{uuid}.json.gz")
+    def _file_path(self, parents, uuid: str) -> str:
+        return os.path.join(self.directory, *parents, f"{uuid}.json.gz")
 
-    def write(self, uuid: str, data: Data):
-        data = json.dumps(data).encode()
-        path = self._path(uuid)
+    def _dir_path(self, parents, uuid: str) -> str:
+        return os.path.join(self.directory, *parents, f"{uuid}.ctx")
+
+    def write_context(self, context: Context):
+        if context.directory:
+            self.write_context_dir([], context)
+        else:
+            self.write_context_file([], context.uuid, context.to_dict())
+
+    def write_context_dir(self, parents: List[str], context: Context):
+        path = self._dir_path(parents, context.uuid)
+        tmp_path = path + "._tmp"
+        os.mkdir()
+        self.write("self", context.to_dict(with_children=False))
+
+    def write_context_file(self, parents: List[str], context: Context, with_children=True):
+        data = json.dumps(context.to_dict(with_children)).encode()
+        path = self._file_path(parents, context.uuid)
         tmp_path = path + "._tmp"
         try:
             with gzip.open(tmp_path, "w") as f:
@@ -45,7 +61,7 @@ class FileStorage(Storage):
 
     def read(self, uuid: str) -> Data:
         try:
-            with gzip.open(self._path(uuid), "r") as f:
+            with gzip.open(self._file_path(uuid), "r") as f:
                 data = f.read()
         except FileNotFoundError:
             return None
