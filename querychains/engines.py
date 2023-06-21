@@ -89,7 +89,7 @@ class OpenAiChatEngine(QueryEngine):
         self.model = model
         LOG.info(
             f"Created OpenAIEngine with API_KEY={shorten_str(self.api_key, 13)} and "
-            "API_ORG={shorten_str(self.api_org, 14)}, default model={self.model}"
+            f"API_ORG={shorten_str(self.api_org, 14)}, model={self.model}"
         )
         self.temperature = temperature
 
