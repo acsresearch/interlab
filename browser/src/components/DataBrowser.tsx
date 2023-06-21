@@ -1,11 +1,12 @@
-import { Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
-import { Context } from "../model/Context";
+import { Box, Button, Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
+import { Context, gatherKinds } from "../model/Context";
 import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVICE_PREFIX } from "../config";
 import { callGuard } from "../common/guard";
 import { AddInfo } from "../common/info";
+import ToggleButton from '@mui/material/ToggleButton';
 
 import SyncIcon from '@mui/icons-material/Sync';
 
@@ -19,6 +20,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     const [roots, setRoots] = useState<string[]>([]);
     const [selectedCtx, setSelectedCtx] = useState<Context | null>(null);
     let [opened, setOpened] = useState<Set<string>>(new Set());
+    const [kinds, setKinds] = useState<Set<string>>(new Set());
 
     function refresh() {
         callGuard(async () => {
@@ -47,8 +49,20 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             setOpened((op) => {
                 let o = new Set(op);
                 o.add(root);
+                if (newKinds.size !== kinds.size) {
+                    newKinds.forEach((k) => {
+                        if (!kinds.has(k)) {
+                            o.add(k);
+                        }
+                    })
+                }
                 return o;
             })
+            const newKinds = new Set(kinds);
+            gatherKinds(ctx, newKinds);
+            if (newKinds.size !== kinds.size) {
+                setKinds(newKinds);
+            }
         }, props.addInfo)
     }
 
@@ -62,6 +76,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
         })
 
     }
+
+    let sortedKinds = Array.from(kinds);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { refresh() }, []);
@@ -78,8 +94,16 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             </Paper>
         </Grid>
         <Grid item xs={9}>
+            <Box
+                m={1} //margin
+                display="flex"
+                justifyContent="flex-start"
+                alignItems="flex-start"
+            >
+                {sortedKinds.map((kind) => <ToggleButton value={""} selected={opened.has(kind)} onChange={() => toggleOpen(kind)} key={kind}>{kind}</ToggleButton>)}
+            </Box>
             {selectedCtx && <ContextNode context={selectedCtx} depth={0} opened={opened} toggleOpen={toggleOpen} />}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
         </Grid>
-    </Grid>
+    </Grid >
 }

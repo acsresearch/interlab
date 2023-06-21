@@ -71,7 +71,7 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
                     <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" opened={props.opened} toggleOpen={props.toggleOpen} />
                 </p>
             }
-            {c.children?.map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
+            {c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
                 <ContextNode context={ctx} depth={props.depth + 1} opened={props.opened} toggleOpen={props.toggleOpen} /></div>)}
         </>
     }

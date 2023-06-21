@@ -8,7 +8,7 @@ def repeat_on_failure(fn: Callable, max_repeats=3, use_context=True, throw_if_fa
     for i in range(max_repeats):
         try:
             if use_context:
-                name = f"{i + 1}/{max_repeats}"
+                name = f"{fn.__name__}: {i + 1}/{max_repeats}"
                 with Context(name=name, kind="repeat_on_failure") as c:
                     result = fn()
                     c.set_result(result)

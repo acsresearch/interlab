@@ -19,7 +19,6 @@ export function DataRenderer(props: { data: any, uid: string, opened: Set<string
             return <span>{d}</span>
         } else {
             const lines = d.split(/\r\n|\r|\n/);
-            console.log(lines);
             if (lines.length <= 5) {
                 return <div style={{ whiteSpace: "pre-wrap" }}>{d}</div>
             } else {

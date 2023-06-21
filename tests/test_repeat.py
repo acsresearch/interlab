@@ -14,7 +14,7 @@ def test_repeat_pass():
             {
                 "_type": "Context",
                 "kind": "repeat_on_failure",
-                "name": "1/3",
+                "name": "<lambda>: 1/3",
                 "result": 123,
             }
         ],

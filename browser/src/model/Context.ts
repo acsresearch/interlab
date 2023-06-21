@@ -12,3 +12,14 @@ export type Context = {
     result?: any,
     error?: any,
 }
+
+export function gatherKinds(ctx: Context, kinds: Set<string>) {
+    if (ctx.kind !== undefined && ctx.kind !== null) {
+        kinds.add(ctx.kind)
+    }
+    if (ctx.children) {
+        for (const child of ctx.children) {
+            gatherKinds(child, kinds)
+        }
+    }
+}
