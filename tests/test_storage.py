@@ -13,16 +13,16 @@ def test_file_storage(tmpdir):
 
     storage.write_context(c1)
 
-    ctx = storage.read(c1.uuid)
+    ctx = storage.read(c1.uid)
     assert ctx == c1.to_dict()
 
     with Context("test2", storage=storage) as c2:
         pass
 
-    ctx = storage.read(c2.uuid)
+    ctx = storage.read(c2.uid)
     assert ctx == c2.to_dict()
 
-    assert {c1.uuid, c2.uuid} == set(storage.list())
+    assert {c1.uid, c2.uid} == set(storage.list())
 
 
 def test_file_storage_dirs(tmpdir):
@@ -42,5 +42,5 @@ def test_file_storage_dirs(tmpdir):
             pass
 
     storage.write_context(c1)
-    data = storage.read(c1.uuid)
+    data = storage.read(c1.uid)
     assert data == c1.to_dict()

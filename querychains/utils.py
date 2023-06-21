@@ -1,8 +1,13 @@
 import logging
+import string
+import random
+import re
+from datetime import datetime
 from typing import Any
 
 LOG = logging.getLogger("querychains")
-
+UID_CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
+ESCAPE_NAME_RE = re.compile("[^0-9a-zA-Z]+")
 
 class QueryFailure(Exception):
     pass
@@ -23,3 +28,9 @@ def short_repr(obj: Any) -> str:
     else:
         s = repr(obj)
     return shorten_str(s)
+
+
+def generate_uid(name: str) -> str:
+    name = ESCAPE_NAME_RE.sub("_", name[:16])
+    random_part = ''.join(random.choice(UID_CHARS) for _ in range(6))
+    return f"{datetime.now().isoformat(timespec='seconds')}-{name}-{random_part}"

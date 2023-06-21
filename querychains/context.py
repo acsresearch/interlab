@@ -3,10 +3,9 @@ import datetime
 import inspect
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
-from uuid import uuid4
 
 from .data import Data, serialize_with_type
-from .utils import LOG, shorten_str
+from .utils import LOG, shorten_str, generate_uid
 
 _CONTEXT_STACK = contextvars.ContextVar("_CONTEXT_STACK", default=())
 
@@ -59,7 +58,7 @@ class Context:
         self.result = None
         self.error = None
         self.state: ContextState = ContextState.NEW
-        self.uuid = str(uuid4())
+        self.uid = generate_uid(name)
         self.children: List[Event, Context] = []
         self.tags = tags
         self.start_time = None
@@ -71,7 +70,7 @@ class Context:
         self._depth = 0
 
     def to_dict(self, with_children=True):
-        result = {"_type": "Context", "name": self.name, "uuid": self.uuid}
+        result = {"_type": "Context", "name": self.name, "uid": self.uid}
         if self.state != ContextState.FINISHED:
             result["state"] = self.state.value
         for name in ["kind", "inputs", "result", "error", "tags"]:
@@ -81,7 +80,7 @@ class Context:
         if with_children and self.children:
             result["children"] = [c.to_dict() for c in self.children]
         if not with_children and self.children:
-            result["children_uuids"] = [c.uuid for c in self.children]
+            result["children_uids"] = [c.uid for c in self.children]
         if self.start_time:
             result["start_time"] = self.start_time.isoformat()
         if self.end_time:

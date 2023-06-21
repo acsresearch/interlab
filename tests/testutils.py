@@ -1,8 +1,8 @@
 def strip_tree(obj):
     if isinstance(obj, dict):
         if obj.get("_type") == "Context":
-            assert "uuid" in obj
-            assert isinstance(obj.pop("uuid"), str)
+            assert "uid" in obj
+            assert isinstance(obj.pop("uid"), str)
             if "start_time" in obj:
                 assert isinstance(obj.pop("start_time"), str)
             if "end_time" in obj:

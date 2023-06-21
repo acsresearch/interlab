@@ -26,7 +26,7 @@ class ServerHandle:
         self.task = loop.create_task(_server_main(self))
 
     def add_context(self, context: Context):
-        self.contexts[context.uuid] = context
+        self.contexts[context.uid] = context
 
     def serve_forever(self):
         loop = asyncio.get_event_loop()
@@ -58,15 +58,15 @@ async def _server_main(handle: ServerHandle):
             handle.storage.list() if handle.storage else []
         )
 
-    @app.get("/contexts/uuid/{uuid}")
-    async def get_uuid(uuid: str):
-        # Check format of uuid
-        ctx = handle.contexts.get(uuid)
+    @app.get("/contexts/uid/{uid}")
+    async def get_uid(uid: str):
+        # Check format of uid
+        ctx = handle.contexts.get(uid)
         if ctx is not None:
             return ctx.to_dict()
 
         if handle.storage:
-            data = handle.storage.read(uuid)
+            data = handle.storage.read(uid)
             if data:
                 return data
 

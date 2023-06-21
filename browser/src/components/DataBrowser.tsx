@@ -1,6 +1,6 @@
-import { Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material"
-import { Context } from "../model/Context"
-import { ContextNode } from "./ContextNode"
+import { Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
+import { Context } from "../model/Context";
+import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVICE_PREFIX } from "../config";
@@ -27,11 +27,12 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                 return;
             }
             const rs = response.data as string[];
+            rs.sort();
             setRoots(rs);
             if (selectedCtx === null && rs.length > 0) {
                 selectRoot(rs[0]);
-            } else if (selectedCtx !== null && rs.find((x) => x === selectedCtx.uuid)) {
-                selectRoot(selectedCtx.uuid);
+            } else if (selectedCtx !== null && rs.find((x) => x === selectedCtx.uid)) {
+                selectRoot(selectedCtx.uid);
             } else {
                 setSelectedCtx(null);
             }
@@ -40,7 +41,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
 
     function selectRoot(root: string) {
         callGuard(async () => {
-            const response = await axios.get(SERVICE_PREFIX + "/contexts/uuid/" + root);
+            const response = await axios.get(SERVICE_PREFIX + "/contexts/uid/" + root);
             const ctx = response.data as Context;
             setSelectedCtx(ctx);
             setOpened((op) => {
@@ -70,8 +71,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             <IconButton onClick={refresh}><SyncIcon /></IconButton>
             <Paper>
                 {roots.map((root) =>
-                    <ListItemButton selected={selectedCtx !== null && root === selectedCtx.uuid} key={root} component="a" onClick={() => selectRoot(root)}>
-                        <ListItemText primary={root.slice(0, 8)} />
+                    <ListItemButton selected={selectedCtx !== null && root === selectedCtx.uid} key={root} component="a" onClick={() => selectRoot(root)}>
+                        <ListItemText primary={root.slice(0, 40)} primaryTypographyProps={{ fontSize: '80%' }} />
                     </ListItemButton>
                 )}
             </Paper>

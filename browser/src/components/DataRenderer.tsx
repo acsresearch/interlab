@@ -1,16 +1,41 @@
 import { Button } from "@mui/material";
-import { UUID } from "crypto";
 
 
 const IMAGE_MIME_TYPES = ["image/jpeg", "image/png"];
 
-export function DataRenderer(props: { data: any, uuid: string, opened: Set<string>, toggleOpen: (uuid: string) => void, hideType?: string }) {
+export function DataRenderer(props: { data: any, uid: string, opened: Set<string>, toggleOpen: (uid: string) => void, hideType?: string }) {
     let d = props.data;
+    if (d === null) {
+        return <span>None</span>
+    }
     if (typeof d === 'boolean') {
         return <span>{d ? "true" : "false"}</span>
     }
-    if (typeof d === 'number' || typeof d === 'string') {
+    if (typeof d === 'number') {
         return <span>{d}</span>
+    }
+    if (typeof d === 'string') {
+        if (d.length < 64 && !/\r|\n/.exec(d)) {
+            return <span>{d}</span>
+        } else {
+            const lines = d.split(/\r\n|\r|\n/);
+            console.log(lines);
+            if (lines.length <= 5) {
+                return <div style={{ whiteSpace: "pre-wrap" }}>{d}</div>
+            } else {
+                if (props.opened.has(props.uid)) {
+                    return <>
+                        <div style={{ whiteSpace: "pre-wrap" }}>{d}</div>
+                        <Button onClick={() => props.toggleOpen(props.uid)}>Hide lines</Button>
+                    </>
+                } else {
+                    return <>
+                        <div style={{ whiteSpace: "pre-wrap" }}>{lines.slice(0, 3).join("\n")} ...</div>
+                        <Button onClick={() => props.toggleOpen(props.uid)}>Show {lines.length} lines</Button>
+                    </>
+                }
+            }
+        }
     }
 
     if (d._type === "Blob" && IMAGE_MIME_TYPES.includes(d.mime_type)) {
@@ -32,17 +57,17 @@ export function DataRenderer(props: { data: any, uuid: string, opened: Set<strin
 
     const isLong = children.length > 3;
 
-    if (isLong && !props.opened.has(props.uuid)) {
+    if (isLong && !props.opened.has(props.uid)) {
         return <>
             {(props.hideType !== type && type) && <span>{type}</span>}
-            <Button onClick={() => props.toggleOpen(props.uuid)}>Show {children.length} items</Button>
+            <Button onClick={() => props.toggleOpen(props.uid)}>Show {children.length} items</Button>
         </>
     }
 
     return (<>
         {(props.hideType !== type && type) && <span>{type}</span>}
-        {isLong && <Button onClick={() => props.toggleOpen(props.uuid)}>Hide items</Button>}
+        {isLong && <Button onClick={() => props.toggleOpen(props.uid)}>Hide items</Button>}
         <ul>
-            {children.map(({ property, value }) => <li key={property}><strong>{property}</strong>: <DataRenderer uuid={props.uuid + "/" + property} data={value} opened={props.opened} toggleOpen={props.toggleOpen} /></li>)}
+            {children.map(({ property, value }) => <li key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} data={value} opened={props.opened} toggleOpen={props.toggleOpen} /></li>)}
         </ul></>);
 }

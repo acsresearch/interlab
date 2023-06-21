@@ -4,7 +4,7 @@ from .context import Context
 from .utils import QueryFailure
 
 
-def repeat_on_failure(fn: Callable, max_repeats=3, use_context=True):
+def repeat_on_failure(fn: Callable, max_repeats=3, use_context=True, throw_if_fail=True, fail_value=None):
     for i in range(max_repeats):
         try:
             if use_context:
@@ -17,7 +17,10 @@ def repeat_on_failure(fn: Callable, max_repeats=3, use_context=True):
                 return fn()
         except QueryFailure:
             continue
-    raise QueryFailure(f"Subqueries failed on all {max_repeats} repetitions")
+    if throw_if_fail:
+        raise QueryFailure(f"Subqueries failed on all {max_repeats} repetitions")
+    else:
+        return fail_value
 
 
 async def async_repeat_on_failure(fn: Awaitable, max_repeats=3, use_context=True, throw_if_fail=True, fail_value=None):

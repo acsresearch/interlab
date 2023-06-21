@@ -1,3 +1,4 @@
+import { type } from "os";
 
 
 export function shorten_string(text: string, max_length: number = 35): string {
@@ -6,4 +7,18 @@ export function shorten_string(text: string, max_length: number = 35): string {
     } else {
         return text
     }
+}
+
+export function short_repr(obj: any): string {
+    let result;
+    if (typeof obj === 'number') {
+        result = obj.toString();
+    } else if (typeof obj === 'string') {
+        result = obj
+    } else if (obj._type) {
+        result = obj._type;
+    } else {
+        result = "<object>";
+    }
+    return shorten_string(result);
 }

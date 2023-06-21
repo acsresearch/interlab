@@ -4,7 +4,7 @@ export type Context = {
     _type: "Context",
     name: string,
     kind?: string,
-    uuid: string,
+    uid: string,
     state?: string,
     meta?: { color?: string }
     children?: Context[]

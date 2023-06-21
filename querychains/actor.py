@@ -24,31 +24,36 @@ class Actor:
         self.events: List[EventAction | EventObservation] = []
         self.ctx_meta = ctx_meta
 
-
     def observations(self):
         return [event.data for event in self.events if isinstance(event, EventObservation)]
 
     def actions(self):
         return [event.action for event in self.events if isinstance(event, EventAction)]
 
-    async def act(self, prompt: Any = None):
-        with Context(f"Action of {self.name}: {short_repr(prompt)}", kind="action", meta=self.ctx_meta, inputs={
-            "prompt": prompt,
-        }) as c:
-            action = await self.compute_action(prompt)
+    def act(self, prompt: Any = None):
+        if prompt:
+            name = f"Action of {self.name}: {short_repr(prompt)}"
+            inputs = {
+                "prompt": prompt,
+            }
+        else:
+            name = f"Action of {self.name}"
+            inputs = None
+        with Context(name, kind="action", meta=self.ctx_meta, inputs=inputs) as c:
+            action = self.get_action(prompt)
             self.events.append(EventAction(prompt, action))
             c.set_result(action)
         return action
 
-    async def compute_action(self, prompt: Any):
+    def get_action(self, prompt: Any):
         raise NotImplementedError
 
     def observe(self, data: Any):
         self.events.append(EventObservation(data))
         with Context(f"Observation of {self.name}: {short_repr(data)}", kind="observation", meta=self.ctx_meta, inputs={"observation": data}):
-            self.process_observe(data)
+            self.process_observation(data)
 
-    def process_observe(self, data: Any):
+    def process_observation(self, data: Any):
         pass
 
     def __repr__(self):
