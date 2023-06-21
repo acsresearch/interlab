@@ -80,6 +80,8 @@ class Context:
                 result[name] = value
         if with_children and self.children:
             result["children"] = [c.to_dict() for c in self.children]
+        if not with_children and self.children:
+            result["children_uuids"] = [c.uuid for c in self.children]
         if self.start_time:
             result["start_time"] = self.start_time.isoformat()
         if self.end_time:

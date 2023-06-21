@@ -1,6 +1,7 @@
 import gzip
 import json
 import os
+import shutil
 from os import PathLike
 from typing import List
 
@@ -11,9 +12,6 @@ from .data import Data
 class Storage:
 
     def write_context(self, context: Context):
-        raise NotImplementedError
-
-    def write(self, uuid: str, data: Data):
         raise NotImplementedError
 
     def read(self, uuid: str) -> Data:
@@ -29,27 +27,37 @@ class FileStorage(Storage):
         os.makedirs(directory, exist_ok=True)
         self.directory = directory
 
-    def _file_path(self, parents, uuid: str) -> str:
-        return os.path.join(self.directory, *parents, f"{uuid}.json.gz")
+    def _file_path(self, directory, name) -> str:
+        return os.path.join(directory, f"{name}.json.gz")
 
-    def _dir_path(self, parents, uuid: str) -> str:
-        return os.path.join(self.directory, *parents, f"{uuid}.ctx")
+    def _dir_path(self, directory, name: str) -> str:
+        return os.path.join(directory, f"{name}.ctx")
 
     def write_context(self, context: Context):
+        self._write_context_into(self.directory, context)
+
+    def _write_context_into(self, directory: str, context: Context):
         if context.directory:
-            self.write_context_dir([], context)
+            self._write_context_dir(directory, context)
         else:
-            self.write_context_file([], context.uuid, context.to_dict())
+            self._write_context_file(directory, context)
 
-    def write_context_dir(self, parents: List[str], context: Context):
-        path = self._dir_path(parents, context.uuid)
+    def _write_context_dir(self, directory: str, context: Context):
+        path = self._dir_path(directory, context.uuid)
         tmp_path = path + "._tmp"
-        os.mkdir()
-        self.write("self", context.to_dict(with_children=False))
+        try:
+            os.mkdir(tmp_path)
+            self._write_context_file(tmp_path, context, with_children=False, name="_self")
+            for child in context.children:
+                self._write_context_into(tmp_path, child)
+            os.rename(tmp_path, path)
+        finally:
+            if os.path.exists(tmp_path):
+                shutil.rmtree(tmp_path)
 
-    def write_context_file(self, parents: List[str], context: Context, with_children=True):
+    def _write_context_file(self, directory: str, context: Context, with_children=True, name=None):
         data = json.dumps(context.to_dict(with_children)).encode()
-        path = self._file_path(parents, context.uuid)
+        path = self._file_path(directory, name or context.uuid)
         tmp_path = path + "._tmp"
         try:
             with gzip.open(tmp_path, "w") as f:
@@ -60,12 +68,29 @@ class FileStorage(Storage):
                 os.unlink(tmp_path)
 
     def read(self, uuid: str) -> Data:
-        try:
-            with gzip.open(self._file_path(uuid), "r") as f:
-                data = f.read()
-        except FileNotFoundError:
-            return None
+        return self._read_from(self.directory, uuid)
+
+    def _read_from(self, directory: str, uuid: str) -> Data:
+        path = self._dir_path(directory, uuid)
+        if os.path.isdir(path):
+            return self._read_dir(path)
+        else:
+            path = self._file_path(directory, uuid)
+            return self._read_file(path)
+
+    def _read_file(self, path: str):
+        with gzip.open(path, "r") as f:
+            data = f.read()
         return json.loads(data)
+
+    def _read_dir(self, path: str):
+        self_path = self._file_path(path, "_self")
+        self_data = self._read_file(self_path)
+        children_uuids = self_data.pop("children_uuids", None)
+        if children_uuids is None:
+            return self_data
+        self_data["children"] = [self._read_from(path, uuid) for uuid in children_uuids]
+        return self_data
 
     def list(self) -> List[str]:
         return [
