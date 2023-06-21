@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+import re
 from typing import Optional
 
 import anthropic
@@ -10,6 +11,7 @@ import asyncio
 from .context import Context
 from .data import Data
 from .utils import LOG, shorten_str
+from .text import group_newlines, remove_leading_spaces
 
 
 class QueryEngine:
@@ -68,7 +70,6 @@ async def _make_openai_chat_async_query(
 
 @dataclass
 class OpenAiChatEngine(QueryEngine):
-
     model: str
     temperature: float
 
@@ -109,12 +110,17 @@ class OpenAiChatEngine(QueryEngine):
         }
         return inputs
 
-    def query(self, prompt: str, max_tokens=1024) -> str:
+    def query(self, prompt: str, max_tokens=1024, strip=None) -> str:
+        if strip is True:
+            prompt = remove_leading_spaces(group_newlines(prompt.strip()))
         inputs = self._prepare_inputs(prompt, max_tokens)
         with Context(f"OpenAiChat {self.model}", kind="query", inputs=inputs) as c:
             result = _make_openai_chat_query(
                 self.api_key, self.api_org, prompt, inputs["conf"]
             )
+
+            if strip is True:
+                result = group_newlines(result.strip())
             c.set_result(result)
             return result
 
@@ -131,7 +137,6 @@ class OpenAiChatEngine(QueryEngine):
 
 @dataclass
 class AnthropicEngine(QueryEngine):
-
     model: str
     temperature: float
 
@@ -164,7 +169,9 @@ class AnthropicEngine(QueryEngine):
         }
         return inputs
 
-    def query(self, prompt: str, max_tokens=1024) -> str:
+    def query(self, prompt: str, max_tokens=1024, strip=None) -> str:
+        if strip is True:
+            prompt = remove_leading_spaces(group_newlines(prompt.strip()))
         inputs = self._prepare_inputs(prompt, max_tokens)
         with Context(f"Anthropic {self.model}", inputs=inputs) as c:
             r = self.client.completion(
@@ -175,6 +182,8 @@ class AnthropicEngine(QueryEngine):
                 model=self.model,
             )
             d = r["completion"].strip()
+            if strip is True:
+                d = group_newlines(d.strip())
             c.set_result(d)
             return d
 

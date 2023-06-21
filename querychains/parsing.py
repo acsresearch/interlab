@@ -7,14 +7,20 @@ class ParsingFailure(QueryFailure):
     pass
 
 
-def parse_tag(tag: str, text: str, required=False) -> str | None:
+def parse_tag(tag: str, text: str, required=False, parse=None) -> str | None:
     if len(re.findall(f"<{tag}>", text)) > 1 or len(re.findall(f"</{tag}>", text)) > 1:
         raise ParsingFailure(
-            "Multiple occurences of '<{tag}>' or '</{tag}>' found in parsed text"
+            f"Multiple occurences of '<{tag}>' or '</{tag}>' found in parsed text"
         )
     r = re.search(f"<{tag}>(.*)</{tag}>", text, re.MULTILINE | re.DOTALL)
     if not r or not r.groups():
         if required:
-            raise ParsingFailure("Tags '<{tag}>...</{tag}>' not found in parsed text")
+            raise ParsingFailure(f"Tags '<{tag}>...</{tag}>' not found in parsed text")
         return None
-    return r.groups()[0]
+    res = r.groups()[0]
+    if parse is not None:
+        try:
+            res = parse(res)
+        except ValueError:
+            raise ParsingFailure(f"Failed parsing value of '<{tag}>...</{tag}>' with {parse!r}")
+    return res
