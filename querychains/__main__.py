@@ -1,13 +1,14 @@
+import argparse
+
 from .server import start_server
 from .storage import FileStorage
-import argparse
 
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='querychains',
-        description='Start server for serving data from storage')
-    parser.add_argument('directory')
+        prog="querychains", description="Start server for serving data from storage"
+    )
+    parser.add_argument("directory")
     parser.add_argument("--port", type=int, default=5000)
     args = parser.parse_args()
 

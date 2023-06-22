@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from querychains import OpenAiChatEngine, AnthropicEngine
+from querychains import AnthropicEngine, OpenAiChatEngine
 from querychains.data import serialize_with_type
 
 

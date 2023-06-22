@@ -1,8 +1,7 @@
-from enum import Enum
-from typing import Any, List, Optional, Dict
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
-from .context import with_context, add_event, Context
+from .context import Context
 from .utils import short_repr
 
 
@@ -18,14 +17,15 @@ class EventAction:
 
 
 class Actor:
-
-    def __init__(self, name: Optional[str] = None, ctx_meta: Optional[Dict]=None):
+    def __init__(self, name: Optional[str] = None, ctx_meta: Optional[Dict] = None):
         self.name = name or self.__class__.__name__
         self.events: List[EventAction | EventObservation] = []
         self.ctx_meta = ctx_meta
 
     def observations(self):
-        return [event.data for event in self.events if isinstance(event, EventObservation)]
+        return [
+            event.data for event in self.events if isinstance(event, EventObservation)
+        ]
 
     def actions(self):
         return [event.action for event in self.events if isinstance(event, EventAction)]
@@ -50,7 +50,12 @@ class Actor:
 
     def observe(self, data: Any):
         self.events.append(EventObservation(data))
-        with Context(f"Observation of {self.name}: {short_repr(data)}", kind="observation", meta=self.ctx_meta, inputs={"observation": data}):
+        with Context(
+            f"Observation of {self.name}: {short_repr(data)}",
+            kind="observation",
+            meta=self.ctx_meta,
+            inputs={"observation": data},
+        ):
             self.process_observation(data)
 
     def process_observation(self, data: Any):
@@ -59,10 +64,11 @@ class Actor:
     def __repr__(self):
         return f"<Actor {self.name}>"
 
+
 # TODO:
 
-class ActorProcess(Actor):
 
+class ActorProcess(Actor):
     async def process_act(self, prompt: Any):
         pass
 

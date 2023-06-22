@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
 from .data import Data, serialize_with_type
-from .utils import LOG, shorten_str, generate_uid
+from .utils import LOG, generate_uid, shorten_str
 
 _CONTEXT_STACK = contextvars.ContextVar("_CONTEXT_STACK", default=())
 
@@ -18,7 +18,9 @@ class ContextState(Enum):
 
 
 class Event:
-    def __init__(self, name: str, kind: Optional[str] = None, data: Optional[Any] = None):
+    def __init__(
+        self, name: str, kind: Optional[str] = None, data: Optional[Any] = None
+    ):
         self.name = name
         self.kind = kind
         self.data = data
@@ -128,7 +130,9 @@ class Context:
             self.storage.write_context(self)
         return False  # Propagate any exception
 
-    def add_event(self, name: str, kind: Optional[str] = None, data: Optional[Any] = None) -> Event:
+    def add_event(
+        self, name: str, kind: Optional[str] = None, data: Optional[Any] = None
+    ) -> Event:
         event = Event(name=name, data=data, kind=kind)
         self.children.append(event)
         return event
@@ -193,7 +197,9 @@ def get_current_context(check: bool = True) -> Optional[Context]:
     return stack[-1]
 
 
-def add_event(name: str, kind: Optional[str] = None, data: Optional[Any] = None) -> Event:
+def add_event(
+    name: str, kind: Optional[str] = None, data: Optional[Any] = None
+) -> Event:
     return get_current_context().add_event(name, kind=kind, data=data)
 
 

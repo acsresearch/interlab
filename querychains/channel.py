@@ -6,11 +6,9 @@
 # from querychains.context import add_event
 #
 #
-from typing import Optional, List, Sequence, Dict
-
-from dataclasses import field, dataclass
-
 import uuid
+from dataclasses import dataclass, field
+from typing import Dict, List, Optional, Sequence
 
 from .context import add_event
 
@@ -32,11 +30,7 @@ class Message:
 
 
 class Channel:
-    def __init__(
-        self,
-        *,
-        actors: Sequence[Actor]
-    ):
+    def __init__(self, *, actors: Sequence[Actor]):
         self.uuid = str(uuid.uuid4())
         self.actors: Dict[Actor] = {actor.uuid: actor for actor in actors}
         self.messages = []
@@ -47,8 +41,11 @@ class Channel:
     def send(self, message: Message):
         assert message.sender.uuid in self.actors
         assert [actor.uuid in self.actors for actor in message.receivers]
-        add_event(f"Message -> {message.sender.name} -> {','.join(a.name for a in message.receivers)}", kind="message",
-                  data={"channel": self.uuid, "message": message})
+        add_event(
+            f"Message -> {message.sender.name} -> {','.join(a.name for a in message.receivers)}",
+            kind="message",
+            data={"channel": self.uuid, "message": message},
+        )
 
 
 #

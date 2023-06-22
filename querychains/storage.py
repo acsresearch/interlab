@@ -10,7 +10,6 @@ from .data import Data
 
 
 class Storage:
-
     def write_context(self, context: Context):
         raise NotImplementedError
 
@@ -22,6 +21,7 @@ class Storage:
 
     def start_server(self, port=0):
         from .server import start_server
+
         return start_server(storage=self, port=port)
 
 
@@ -51,7 +51,9 @@ class FileStorage(Storage):
         tmp_path = path + "._tmp"
         try:
             os.mkdir(tmp_path)
-            self._write_context_file(tmp_path, context, with_children=False, name="_self")
+            self._write_context_file(
+                tmp_path, context, with_children=False, name="_self"
+            )
             for child in context.children:
                 self._write_context_into(tmp_path, child)
             os.rename(tmp_path, path)
@@ -59,7 +61,9 @@ class FileStorage(Storage):
             if os.path.exists(tmp_path):
                 shutil.rmtree(tmp_path)
 
-    def _write_context_file(self, directory: str, context: Context, with_children=True, name=None):
+    def _write_context_file(
+        self, directory: str, context: Context, with_children=True, name=None
+    ):
         data = json.dumps(context.to_dict(with_children)).encode()
         path = self._file_path(directory, name or context.uid)
         tmp_path = path + "._tmp"

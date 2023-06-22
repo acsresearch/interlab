@@ -30,5 +30,5 @@ def test_custom_serialize():
         "_type": "Root",
         "my_class": {"_type": "MyClass", "attr": "hi!"},
         "my_other_class": {"_type": "MyOtherClass"},
-        'other': {"_type": "function"}
+        "other": {"_type": "function"},
     }

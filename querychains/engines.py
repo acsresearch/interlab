@@ -1,17 +1,16 @@
+import asyncio
 import os
 from dataclasses import dataclass
-import re
 from typing import Optional
 
 import anthropic
 import backoff
 import openai
-import asyncio
 
 from .context import Context
 from .data import Data
-from .utils import LOG, shorten_str
 from .text import group_newlines, remove_leading_spaces
+from .utils import LOG, shorten_str
 
 
 class QueryEngine:

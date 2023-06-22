@@ -22,5 +22,7 @@ def parse_tag(tag: str, text: str, required=False, parse=None) -> str | None:
         try:
             res = parse(res)
         except ValueError:
-            raise ParsingFailure(f"Failed parsing value of '<{tag}>...</{tag}>' with {parse!r}")
+            raise ParsingFailure(
+                f"Failed parsing value of '<{tag}>...</{tag}>' with {parse!r}"
+            )
     return res

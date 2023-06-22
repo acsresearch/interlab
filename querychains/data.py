@@ -1,6 +1,5 @@
-from typing import Dict, List
-
 import dataclasses
+from typing import Dict, List
 
 Data = Dict[str, "Data"] | List["Data"] | int | float | str | bool | None
 

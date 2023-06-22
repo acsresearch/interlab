@@ -2,8 +2,9 @@ from ..blob import Blob
 
 
 def capture_figure(file_format: str = "png", **kwargs):
-    import matplotlib.pyplot as plt
     import io
+
+    import matplotlib.pyplot as plt
 
     buf = io.BytesIO()
     plt.savefig(buf, format=file_format, **kwargs)
