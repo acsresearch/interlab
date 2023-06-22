@@ -11,6 +11,8 @@ export type Context = {
     inputs?: any,
     result?: any,
     error?: any,
+    start_time?: string,
+    end_time?: string,
 }
 
 export function gatherKinds(ctx: Context, kinds: Set<string>) {
@@ -21,5 +23,15 @@ export function gatherKinds(ctx: Context, kinds: Set<string>) {
         for (const child of ctx.children) {
             gatherKinds(child, kinds)
         }
+    }
+}
+
+export function duration(ctx: Context): number | null {
+    if (ctx.start_time && ctx.end_time) {
+        const start = new Date(ctx.start_time);
+        const end = new Date(ctx.end_time);
+        return end.getTime() - start.getTime();
+    } else {
+        return null;
     }
 }

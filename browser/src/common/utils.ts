@@ -22,3 +22,14 @@ export function short_repr(obj: any): string {
     }
     return shorten_string(result);
 }
+
+export function humanReadableDuration(value: number) {
+    if (value < 500) {
+        return `${value}ms`
+    }
+    value /= 1000;
+    if (value < 120) {
+        return `${(value).toFixed(1)}s`
+    }
+    return `${(value / 60).toFixed(1)} minutes`
+}

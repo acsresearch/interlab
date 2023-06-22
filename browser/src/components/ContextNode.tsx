@@ -1,6 +1,6 @@
 
 
-import { Context } from "../model/Context";
+import { Context, duration } from "../model/Context";
 import { Divider, IconButton } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
@@ -18,7 +18,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ForwardIcon from '@mui/icons-material/Forward';
 
 
-import { short_repr } from "../common/utils";
+import { humanReadableDuration, short_repr } from "../common/utils";
 
 //const DEFAULT_COLORS = [grey[100], grey[200], grey[300], grey[400], grey[500]];
 const DEFAULT_COLORS = [grey[100], grey[300]];
@@ -77,6 +77,10 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
     }
 
     let short_result = c.result ? short_repr(c.result) : null;
+    const dur = duration(props.context);
+    if (dur && dur > 0) {
+        <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span>
+    }
 
     return <Item style={{ backgroundColor: color }} variant="outlined">
 
@@ -86,7 +90,7 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
             flexWrap: 'wrap',
         }}>
             <IconButton onClick={() => props.toggleOpen(c.uid)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
-            {c.name} {short_result && <><ArrowRightAltIcon /> {short_result}</>} {c.kind ? " [" + c.kind + "]" : ""}
+            {c.name} {short_result && <><ArrowRightAltIcon /> {short_result}</>} {c.kind ? " [" + c.kind + "]" : ""}  {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
         </div>
         {open && body()}
     </Item >
