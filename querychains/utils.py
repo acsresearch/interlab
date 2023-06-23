@@ -34,4 +34,6 @@ def short_repr(obj: Any) -> str:
 def generate_uid(name: str) -> str:
     name = ESCAPE_NAME_RE.sub("_", name[:16])
     random_part = "".join(random.choice(UID_CHARS) for _ in range(6))
-    return f"{datetime.now().isoformat(timespec='seconds')}-{name}-{random_part}"
+    uid= f"{datetime.now().isoformat(timespec='seconds')}-{name}-{random_part}"
+    # Replace ':' to appease windows, and also both slashes just in case
+    return uid.replace(":/\\", "-")
