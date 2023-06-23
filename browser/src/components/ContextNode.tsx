@@ -1,7 +1,7 @@
 
 
-import { Context, duration } from "../model/Context";
-import { Divider, IconButton } from "@mui/material";
+import { Context, duration, getAllChildren } from "../model/Context";
+import { Button, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
 import { Item } from "./Item";
@@ -16,14 +16,46 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ForwardIcon from '@mui/icons-material/Forward';
+import MenuIcon from '@mui/icons-material/Menu';
 
 
 import { humanReadableDuration, short_repr } from "../common/utils";
+import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
+import { Opener, OpenerMode } from "./DataBrowser";
 
 //const DEFAULT_COLORS = [grey[100], grey[200], grey[300], grey[400], grey[500]];
 const DEFAULT_COLORS = [grey[100], grey[300]];
 
-export function ContextNode(props: { context: Context, depth: number, opened: Set<string>, toggleOpen: (uid: string) => void }) {
+function ContextMenu(props: { context: Context, setOpen: Opener }) {
+
+    return (
+        <PopupState variant="popover" popupId="demo-popup-menu">
+            {(popupState) => (
+                <>
+                    <IconButton {...bindTrigger(popupState)}><MenuIcon /></IconButton>
+
+                    <Menu {...bindMenu(popupState)}>
+
+                        <MenuItem onClick={() => { props.setOpen(getAllChildren(props.context), OpenerMode.Open); popupState.close() }}>
+                            <ListItemIcon>
+                                <ArrowDropDownIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Expand all children</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={() => { props.setOpen(getAllChildren(props.context), OpenerMode.Close); popupState.close() }}>
+                            <ListItemIcon>
+                                <ArrowRightIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Collapse all children</ListItemText>
+                        </MenuItem>
+                    </Menu>
+                </>
+            )}
+        </PopupState>
+    );
+}
+
+export function ContextNode(props: { context: Context, depth: number, opened: Set<string>, setOpen: Opener }) {
     //let [open, setOpen] = useState<boolean>(props.depth < 1);
 
     let c = props.context;
@@ -57,22 +89,22 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
             {(c.inputs || c.result || c.error) && <Divider />}
             {c.inputs && <p>
                 <strong>Inputs</strong><br />
-                <DataRenderer uid={c.uid + "/inputs"} data={c.inputs} opened={props.opened} toggleOpen={props.toggleOpen} />
+                <DataRenderer uid={c.uid + "/inputs"} data={c.inputs} opened={props.opened} setOpen={props.setOpen} />
             </p>}
             {c.result &&
                 <p>
                     <strong>Result</strong><br />
-                    <DataRenderer uid={c.uid + "/result"} data={c.result} opened={props.opened} toggleOpen={props.toggleOpen} />
+                    <DataRenderer uid={c.uid + "/result"} data={c.result} opened={props.opened} setOpen={props.setOpen} />
                 </p>
             }
             {c.error &&
                 <p>
                     <strong>Error</strong><br />
-                    <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" opened={props.opened} toggleOpen={props.toggleOpen} />
+                    <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" opened={props.opened} setOpen={props.setOpen} />
                 </p>
             }
             {c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
-                <ContextNode context={ctx} depth={props.depth + 1} opened={props.opened} toggleOpen={props.toggleOpen} /></div>)}
+                <ContextNode context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)}
         </>
     }
 
@@ -89,8 +121,10 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
             alignItems: 'center',
             flexWrap: 'wrap',
         }}>
-            <IconButton onClick={() => props.toggleOpen(c.uid)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
-            {c.name} {short_result && <><ArrowRightAltIcon /> {short_result}</>} {c.kind ? " [" + c.kind + "]" : ""}  {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
+            <IconButton onClick={() => props.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
+            {c.name} {short_result && <><ArrowRightAltIcon /> {short_result}</>} {c.kind ? " [" + c.kind + "]" : ""}
+            {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
+            <ContextMenu context={props.context} setOpen={props.setOpen} />
         </div>
         {open && body()}
     </Item >

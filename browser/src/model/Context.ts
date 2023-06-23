@@ -35,3 +35,17 @@ export function duration(ctx: Context): number | null {
         return null;
     }
 }
+
+export function getAllChildren(ctx: Context): string[] {
+    const result: string[] = [];
+    function _crawl(ctx: Context) {
+        result.push(ctx.uid);
+        if (ctx.children) {
+            for (const c of ctx.children) {
+                _crawl(c);
+            }
+        }
+    }
+    _crawl(ctx);
+    return result;
+}

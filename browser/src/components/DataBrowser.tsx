@@ -1,4 +1,4 @@
-import { Box, Button, Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
+import { Box, Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
 import { Context, gatherKinds } from "../model/Context";
 import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";
@@ -15,6 +15,13 @@ import SyncIcon from '@mui/icons-material/Sync';
 //     uuid: string,
 // }
 
+export enum OpenerMode {
+    Toggle,
+    Open,
+    Close
+}
+
+export type Opener = (keys: string | string[], mode: OpenerMode) => void
 
 export function DataBrowser(props: { addInfo: AddInfo }) {
     const [roots, setRoots] = useState<string[]>([]);
@@ -66,11 +73,26 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
         }, props.addInfo)
     }
 
-    function toggleOpen(uuid: string) {
+    function setOpen(keys: string | string[], mode: OpenerMode) {
         setOpened((op) => {
             let o = new Set(op);
-            if (!o.delete(uuid)) {
-                o.add(uuid)
+            if (!Array.isArray(keys)) {
+                keys = [keys]
+            }
+            if (mode === OpenerMode.Toggle) {
+                for (const key of keys) {
+                    if (!o.delete(key)) {
+                        o.add(key)
+                    }
+                }
+            } else if (mode === OpenerMode.Open) {
+                for (const key of keys) {
+                    o.add(key)
+                }
+            } else {
+                for (const key of keys) {
+                    o.delete(key)
+                }
             }
             return o;
         })
@@ -100,9 +122,9 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                 justifyContent="flex-start"
                 alignItems="flex-start"
             >
-                {sortedKinds.map((kind) => <ToggleButton value={""} selected={opened.has(kind)} onChange={() => toggleOpen(kind)} key={kind}>{kind}</ToggleButton>)}
+                {sortedKinds.map((kind) => <ToggleButton value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
             </Box>
-            {selectedCtx && <ContextNode context={selectedCtx} depth={0} opened={opened} toggleOpen={toggleOpen} />}
+            {selectedCtx && <ContextNode context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} />}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
         </Grid>
     </Grid >
