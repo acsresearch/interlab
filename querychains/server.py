@@ -22,8 +22,12 @@ class ServerHandle:
         self.task = None
 
     def start(self):
-        loop = asyncio.get_event_loop()
-        self.task = loop.create_task(_server_main(self))
+        from IPython.lib import backgroundjobs as bg
+
+        def _helper():
+            asyncio.run(_server_main(self))
+        jobs = bg.BackgroundJobManager()
+        jobs.new(_helper)
 
     def add_context(self, context: Context):
         self.contexts[context.uid] = context
@@ -76,15 +80,7 @@ async def _server_main(handle: ServerHandle):
 
     config = uvicorn.Config(app, port=handle.port, log_level="info")
     server = uvicorn.Server(config)
-    asyncio.create_task(server.serve())
-
-    while not server.started:
-        await asyncio.sleep(0.1)
-
-    for server in server.servers:
-        for socket in server.sockets:
-            addr, port = socket.getsockname()
-            return f"{addr}:{port}"
+    await server.serve()
 
 
 def start_server(*, storage: Optional[Storage] = None, port: int = 0):
