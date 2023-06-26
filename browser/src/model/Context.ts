@@ -31,6 +31,9 @@ export function duration(ctx: Context): number | null {
         const start = new Date(ctx.start_time);
         const end = new Date(ctx.end_time);
         return end.getTime() - start.getTime();
+    } else if (ctx.start_time && !ctx.end_time && ctx.state === "open") {
+        const start = new Date(ctx.start_time);
+        return Date.now() - start.getTime();
     } else {
         return null;
     }

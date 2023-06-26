@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
+import { Box, CircularProgress, Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
 import { Context, gatherKinds } from "../model/Context";
 import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";
@@ -32,7 +32,10 @@ function ListItem(props: { root: Context, selectedCtx: Context | null, selectRoo
     let icon;
     let color;
 
-    if (root.state === "error") {
+    if (root.state === "open") {
+        icon = <span style={{ paddingRight: 5 }}><CircularProgress size="1em" /></span>;
+        color = "green";
+    } else if (root.state === "error") {
         icon = <ErrorIcon sx={{ fontSize: "90%", paddingRight: 0.5, color: "red" }} />
         color = "red";
     } else {
@@ -60,7 +63,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             }
             const uids = response1.data as string[];
 
-            const local_uids = new Set(roots.map(c => c.uid));
+            const forget_open = roots.filter(c => c.state !== 'open');
+            const local_uids = new Set(forget_open.map(c => c.uid));
             const to_download: string[] = [];
             for (const uid of uids) {
                 if (!local_uids.has(uid)) {
@@ -74,7 +78,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             const new_roots = response2.data as Context[];
             const uids_set = new Set(uids);
 
-            const final_roots = roots.filter((c) => uids_set.has(c.uid)).concat(new_roots);
+            const final_roots = forget_open.filter((c) => uids_set.has(c.uid)).concat(new_roots);
             final_roots.sort()
 
             final_roots.sort((a, b) => {

@@ -1,7 +1,7 @@
 
 
 import { Context, duration, getAllChildren } from "../model/Context";
-import { Button, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { Button, CircularProgress, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
 import { Item } from "./Item";
@@ -70,7 +70,9 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
 
     let icon;
 
-    if (c.state) {
+    if (c.state === "open") {
+        icon = <span style={{ paddingRight: 10 }}><CircularProgress size="1em" /></span>
+    } else if (c.state === "error") {
         icon = <ErrorIcon style={{ paddingRight: 10 }} />
     } else if (c.kind === "repeat_on_failure") {
         icon = <ReplayIcon style={{ paddingRight: 10 }} />

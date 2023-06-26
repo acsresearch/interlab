@@ -10,6 +10,13 @@ from .data import Data
 
 
 class Storage:
+
+    def __init__(self):
+        self.ephemeral_contexts = {}
+
+    def register_context(self, context: Context):
+        self.ephemeral_contexts[context.uid] = context
+
     def write_context(self, context: Context):
         raise NotImplementedError
 
@@ -20,30 +27,19 @@ class Storage:
         raise NotImplementedError
 
     def read_roots(self, uids: List[str]) -> List[Data]:
-        return NotImplementedError
+        raise NotImplementedError
 
     def list(self) -> List[str]:
         raise NotImplementedError
 
     def start_server(self, port=0):
         from .server import start_server
-
         return start_server(storage=self, port=port)
-
-
-def write_gzipped_file(path, data):
-    tmp_path = path + "._tmp"
-    try:
-        with gzip.open(tmp_path, "w") as f:
-            f.write(data)
-        os.rename(tmp_path, path)
-    finally:
-        if os.path.exists(tmp_path):
-            os.unlink(tmp_path)
 
 
 class FileStorage(Storage):
     def __init__(self, directory: PathLike | str):
+        super().__init__()
         directory = os.path.abspath(directory)
         os.makedirs(directory, exist_ok=True)
         self.directory = directory
@@ -56,6 +52,7 @@ class FileStorage(Storage):
 
     def write_context(self, context: Context):
         self._write_context_into(self.directory, context)
+        self.ephemeral_contexts.pop(context.uid, None)
 
     def _write_context_into(self, directory: str, context: Context):
         if context.directory:
@@ -96,9 +93,17 @@ class FileStorage(Storage):
                 os.unlink(tmp_path)
 
     def read(self, uid: str) -> Data:
+        context = self.ephemeral_contexts.get(uid)
+        if context:
+            return context.to_dict()
+
         return self._read_from(self.directory, uid)
 
     def read_root(self, uid) -> Data:
+        context = self.ephemeral_contexts.get(uid)
+        if context:
+            return context.to_dict(with_children=False)
+
         dir_path = self._dir_path(self.directory, uid)
         if os.path.isdir(dir_path):
             path = self._file_path(dir_path, "_self")
@@ -133,7 +138,7 @@ class FileStorage(Storage):
         dir_suffix = ".ctx"
 
         lst = os.listdir(self.directory)
-        return [
+        return list(self.ephemeral_contexts.keys()) + [
             name[:-len(file_suffix)]
             for name in lst if name.endswith(file_suffix)
         ] + [

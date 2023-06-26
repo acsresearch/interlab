@@ -16,10 +16,9 @@ PATH_TO_STATIC_FILES = "browser/build/"
 
 
 class ServerHandle:
-    def __init__(self, storage: Optional[Storage] = None, port=0):
+    def __init__(self, storage: Storage, port: int = 0):
         self.port = port
         self.storage = storage
-        self.contexts = {}
         self.task = None
 
     def start(self):
@@ -29,9 +28,6 @@ class ServerHandle:
             asyncio.run(_server_main(self))
         jobs = bg.BackgroundJobManager()
         jobs.new(_helper)
-
-    def add_context(self, context: Context):
-        self.contexts[context.uid] = context
 
     def serve_forever(self):
         loop = asyncio.get_event_loop()
@@ -59,38 +55,21 @@ async def _server_main(handle: ServerHandle):
 
     @app.get("/contexts/list")
     async def list_of_contexts():
-        return list(handle.contexts.keys()) + (
-            handle.storage.list() if handle.storage else []
-        )
+        return handle.storage.list()
 
     class RootsRequest(BaseModel):
         uids: List[str]
 
     @app.post("/contexts/roots")
     async def get_roots(roots_request: RootsRequest):
-        from_storage = []
-        result = []
-        for uid in roots_request.uids:
-            ctx = handle.contexts.get(uid)
-            if ctx:
-                result.append(ctx)
-            else:
-                from_storage.append(uid)
-        return result + handle.storage.read_roots(from_storage)
+        return handle.storage.read_roots(roots_request.uids)
 
     @app.get("/contexts/uid/{uid}")
     async def get_uid(uid: str):
-        # Check format of uid
-        ctx = handle.contexts.get(uid)
-        if ctx is not None:
-            return ctx.to_dict()
-
-        if handle.storage:
-            data = handle.storage.read(uid)
-            if data:
-                return data
-
-        raise HTTPException(status_code=404)
+        data = handle.storage.read(uid)
+        if not data:
+            raise HTTPException(status_code=404)
+        return data
 
     app.mount("/", StaticFiles(directory=PATH_TO_STATIC_FILES), name="static")
 

@@ -71,6 +71,9 @@ class Context:
         self._token = None
         self._depth = 0
 
+        if storage:
+            storage.register_context(self)
+
     def to_dict(self, with_children=True):
         result = {"_type": "Context", "name": self.name, "uid": self.uid}
         if self.state != ContextState.FINISHED:
