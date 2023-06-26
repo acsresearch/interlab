@@ -3,7 +3,7 @@ import json
 import os
 import shutil
 from os import PathLike
-from typing import List
+from typing import List, Sequence
 
 from .context import Context
 from .data import Data
@@ -25,6 +25,17 @@ class Storage:
         return start_server(storage=self, port=port)
 
 
+def write_gzipped_file(path, data):
+    tmp_path = path + "._tmp"
+    try:
+        with gzip.open(tmp_path, "w") as f:
+            f.write(data)
+        os.rename(tmp_path, path)
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+
+
 class FileStorage(Storage):
     def __init__(self, directory: PathLike | str):
         directory = os.path.abspath(directory)
@@ -32,7 +43,7 @@ class FileStorage(Storage):
         self.directory = directory
 
     def _file_path(self, directory, name) -> str:
-        return os.path.join(directory, f"{name}.json.gz")
+        return os.path.join(directory, f"{name}.gz")
 
     def _dir_path(self, directory, name: str) -> str:
         return os.path.join(directory, f"{name}.ctx")
@@ -44,15 +55,19 @@ class FileStorage(Storage):
         if context.directory:
             self._write_context_dir(directory, context)
         else:
-            self._write_context_file(directory, context)
+            data = json.dumps(context.to_dict()).encode()
+            data_root = json.dumps(context.to_dict(False)).encode()
+            self._write_context_file(directory, context.uid + ".full", data)
+            self._write_context_file(directory, context.uid + ".root", data_root)
 
     def _write_context_dir(self, directory: str, context: Context):
         path = self._dir_path(directory, context.uid)
         tmp_path = path + "._tmp"
         try:
             os.mkdir(tmp_path)
+            data_root = json.dumps(context.to_dict(False)).encode()
             self._write_context_file(
-                tmp_path, context, with_children=False, name="_self"
+                tmp_path, "_self", data_root
             )
             for child in context.children:
                 self._write_context_into(tmp_path, child)
@@ -62,10 +77,9 @@ class FileStorage(Storage):
                 shutil.rmtree(tmp_path)
 
     def _write_context_file(
-        self, directory: str, context: Context, with_children=True, name=None
+        self, directory: str, name: str, data: Data
     ):
-        data = json.dumps(context.to_dict(with_children)).encode()
-        path = self._file_path(directory, name or context.uid)
+        path = self._file_path(directory, name)
         tmp_path = path + "._tmp"
         try:
             with gzip.open(tmp_path, "w") as f:
@@ -78,12 +92,20 @@ class FileStorage(Storage):
     def read(self, uid: str) -> Data:
         return self._read_from(self.directory, uid)
 
+    def read_root(self, uid):
+        dir_path = self._dir_path(self.directory, uid)
+        if os.path.isdir(dir_path):
+            path = self._file_path(dir_path, "_self")
+        else:
+            path = self._file_path(self.directory, uid + ".root")
+        return self._read_file(path)
+
     def _read_from(self, directory: str, uid: str) -> Data:
         path = self._dir_path(directory, uid)
         if os.path.isdir(path):
             return self._read_dir(path)
         else:
-            path = self._file_path(directory, uid)
+            path = self._file_path(directory, uid + ".full")
             return self._read_file(path)
 
     def _read_file(self, path: str):
@@ -101,11 +123,20 @@ class FileStorage(Storage):
         return self_data
 
     def list(self) -> List[str]:
+        file_suffix = ".root.gz"
+        dir_suffix = ".ctx"
+
+        lst = os.listdir(self.directory)
         return [
-            name[:-8]
-            for name in os.listdir(self.directory)
-            if name.endswith(".json.gz")
+            name[:-len(file_suffix)]
+            for name in lst if name.endswith(file_suffix)
+        ] + [
+            name[:-len(dir_suffix)]
+            for name in lst if name.endswith(dir_suffix)
         ]
+
+    def read_roots(self, uids: Sequence[str]) -> List[Data]:
+        return [self.read_root(uid) for uid in uids]
 
     def __repr__(self):
         return f"<FileStorage directory={repr(self.directory)}>"

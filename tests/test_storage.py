@@ -24,6 +24,10 @@ def test_file_storage(tmpdir):
 
     assert {c1.uid, c2.uid} == set(storage.list())
 
+    roots = storage.read_roots([c1.uid, c2.uid])
+    assert roots[0] == c1.to_dict(with_children=False)
+    assert roots[1] == c2.to_dict(with_children=False)
+
 
 def test_file_storage_dirs(tmpdir):
     storage = FileStorage(os.path.join(tmpdir, "storage"))
@@ -44,3 +48,8 @@ def test_file_storage_dirs(tmpdir):
     storage.write_context(c1)
     data = storage.read(c1.uid)
     assert data == c1.to_dict()
+
+    assert storage.list() == [c1.uid]
+
+    roots = storage.read_roots([c1.uid])
+    assert roots[0] == c1.to_dict(with_children=False)
