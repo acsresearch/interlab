@@ -1,11 +1,12 @@
 import asyncio
 import os
-from typing import Optional
+from typing import Optional, List
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 from starlette.responses import FileResponse
 
 from .context import Context
@@ -61,6 +62,21 @@ async def _server_main(handle: ServerHandle):
         return list(handle.contexts.keys()) + (
             handle.storage.list() if handle.storage else []
         )
+
+    class RootsRequest(BaseModel):
+        uids: List[str]
+
+    @app.post("/contexts/roots")
+    async def get_roots(roots_request: RootsRequest):
+        from_storage = []
+        result = []
+        for uid in roots_request.uids:
+            ctx = handle.contexts.get(uid)
+            if ctx:
+                result.append(ctx)
+            else:
+                from_storage.append(uid)
+        return result + handle.storage.read_roots(from_storage)
 
     @app.get("/contexts/uid/{uid}")
     async def get_uid(uid: str):

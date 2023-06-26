@@ -16,6 +16,12 @@ class Storage:
     def read(self, uid: str) -> Data:
         raise NotImplementedError
 
+    def read_root(self, uid: str) -> Data:
+        raise NotImplementedError
+
+    def read_roots(self, uids: List[str]) -> List[Data]:
+        return NotImplementedError
+
     def list(self) -> List[str]:
         raise NotImplementedError
 
@@ -92,7 +98,7 @@ class FileStorage(Storage):
     def read(self, uid: str) -> Data:
         return self._read_from(self.directory, uid)
 
-    def read_root(self, uid):
+    def read_root(self, uid) -> Data:
         dir_path = self._dir_path(self.directory, uid)
         if os.path.isdir(dir_path):
             path = self._file_path(dir_path, "_self")
