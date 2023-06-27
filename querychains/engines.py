@@ -15,7 +15,11 @@ from .utils import LOG, shorten_str
 # Time window when queries qill be retried on service or network failures
 # Note that this does not limit the time of the last query itself
 MAX_QUERY_TIME = 120
-BACKOFF_EXCEPTIONS = (openai.error.RateLimitError, openai.error.ServiceUnavailableError)
+BACKOFF_EXCEPTIONS = (
+    openai.error.RateLimitError,
+    openai.error.ServiceUnavailableError,
+    openai.error.APIError,
+)
 
 
 class QueryEngine:
