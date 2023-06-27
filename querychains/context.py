@@ -102,20 +102,29 @@ class Context:
         return " " * self._depth
 
     def __enter__(self):
-        with self._lock:
-            assert not self._token
-            assert self.state == ContextState.NEW
-            self.start_time = datetime.datetime.now()
-            parents = _CONTEXT_STACK.get()
-            self._depth = len(parents)
-            if parents:
-                parents[-1].children.append(self)
-            self._token = _CONTEXT_STACK.set(parents + (self,))
-            self.state = ContextState.OPEN
-            LOG.debug(
-                f"{self._pad}Context {self.kind} inputs={shorten_str(self.inputs, 50)}"
-            )
-            return self
+        def _helper(depth):
+            with self._lock:
+                assert not self._token
+                assert self.state == ContextState.NEW
+                self.start_time = datetime.datetime.now()
+                self._depth = depth
+                self._token = _CONTEXT_STACK.set(parents + (self,))
+                self.state = ContextState.OPEN
+                LOG.debug(
+                    f"{self._pad}Context {self.kind} inputs={shorten_str(self.inputs, 50)}"
+                )
+
+        # First we need to get Lock from parent to not get in collision
+        # with to_dict() that goes down the tree
+        parents = _CONTEXT_STACK.get()
+        if parents:
+            parent = parents[-1]
+            with parent._lock:  # noqa
+                _helper(len(parents))
+                parent.children.append(self)
+        else:
+            _helper(0)
+        return self
 
     def __exit__(self, _exc_type, exc_val, _exc_tb):
         with self._lock:
