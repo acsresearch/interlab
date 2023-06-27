@@ -15,7 +15,7 @@ from .utils import LOG, shorten_str
 # Time window when queries qill be retried on service or network failures
 # Note that this does not limit the time of the last query itself
 MAX_QUERY_TIME = 120
-
+BACKOFF_EXCEPTIONS = (openai.error.RateLimitError, openai.error.ServiceUnavailableError)
 
 class QueryEngine:
     def query(self, prompt: str, max_tokens: Optional[int]) -> Data:
@@ -36,10 +36,9 @@ class QueryConf:
 _openai_semaphore = asyncio.Semaphore(12)
 _anthropic_semaphore = asyncio.Semaphore(12)
 
-
 @backoff.on_exception(
     backoff.expo,
-    (openai.error.RateLimitError, openai.error.ServiceUnavailableError),
+    BACKOFF_EXCEPTIONS,
     max_time=MAX_QUERY_TIME,
 )
 def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: QueryConf):
@@ -60,7 +59,7 @@ def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: QueryConf)
 
 @backoff.on_exception(
     backoff.expo,
-    (openai.error.RateLimitError, openai.error.ServiceUnavailableError),
+    BACKOFF_EXCEPTIONS,
     max_time=MAX_QUERY_TIME,
 )
 async def _make_openai_chat_async_query(
