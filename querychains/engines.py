@@ -32,7 +32,9 @@ _openai_semaphore = asyncio.Semaphore(12)
 _anthropic_semaphore = asyncio.Semaphore(12)
 
 
-@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+backoff_exception_tuple = (openai.error.RateLimitError, openai.error.ServiceUnavailableError)
+
+@backoff.on_exception(backoff.expo, backoff_exception_tuple)
 def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: QueryConf):
     # openai.api_key = api_key
     # openai.organization = api_org
@@ -49,7 +51,7 @@ def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: QueryConf)
     return m.content.strip()
 
 
-@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+@backoff.on_exception(backoff.expo, backoff_exception_tuple)
 async def _make_openai_chat_async_query(
     api_key: str, api_org: str, prompt, conf: QueryConf
 ):
