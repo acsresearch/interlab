@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from querychains import Context, with_context, add_tag, Tag
+from querychains import Context, Tag, add_tag, with_context
 from querychains.context import ContextState, get_current_context
 from tests.testutils import strip_tree
 

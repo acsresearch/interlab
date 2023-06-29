@@ -1,7 +1,7 @@
 
 
 import { Context, duration, getAllChildren } from "../model/Context";
-import { Button, CircularProgress, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { CircularProgress, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
 import { Item } from "./Item";
@@ -22,9 +22,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { humanReadableDuration, short_repr } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { Opener, OpenerMode } from "./DataBrowser";
+import { TagChip } from "./TagChip";
 
 //const DEFAULT_COLORS = [grey[100], grey[200], grey[300], grey[400], grey[500]];
 const DEFAULT_COLORS = [grey[100], grey[300]];
+
 
 function ContextMenu(props: { context: Context, setOpen: Opener }) {
 
@@ -126,7 +128,8 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
             <IconButton onClick={() => props.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
             {c.name} {short_result && <><ArrowRightAltIcon /> {short_result}</>} {c.kind ? " [" + c.kind + "]" : ""}
             {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
-            <ContextMenu context={props.context} setOpen={props.setOpen} />
+            <ContextMenu context={c} setOpen={props.setOpen} />
+            {c.tags?.map((t, i) => <TagChip key={i} tag={t} />)}
         </div>
         {open && body()}
     </Item >

@@ -11,6 +11,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import SyncIcon from '@mui/icons-material/Sync';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorIcon from '@mui/icons-material/Error';
+import { TagChip } from "./TagChip";
 
 // type Root = {
 //     name: string,
@@ -44,7 +45,7 @@ function ListItem(props: { root: Context, selectedCtx: Context | null, selectRoo
 
     return (
         <ListItemButton selected={selectedCtx !== null && root.uid === selectedCtx.uid} key={root.uid} component="a" onClick={() => selectRoot(root.uid)}>
-            {icon} <ListItemText primary={primary} primaryTypographyProps={{ fontSize: '80%', color: color }} />
+            {icon} <ListItemText primary={<span>{primary} {root.tags?.map((t, i) => <TagChip key={i} tag={t} />)}</span>} primaryTypographyProps={{ fontSize: '80%', color: color }} />
         </ListItemButton>
     )
 }

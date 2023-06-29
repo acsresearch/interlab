@@ -1,10 +1,10 @@
 import contextvars
 import datetime
 import inspect
-from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
-from threading import Lock
 from dataclasses import dataclass
+from enum import Enum
+from threading import Lock
+from typing import Any, Callable, Dict, List, Optional
 
 from .data import Data, serialize_with_type
 from .utils import LOG, generate_uid, shorten_str
@@ -43,7 +43,7 @@ class Event:
 @dataclass
 class Tag:
     name: str
-    color: str
+    color: Optional[str] = None
 
 
 class Context:

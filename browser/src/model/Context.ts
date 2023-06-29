@@ -1,4 +1,8 @@
 
+export type Tag = {
+    name: string,
+    color?: string | null
+}
 
 export type Context = {
     _type: "Context",
@@ -13,6 +17,7 @@ export type Context = {
     error?: any,
     start_time?: string,
     end_time?: string,
+    tags?: Tag[],
 }
 
 export function gatherKinds(ctx: Context, kinds: Set<string>) {

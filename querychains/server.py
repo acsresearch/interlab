@@ -1,6 +1,6 @@
 import asyncio
 import os
-from typing import Optional, List
+from typing import List, Optional
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -9,7 +9,6 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 
-from .context import Context
 from .storage import Storage
 
 PATH_TO_STATIC_FILES = "browser/build/"

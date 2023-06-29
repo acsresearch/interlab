@@ -1,5 +1,5 @@
 from .actor import Actor  # noqa: F401
-from .context import Context, with_context, add_tag, Tag  # noqa: F401
+from .context import Context, Tag, add_tag, with_context  # noqa: F401
 from .data import Data  # noqa: F401
 from .engines import AnthropicEngine, OpenAiChatEngine, QueryEngine  # noqa: F401
 from .parsing import ParsingFailure, parse_tag  # noqa: F401
