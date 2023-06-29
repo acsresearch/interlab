@@ -112,24 +112,25 @@ def test_context_lists():
     }
 
 
-#
-# def test_context_events():
-#     with Context("root") as c:
-#         c.add_event("Message", {"x": 10, "y": 20})
-#     output = strip_tree(c.to_dict())
-#     print(json.dumps(output, indent=2))
-#     assert output == {
-#         "_type": "Context",
-#         "name": "root",
-#         "children": [
-#             {
-#                 "name": "Message",
-#                 "data": {"x": 10, "y": 20},
-#                 "_type": "Event",
-#             }
-#         ],
-#     }
-#
+def test_context_events():
+    with Context("root") as c:
+        c.add_event("Message to Alice", kind="message", data={"x": 10, "y": 20})
+    output = strip_tree(c.to_dict())
+    print(json.dumps(output, indent=2))
+    assert output == {
+        "_type": "Context",
+        "name": "root",
+        "children": [
+            {
+                "_type": "Context",
+                "name": "Message to Alice",
+                "state": "event",
+                "kind": "message",
+                "result": {"x": 10, "y": 20},
+            }
+        ],
+    }
+
 
 
 @pytest.mark.asyncio

@@ -17,27 +17,7 @@ class ContextState(Enum):
     OPEN = "open"
     FINISHED = "finished"
     ERROR = "error"
-
-
-class Event:
-    def __init__(
-        self, name: str, kind: Optional[str] = None, data: Optional[Any] = None
-    ):
-        self.name = name
-        self.kind = kind
-        self.data = data
-        self.time = datetime.datetime.now()
-
-    def to_dict(self):
-        result = {
-            "_type": "Event",
-            "name": self.name,
-            "time": self.time.isoformat(),
-        }
-        if self.kind:
-            result["kind"] = self.kind
-        if self.data:
-            result["data"] = self.data
+    EVENT = "event"
 
 
 @dataclass
@@ -56,6 +36,7 @@ class Context:
         tags: Optional[List[str | Tag]] = None,
         storage: Optional["Storage"] = None,
         directory=False,
+        result=None
     ):
         if inputs:
             inputs = serialize_with_type(inputs)
@@ -65,14 +46,14 @@ class Context:
         self.name = name
         self.kind = kind
         self.inputs = inputs
-        self.result = None
+        self.result = result
         self.error = None
-        self.state: ContextState = ContextState.NEW
+        self.state: ContextState = ContextState.NEW if result is None else ContextState.EVENT
         self.uid = generate_uid(name)
-        self.children: List[Event, Context] = []
+        self.children: List[Context] = []
         self.tags = tags
         self.start_time = None
-        self.end_time = None
+        self.end_time = None if result is None else datetime.datetime.now()
         self.meta = meta
         self.storage = storage
         self.directory = directory
@@ -166,12 +147,14 @@ class Context:
                 self.tags.append(tag)
 
     def add_event(
-        self, name: str, kind: Optional[str] = None, data: Optional[Any] = None
-    ) -> Event:
+        self, name: str, kind: Optional[str] = None, data: Optional[Any] = None,
+        meta: Optional[Dict[str, Data]] = None,
+        tags: Optional[List[str | Tag]] = None,
+    ) -> "Context":
+        event = Context(name=name, kind=kind, result=data, meta=meta, tags=tags)
         with self._lock:
-            event = Event(name=name, data=data, kind=kind)
             self.children.append(event)
-            return event
+        return event
 
     def add_input(self, name: str, value: any):
         with self._lock:
@@ -234,12 +217,6 @@ def current_context(check: bool = True) -> Optional[Context]:
             raise Exception("No current context")
         return None
     return stack[-1]
-
-
-def add_event(
-    name: str, kind: Optional[str] = None, data: Optional[Any] = None
-) -> Event:
-    return current_context().add_event(name, kind=kind, data=data)
 
 
 # Solving circular dependencies

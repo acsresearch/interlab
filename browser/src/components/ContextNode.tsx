@@ -17,6 +17,7 @@ import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ForwardIcon from '@mui/icons-material/Forward';
 import MenuIcon from '@mui/icons-material/Menu';
+import CircleIcon from '@mui/icons-material/Circle';
 
 
 import { humanReadableDuration, short_repr } from "../common/utils";
@@ -74,6 +75,8 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
 
     if (c.state === "open") {
         icon = <span style={{ paddingRight: 10 }}><CircularProgress size="1em" /></span>
+    } else if (c.state === "event") {
+        icon = <CircleIcon style={{ paddingRight: 10 }} />
     } else if (c.state === "error") {
         icon = <ErrorIcon style={{ paddingRight: 10 }} />
     } else if (c.kind === "repeat_on_failure") {
