@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from querychains import Context, with_context
+from querychains import Context, with_context, add_tag, Tag
 from querychains.context import ContextState, get_current_context
 from tests.testutils import strip_tree
 
@@ -162,5 +162,28 @@ async def test_async_context():
                 "kind": "acall",
                 "result": "a",
             },
+        ],
+    }
+
+
+def test_context_tags():
+    with Context("root", tags=["abc", "xyz"]) as c:
+        c.add_tag("123")
+        with Context("child"):
+            add_tag("mmm")
+            add_tag(Tag("nnn", color="green"))
+
+    root = strip_tree(c.to_dict())
+    print(json.dumps(root, indent=2))
+    assert root == {
+        "_type": "Context",
+        "name": "root",
+        "tags": ["abc", "xyz", "123"],
+        "children": [
+            {
+                "_type": "Context",
+                "name": "child",
+                "tags": ["mmm", {"name": "nnn", "color": "green", "_type": "Tag"}],
+            }
         ],
     }

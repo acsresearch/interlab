@@ -4,6 +4,7 @@ import inspect
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 from threading import Lock
+from dataclasses import dataclass
 
 from .data import Data, serialize_with_type
 from .utils import LOG, generate_uid, shorten_str
@@ -39,6 +40,12 @@ class Event:
             result["data"] = self.data
 
 
+@dataclass
+class Tag:
+    name: str
+    color: str
+
+
 class Context:
     def __init__(
         self,
@@ -46,7 +53,7 @@ class Context:
         kind: Optional[str] = None,
         inputs: Optional[Dict[str, Any]] = None,
         meta: Optional[Dict[str, Data]] = None,
-        tags: Optional[List[str]] = None,
+        tags: Optional[List[str | Tag]] = None,
         storage: Optional["Storage"] = None,
         directory=False,
     ):
@@ -95,6 +102,8 @@ class Context:
                 result["end_time"] = self.end_time.isoformat()
             if self.meta:
                 result["meta"] = self.meta
+            if self.tags:
+                result["tags"] = serialize_with_type(self.tags)
             return result
 
     @property
@@ -148,6 +157,13 @@ class Context:
         if self.storage:
             self.storage.write_context(self)
         return False  # Propagate any exception
+
+    def add_tag(self, tag: str | Tag):
+        with self._lock:
+            if self.tags is None:
+                self.tags = [tag]
+            else:
+                self.tags.append(tag)
 
     def add_event(
         self, name: str, kind: Optional[str] = None, data: Optional[Any] = None
@@ -224,6 +240,10 @@ def add_event(
     name: str, kind: Optional[str] = None, data: Optional[Any] = None
 ) -> Event:
     return get_current_context().add_event(name, kind=kind, data=data)
+
+
+def add_tag(tag: str | Tag):
+    return get_current_context().add_tag(tag)
 
 
 # Solving circular dependencies
