@@ -17,6 +17,7 @@ from .utils import LOG, shorten_str
 MAX_QUERY_TIME = 120
 BACKOFF_EXCEPTIONS = (openai.error.RateLimitError, openai.error.ServiceUnavailableError)
 
+
 class QueryEngine:
     def query(self, prompt: str, max_tokens: Optional[int]) -> Data:
         raise NotImplementedError()
@@ -35,6 +36,7 @@ class QueryConf:
 
 _openai_semaphore = asyncio.Semaphore(12)
 _anthropic_semaphore = asyncio.Semaphore(12)
+
 
 @backoff.on_exception(
     backoff.expo,

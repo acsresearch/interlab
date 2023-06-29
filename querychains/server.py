@@ -26,6 +26,7 @@ class ServerHandle:
 
         def _helper():
             asyncio.run(_server_main(self))
+
         jobs = bg.BackgroundJobManager()
         jobs.new(_helper)
 

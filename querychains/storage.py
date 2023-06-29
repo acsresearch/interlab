@@ -10,7 +10,6 @@ from .data import Data
 
 
 class Storage:
-
     def __init__(self):
         self.ephemeral_contexts = {}
 
@@ -34,6 +33,7 @@ class Storage:
 
     def start_server(self, port=0):
         from .server import start_server
+
         return start_server(storage=self, port=port)
 
 
@@ -69,9 +69,7 @@ class FileStorage(Storage):
         try:
             os.mkdir(tmp_path)
             data_root = json.dumps(context.to_dict(False)).encode()
-            self._write_context_file(
-                tmp_path, "_self", data_root
-            )
+            self._write_context_file(tmp_path, "_self", data_root)
             for child in context.children:
                 self._write_context_into(tmp_path, child)
             os.rename(tmp_path, path)
@@ -79,9 +77,7 @@ class FileStorage(Storage):
             if os.path.exists(tmp_path):
                 shutil.rmtree(tmp_path)
 
-    def _write_context_file(
-        self, directory: str, name: str, data: Data
-    ):
+    def _write_context_file(self, directory: str, name: str, data: Data):
         path = self._file_path(directory, name)
         tmp_path = path + "._tmp"
         try:
@@ -138,13 +134,11 @@ class FileStorage(Storage):
         dir_suffix = ".ctx"
 
         lst = os.listdir(self.directory)
-        return list(self.ephemeral_contexts.keys()) + [
-            name[:-len(file_suffix)]
-            for name in lst if name.endswith(file_suffix)
-        ] + [
-            name[:-len(dir_suffix)]
-            for name in lst if name.endswith(dir_suffix)
-        ]
+        return (
+            list(self.ephemeral_contexts.keys())
+            + [name[: -len(file_suffix)] for name in lst if name.endswith(file_suffix)]
+            + [name[: -len(dir_suffix)] for name in lst if name.endswith(dir_suffix)]
+        )
 
     def read_roots(self, uids: Sequence[str]) -> List[Data]:
         return [self.read_root(uid) for uid in uids]

@@ -111,6 +111,7 @@ def test_context_lists():
         "result": ["A", ["B", "C"]],
     }
 
+
 #
 # def test_context_events():
 #     with Context("root") as c:
@@ -129,6 +130,7 @@ def test_context_lists():
 #         ],
 #     }
 #
+
 
 @pytest.mark.asyncio
 async def test_async_context():
