@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from querychains import Context, Tag, add_tag, with_context
-from querychains.context import ContextState, get_current_context
+from querychains import Context, Tag, current_context, with_context
+from querychains.context import ContextState
 from tests.testutils import strip_tree
 
 
@@ -20,17 +20,17 @@ def test_context_basic():
 
     root_ctx = Context("Test", kind="root")
     root_ctx.state = ContextState.NEW
-    assert get_current_context(check=False) is None
+    assert current_context(check=False) is None
 
     with root_ctx as c:
         assert c.state == ContextState.OPEN
-        assert get_current_context() is c
+        assert current_context() is c
         with Context("c1") as c2:
             c2.set_result("blabla")
         assert c2.state == ContextState.FINISHED
         with pytest.raises(TestException, match="well"):
             with Context("c2") as c2:
-                assert get_current_context() is c2
+                assert current_context() is c2
                 raise TestException("Ah well")
         assert c2.state == ContextState.ERROR
         assert func1(10, 20) == 30
@@ -170,8 +170,8 @@ def test_context_tags():
     with Context("root", tags=["abc", "xyz"]) as c:
         c.add_tag("123")
         with Context("child"):
-            add_tag("mmm")
-            add_tag(Tag("nnn", color="green"))
+            current_context().add_tag("mmm")
+            current_context().add_tag(Tag("nnn", color="green"))
 
     root = strip_tree(c.to_dict())
     print(json.dumps(root, indent=2))

@@ -227,7 +227,7 @@ def with_context(fn: Callable = None, *, name=None, kind=None):
         return helper
 
 
-def get_current_context(check: bool = True) -> Optional[Context]:
+def current_context(check: bool = True) -> Optional[Context]:
     stack = _CONTEXT_STACK.get()
     if not stack:
         if check:
@@ -239,11 +239,7 @@ def get_current_context(check: bool = True) -> Optional[Context]:
 def add_event(
     name: str, kind: Optional[str] = None, data: Optional[Any] = None
 ) -> Event:
-    return get_current_context().add_event(name, kind=kind, data=data)
-
-
-def add_tag(tag: str | Tag):
-    return get_current_context().add_tag(tag)
+    return current_context().add_event(name, kind=kind, data=data)
 
 
 # Solving circular dependencies
