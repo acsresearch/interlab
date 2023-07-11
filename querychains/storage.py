@@ -12,6 +12,7 @@ from .data import Data
 class Storage:
     def __init__(self):
         self.ephemeral_contexts = {}
+        self.server = None
 
     def register_context(self, context: Context):
         self.ephemeral_contexts[context.uid] = context
@@ -31,10 +32,17 @@ class Storage:
     def list(self) -> List[str]:
         raise NotImplementedError
 
+    def display(self, width=1200, height=1000):
+        if self.server is None:
+            self.start_server()
+        from IPython.display import IFrame
+        return IFrame(self.server.url, width=width, height=height)
+
     def start_server(self, port=0):
         from .server import start_server
 
-        return start_server(storage=self, port=port)
+        self.server = start_server(storage=self, port=port)
+        return self.server
 
 
 class FileStorage(Storage):
