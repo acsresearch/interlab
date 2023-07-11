@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.responses import FileResponse
+from threading import Condition
 
 from .storage import Storage
 
@@ -24,21 +25,27 @@ class ServerHandle:
         from IPython.lib import backgroundjobs as bg
 
         def _helper():
-            asyncio.run(_server_main(self))
+            asyncio.run(_server_main(self, cv))
 
+        cv = Condition()
         jobs = bg.BackgroundJobManager()
         jobs.new(_helper)
+        with cv:  # Wait for port assigment
+            cv.wait()
 
     def serve_forever(self):
         loop = asyncio.get_event_loop()
         loop.run_forever()
 
+    @property
+    def url(self):
+        return f"http://localhost:{self.port}"
+
     def __repr__(self):
-        # TODO: Return assigned port
-        return "<ServerHandle>"
+        return f"<ServerHandle {self.url}>"
 
 
-async def _server_main(handle: ServerHandle):
+async def _server_main(handle: ServerHandle, cv: Condition):
     app = FastAPI()
 
     app.add_middleware(
@@ -73,8 +80,20 @@ async def _server_main(handle: ServerHandle):
 
     app.mount("/", StaticFiles(directory=PATH_TO_STATIC_FILES), name="static")
 
-    config = uvicorn.Config(app, port=handle.port, log_level="info")
+    config = uvicorn.Config(app, port=handle.port, log_level="error")
     server = uvicorn.Server(config)
+
+    async def _wait_for_port(server):
+        while not server.started:
+            await asyncio.sleep(0.1)
+        if server.servers:
+            s = server.servers[0]
+            if s.sockets:
+                _, port = s.sockets[0].getsockname()
+                handle.port = port
+        with cv:
+            cv.notify_all()
+    asyncio.create_task(_wait_for_port(server))
     await server.serve()
 
 
