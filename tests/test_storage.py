@@ -24,7 +24,7 @@ def test_file_storage(storage):
     assert roots[1] == c2.to_dict(with_children=False)
 
     assert storage.read_context(c2.uid).to_dict() == c2.to_dict()
-    contexts = storage.read_all_contexts()
+    contexts = list(storage.read_all_contexts())
     assert len(contexts) == 2
 
 

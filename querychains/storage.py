@@ -4,7 +4,7 @@ import os
 import shutil
 import threading
 from os import PathLike
-from typing import List, Optional, Sequence
+from typing import Callable, Iterator, List, Optional, Sequence
 
 from .context import Context
 from .data import Data
@@ -36,8 +36,9 @@ class Storage:
     def read_context(self, uid: str) -> Context:
         return Context.deserialize(self.read(uid))
 
-    def read_all_contexts(self) -> List[Context]:
-        return [self.read_context(uid) for uid in self.list()]
+    def read_all_contexts(self) -> Iterator[Context]:
+        for uid in self.list():
+            yield self.read_context(uid)
 
     def read_roots(self, uids: List[str]) -> List[Data]:
         raise NotImplementedError
@@ -65,6 +66,10 @@ class Storage:
 
         self._server = start_server(storage=self, port=port)
         return self._server
+
+    def find_contexts(self, predicate: Callable) -> Iterator[Context]:
+        for context in self.read_all_contexts():
+            yield from context.find_contexts(predicate)
 
 
 class FileStorage(Storage):

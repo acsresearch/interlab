@@ -199,3 +199,16 @@ def test_context_tags():
     print(json.dumps(data, indent=2))
     root2 = Context.deserialize(data).to_dict()
     assert data == root2
+
+
+def test_find_contexts():
+    with Context("root") as c:
+        c.add_tag("123")
+        with Context("child"):
+            with Context("child3") as c3:
+                c3.add_tag("x")
+                c3.set_result("abc")
+        with Context("child2", tags=[Tag("x")]) as c4:
+            pass
+
+    assert c.find_contexts(lambda ctx: ctx.has_tag_name("x")) == [c3, c4]

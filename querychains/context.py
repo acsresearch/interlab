@@ -224,8 +224,31 @@ class Context:
             self.state = ContextState.ERROR
             self.error = serialize_with_type(exc)
 
+    def has_tag_name(self, tag_name: str):
+        if not self.tags:
+            return False
+        for tag in self.tags:
+            if tag == tag_name or (isinstance(tag, Tag) and tag.name == tag_name):
+                return True
+        return False
 
-def with_context(fn: Callable = None, *, name=None, kind=None):
+    def find_contexts(self, predicate: Callable) -> List["Context"]:
+        def _helper(context: Context):
+            with context._lock:
+                if predicate(context):
+                    result.append(context)
+                if context.children:
+                    for ctx in context.children:
+                        _helper(ctx)
+
+        result = []
+        _helper(self)
+        return result
+
+
+def with_context(
+    fn: Callable = None, *, name=None, kind=None, tags: Optional[List[str | Tag]] = None
+):
     name = name or fn.__name__
 
     def helper(func):
@@ -234,7 +257,7 @@ def with_context(fn: Callable = None, *, name=None, kind=None):
         def wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
             with Context(
-                name=name, kind=kind or "call", inputs=binding.arguments
+                name=name, kind=kind or "call", inputs=binding.arguments, tags=tags
             ) as ctx:
                 result = func(*a, **kw)
                 ctx.set_result(result)
