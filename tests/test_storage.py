@@ -1,12 +1,7 @@
-import os
-
 from querychains import Context
-from querychains.storage import FileStorage
 
 
-def test_file_storage(tmpdir):
-    storage = FileStorage(os.path.join(tmpdir, "storage"))
-
+def test_file_storage(storage):
     with Context("test1") as c1:
         with Context("test1-1"):
             pass
@@ -29,9 +24,7 @@ def test_file_storage(tmpdir):
     assert roots[1] == c2.to_dict(with_children=False)
 
 
-def test_file_storage_dirs(tmpdir):
-    storage = FileStorage(os.path.join(tmpdir, "storage"))
-
+def test_file_storage_dirs(storage):
     with Context("test1", directory=True) as c1:
         with Context("test1-1", directory=True):
             with Context("test-1-1-1"):

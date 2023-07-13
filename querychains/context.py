@@ -36,7 +36,7 @@ class Context:
         tags: Optional[List[str | Tag]] = None,
         storage: Optional["Storage"] = None,
         directory=False,
-        result=None
+        result=None,
     ):
         if inputs:
             inputs = serialize_with_type(inputs)
@@ -48,7 +48,9 @@ class Context:
         self.inputs = inputs
         self.result = result
         self.error = None
-        self.state: ContextState = ContextState.NEW if result is None else ContextState.EVENT
+        self.state: ContextState = (
+            ContextState.NEW if result is None else ContextState.EVENT
+        )
         self.uid = generate_uid(name)
         self.children: List[Context] = []
         self.tags = tags
@@ -147,7 +149,10 @@ class Context:
                 self.tags.append(tag)
 
     def add_event(
-        self, name: str, kind: Optional[str] = None, data: Optional[Any] = None,
+        self,
+        name: str,
+        kind: Optional[str] = None,
+        data: Optional[Any] = None,
         meta: Optional[Dict[str, Data]] = None,
         tags: Optional[List[str | Tag]] = None,
     ) -> "Context":

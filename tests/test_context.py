@@ -132,7 +132,6 @@ def test_context_events():
     }
 
 
-
 @pytest.mark.asyncio
 async def test_async_context():
     @with_context

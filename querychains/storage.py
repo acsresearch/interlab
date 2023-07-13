@@ -2,8 +2,9 @@ import gzip
 import json
 import os
 import shutil
+import threading
 from os import PathLike
-from typing import List, Sequence
+from typing import List, Optional, Sequence
 
 from .context import Context
 from .data import Data
@@ -11,11 +12,17 @@ from .data import Data
 
 class Storage:
     def __init__(self):
-        self.ephemeral_contexts = {}
-        self.server = None
+        self._lock = threading.Lock()
+        self._ephemeral_contexts = {}
+        self._server = None
 
     def register_context(self, context: Context):
-        self.ephemeral_contexts[context.uid] = context
+        with self._lock:
+            self._ephemeral_contexts[context.uid] = context
+
+    def get_ephemeral_context(self, uid: str) -> Optional[Context]:
+        with self._lock:
+            return self._ephemeral_contexts.get(uid)
 
     def write_context(self, context: Context):
         raise NotImplementedError
@@ -33,16 +40,25 @@ class Storage:
         raise NotImplementedError
 
     def display(self, width=1200, height=1000):
-        if self.server is None:
+        if self._server is None:
             self.start_server()
         from IPython.display import IFrame
-        return IFrame(self.server.url, width=width, height=height)
+
+        return IFrame(self._server.url, width=width, height=height)
+
+    @property
+    def server(self):
+        if self._server is None:
+            raise Exception("Server not stared. Use method 'start_server' on storage")
+        return self._server
 
     def start_server(self, port=0):
+        if self._server is not None:
+            raise Exception("Server already started")
         from .server import start_server
 
-        self.server = start_server(storage=self, port=port)
-        return self.server
+        self._server = start_server(storage=self, port=port)
+        return self._server
 
 
 class FileStorage(Storage):
@@ -60,7 +76,8 @@ class FileStorage(Storage):
 
     def write_context(self, context: Context):
         self._write_context_into(self.directory, context)
-        self.ephemeral_contexts.pop(context.uid, None)
+        with self._lock:
+            self._ephemeral_contexts.pop(context.uid, None)
 
     def _write_context_into(self, directory: str, context: Context):
         if context.directory:
@@ -97,14 +114,13 @@ class FileStorage(Storage):
                 os.unlink(tmp_path)
 
     def read(self, uid: str) -> Data:
-        context = self.ephemeral_contexts.get(uid)
+        context = self.get_ephemeral_context(uid)
         if context:
             return context.to_dict()
-
         return self._read_from(self.directory, uid)
 
     def read_root(self, uid) -> Data:
-        context = self.ephemeral_contexts.get(uid)
+        context = self.get_ephemeral_context(uid)
         if context:
             return context.to_dict(with_children=False)
 
@@ -141,9 +157,12 @@ class FileStorage(Storage):
         file_suffix = ".root.gz"
         dir_suffix = ".ctx"
 
+        with self._lock:
+            ephemeral = list(self._ephemeral_contexts.keys())
+
         lst = os.listdir(self.directory)
         return (
-            list(self.ephemeral_contexts.keys())
+            ephemeral
             + [name[: -len(file_suffix)] for name in lst if name.endswith(file_suffix)]
             + [name[: -len(dir_suffix)] for name in lst if name.endswith(dir_suffix)]
         )
