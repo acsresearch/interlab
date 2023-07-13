@@ -33,6 +33,12 @@ class Storage:
     def read_root(self, uid: str) -> Data:
         raise NotImplementedError
 
+    def read_context(self, uid: str) -> Context:
+        return Context.deserialize(self.read(uid))
+
+    def read_all_contexts(self) -> List[Context]:
+        return [self.read_context(uid) for uid in self.list()]
+
     def read_roots(self, uids: List[str]) -> List[Data]:
         raise NotImplementedError
 

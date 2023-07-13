@@ -66,6 +66,52 @@ class Context:
         if storage:
             storage.register_context(self)
 
+    @classmethod
+    def deserialize(cls, data: Data, depth=0):
+        assert isinstance(data, dict)
+        assert data["_type"] == "Context"
+        self = cls.__new__(cls)
+        self.uid = data["uid"]
+        self.name = data["name"]
+
+        state = data.get("state")
+        if state:
+            state = ContextState(state)
+        else:
+            state = ContextState.FINISHED
+        self.state = state
+        for name in ["kind", "inputs", "result", "error", "tags", "meta"]:
+            setattr(self, name, data.get(name))
+        self.kind = data.get("kind")
+        self.inputs = data.get("inputs")
+        self.tags = data.get("tags")
+
+        start_time = data.get("start_time")
+        if start_time is None:
+            self.start_time = None
+        else:
+            self.start_time = datetime.datetime.fromisoformat(start_time)
+
+        end_time = data.get("end_time")
+        if end_time is None:
+            self.end_time = None
+        else:
+            self.end_time = datetime.datetime.fromisoformat(end_time)
+
+        children = data.get("children")
+        if children is None:
+            self.children = None
+        else:
+            new_depth = depth + 1
+            self.children = [
+                Context.deserialize(child, depth=new_depth) for child in children
+            ]
+
+        self._token = None
+        self._depth = depth
+        self._lock = Lock()
+        return self
+
     def to_dict(self, with_children=True):
         with self._lock:
             result = {"_type": "Context", "name": self.name, "uid": self.uid}

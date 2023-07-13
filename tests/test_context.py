@@ -1,3 +1,4 @@
+import copy
 import dataclasses
 import json
 
@@ -6,6 +7,11 @@ import pytest
 from querychains import Context, Tag, current_context, with_context
 from querychains.context import ContextState
 from tests.testutils import strip_tree
+
+
+def serialization_check(context: Context):
+    d = context.to_dict()
+    assert d == Context.deserialize(d).to_dict()
 
 
 def test_context_basic():
@@ -19,7 +25,8 @@ def test_context_basic():
         return param1 + param2
 
     root_ctx = Context("Test", kind="root")
-    root_ctx.state = ContextState.NEW
+    serialization_check(root_ctx)
+    assert root_ctx.state == ContextState.NEW
     assert current_context(check=False) is None
 
     with root_ctx as c:
@@ -31,12 +38,14 @@ def test_context_basic():
         with pytest.raises(TestException, match="well"):
             with Context("c2") as c2:
                 assert current_context() is c2
+                serialization_check(c2)
                 raise TestException("Ah well")
         assert c2.state == ContextState.ERROR
         assert func1(10, 20) == 30
 
     assert c.state == ContextState.FINISHED
     # with_new_context("ch3", lambda d: f"Hello {d.name}", Data(name="LLM"))
+    serialization_check(c)
     print(root_ctx.to_dict())
     output = strip_tree(root_ctx.to_dict())
     print(json.dumps(output, indent=2))
@@ -173,8 +182,8 @@ def test_context_tags():
             current_context().add_tag("mmm")
             current_context().add_tag(Tag("nnn", color="green"))
 
-    root = strip_tree(c.to_dict())
-    print(json.dumps(root, indent=2))
+    data = c.to_dict()
+    root = strip_tree(copy.deepcopy(data))
     assert root == {
         "_type": "Context",
         "name": "root",
@@ -187,3 +196,6 @@ def test_context_tags():
             }
         ],
     }
+    print(json.dumps(data, indent=2))
+    root2 = Context.deserialize(data).to_dict()
+    assert data == root2
