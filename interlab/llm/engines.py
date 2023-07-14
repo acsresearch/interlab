@@ -8,6 +8,7 @@ import backoff
 import openai
 
 from ..context import Context
+from ..context.console_srv import ConsoleServer
 from ..utils import LOG, shorten_str
 from ..utils.data import Data
 from ..utils.text import group_newlines, remove_leading_spaces
@@ -217,3 +218,21 @@ class AnthropicEngine(QueryEngine):
                 d = r["completion"].strip()
                 c.set_result(d)
                 return d
+
+
+class HumanEngine(QueryEngine):
+
+    def __init__(self, name: str, port: Optional[int] = 0):
+        self.name = name
+        self.server = ConsoleServer(name, port=port)
+
+    def query(self, prompt: str, max_tokens=1024, strip=None) -> str:
+        self.server.clear()
+        self.server.add_message(prompt)
+        return self.server.receive()
+
+    def display(self):
+        return self.server.display()
+
+    def __repr__(self):
+        return f"<HumanEngine name={self.name} url={self.server.url}"
