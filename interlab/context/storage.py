@@ -62,9 +62,9 @@ class Storage:
     def start_server(self, port=0):
         if self._server is not None:
             raise Exception("Server already started")
-        from .server import start_server
+        from .storage_srv import start_storage_server
 
-        self._server = start_server(storage=self, port=port)
+        self._server = start_storage_server(storage=self, port=port)
         return self._server
 
     def find_contexts(self, predicate: Callable) -> Iterator[Context]:

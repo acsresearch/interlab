@@ -1,73 +1,35 @@
 import asyncio
 import importlib.resources as resources
-import os
 from threading import Condition
-from typing import List, Optional
+from typing import Optional
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from starlette.responses import FileResponse
+from starlette.middleware.cors import CORSMiddleware
 
-from ..utils import LOG
 from . import browser
-from .storage import Storage
 
 with resources.path(browser, ".") as static_path:
     PATH_TO_STATIC_FILES = static_path
 
-
 class ServerHandle:
-    def __init__(self, storage: Storage, port: int = 0):
-        self.port = port
-        self.storage = storage
+    def __init__(self):
+        self.port = None
         self.task = None
         self.server = None
+        self.loop = None
 
     def stop(self):
         if self.server:
             self.server.should_exit = True
 
-    def start(self):
+    def start(self, app: FastAPI, port=0):
         from IPython.lib import backgroundjobs as bg
-
-        app = FastAPI()
-
-        app.add_middleware(
-            CORSMiddleware,
-            allow_origins=["*"],
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
-
-        @app.get("/")
-        async def root():
-            return FileResponse(os.path.join(PATH_TO_STATIC_FILES, "index.html"))
-
-        @app.get("/contexts/list")
-        async def list_of_contexts():
-            return self.storage.list()
-
-        class RootsRequest(BaseModel):
-            uids: List[str]
-
-        @app.post("/contexts/roots")
-        async def get_roots(roots_request: RootsRequest):
-            return self.storage.read_roots(roots_request.uids)
-
-        @app.get("/contexts/uid/{uid}")
-        async def get_uid(uid: str):
-            data = self.storage.read(uid)
-            if not data:
-                raise HTTPException(status_code=404)
-            return data
 
         app.mount("/", StaticFiles(directory=PATH_TO_STATIC_FILES), name="static")
 
-        config = uvicorn.Config(app, port=self.port, log_level="error")
+        config = uvicorn.Config(app, port=port, log_level="error")
         server = uvicorn.Server(config)
 
         def _helper():
@@ -76,7 +38,7 @@ class ServerHandle:
         cv = Condition()
         jobs = bg.BackgroundJobManager()
         jobs.new(_helper)
-        with cv:  # Wait for port assigment
+        with cv:  # Wait for port assignment
             cv.wait()
         self.server = server
 
@@ -104,12 +66,6 @@ async def _server_main(handle: ServerHandle, server, cv: Condition):
         with cv:
             cv.notify_all()
 
+    handle.loop = asyncio.get_running_loop()
     asyncio.create_task(_wait_for_port(server))
     await server.serve()
-
-
-def start_server(*, storage: Optional[Storage] = None, port: int = 0):
-    handle = ServerHandle(storage=storage, port=port)
-    handle.start()
-    LOG.info(f"Started UI server: {handle}")
-    return handle
