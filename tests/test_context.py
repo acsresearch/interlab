@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from querychains import Context, Tag, current_context, with_context
-from querychains.context import ContextState
+from interlab import Context, Tag, current_context, with_context
+from interlab.context.context import ContextState
 from tests.testutils import strip_tree
 
 

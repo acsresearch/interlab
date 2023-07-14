@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from .context import Context
-from .utils import short_repr
+from ..context import Context
+from ..utils import short_repr
 
 
 @dataclass
