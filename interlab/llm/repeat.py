@@ -1,7 +1,7 @@
 from typing import Awaitable, Callable
 
-from .context import Context
-from .utils import QueryFailure
+from ..context import Context
+from ..utils import QueryFailure
 
 
 def repeat_on_failure(

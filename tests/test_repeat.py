@@ -1,6 +1,6 @@
 import pytest
 
-from querychains import Context, QueryFailure, repeat_on_failure
+from interlab import Context, QueryFailure, repeat_on_failure
 from tests.testutils import strip_tree
 
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from querychains import AnthropicEngine, OpenAiChatEngine
-from querychains.data import serialize_with_type
+from interlab import AnthropicEngine, OpenAiChatEngine
+from interlab.context.data import serialize_with_type
 
 
 def test_serialize_engines():

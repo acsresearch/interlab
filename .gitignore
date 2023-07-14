@@ -1,6 +1,8 @@
-.vscode/
+/.vscode/
 __pycache__/
 .ipynb_checkpoints/
 .env
+/.venv
 data/
 package-lock.json
+/.pytest_cache/

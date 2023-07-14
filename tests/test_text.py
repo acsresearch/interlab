@@ -1,4 +1,4 @@
-from querychains.text import ensure_newline
+from interlab.utils.text import ensure_newline
 
 
 def test_ensure_new_lines():

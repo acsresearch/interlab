@@ -7,7 +7,7 @@ from threading import Lock
 from typing import Any, Callable, Dict, List, Optional
 
 from .data import Data, serialize_with_type
-from .utils import LOG, generate_uid, shorten_str
+from ..utils import LOG, generate_uid, shorten_str
 
 _CONTEXT_STACK = contextvars.ContextVar("_CONTEXT_STACK", default=())
 

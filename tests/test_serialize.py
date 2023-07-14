@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from querychains.data import serialize_with_type
+from interlab.context.data import serialize_with_type
 
 
 def test_custom_serialize():

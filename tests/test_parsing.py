@@ -1,4 +1,4 @@
-from querychains import ParsingFailure, parse_tag
+from interlab import ParsingFailure, parse_tag
 
 
 def test_parse_tag():
