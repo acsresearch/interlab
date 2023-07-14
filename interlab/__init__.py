@@ -1,4 +1,3 @@
-from .actors.actor import Actor  # noqa: F401
 from .context import Context, Tag, current_context, with_context  # noqa: F401
 from .context.data import Data  # noqa: F401
 from .context.server import start_server  # noqa: F401
