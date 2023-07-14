@@ -1,76 +1,57 @@
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+import random
 
 from ..context import Context
-from ..utils import short_repr
-
-
-@dataclass
-class EventObservation:
-    data: Any
-
-
-@dataclass
-class EventAction:
-    prompt: Any
-    action: Any
+from ..utils import pseudo_random_color, shorten_str
+from . import format, memory as memory_
+from .event import Event
 
 
 class Actor:
-    def __init__(self, name: Optional[str] = None, ctx_meta: Optional[Dict] = None):
-        self.name = name or self.__class__.__name__
-        self.events: List[EventAction | EventObservation] = []
-        self.ctx_meta = ctx_meta
+    DEFAULT_FORMAT = format.LLMTextFormat
 
-    def observations(self):
-        return [
-            event.data for event in self.events if isinstance(event, EventObservation)
-        ]
+    def __init__(
+        self,
+        name: str | None = None,
+        *,
+        color: str | None = None,
+        memory: memory_.MemoryBase = None,
+        format: format.FormatBase = None,
+    ):
+        self.name = name or f"self.__class__.__name__{random.randint(0, 9999):i04}"
+        self.memory = memory or memory_.SimpleMemory()
+        self.formatter = format or self.DEFAULT_FORMAT()
+        self.style = {"color": color or pseudo_random_color(self.name)}
 
-    def actions(self):
-        return [event.action for event in self.events if isinstance(event, EventAction)]
+    def formatted_memories(self, query: any = None) -> any:
+        return self.formatter.format_events(self.memory.events_for_query(query), self)
 
-    def act(self, prompt: Any = None):
+    def act(self, prompt: any = None) -> Event:
         if prompt:
-            name = f"Action of {self.name}: {short_repr(prompt)}"
-            inputs = {
-                "prompt": prompt,
-            }
+            name = f"{self.name} to act on {shorten_str(str(prompt))!r}"
+            inputs = {"prompt": prompt}
         else:
-            name = f"Action of {self.name}"
+            name = f"{self.name} to act"
             inputs = None
-        with Context(name, kind="action", meta=self.ctx_meta, inputs=inputs) as c:
-            action = self.get_action(prompt)
-            self.events.append(EventAction(prompt, action))
-            c.set_result(action)
-        return action
+        with Context(name, kind="action", meta=self.style, inputs=inputs) as ctx:
+            action = self._act(prompt)
+            ctx.set_result(action)
+            ev = Event(origin=self.name, data=action, style=self.style)
+        return ev
 
-    def get_action(self, prompt: Any):
-        raise NotImplementedError
+    def _act(self, prompt: any = None) -> any:
+        raise NotImplementedError("Implement _act in a derived actor class")
 
-    def observe(self, data: Any):
-        self.events.append(EventObservation(data))
+    def observe(self, event: Event):
         with Context(
-            f"Observation of {self.name}: {short_repr(data)}",
+            f"{self.name} observes {shorten_str(str(event))!r}",
             kind="observation",
-            meta=self.ctx_meta,
-            inputs={"observation": data},
+            meta=self.style,
+            inputs={"event": event},
         ):
-            self.process_observation(data)
+            self._observe(event)
 
-    def process_observation(self, data: Any):
-        pass
+    def _observe(self, event: Event):
+        self.memory.add_event(event)
 
     def __repr__(self):
-        return f"<Actor {self.name}>"
-
-
-# TODO:
-
-
-class ActorProcess(Actor):
-    async def process_act(self, prompt: Any):
-        pass
-
-    async def main(self):
-        raise NotImplementedError
+        return f"<{self.__class__.__name__} {self.name}>"
