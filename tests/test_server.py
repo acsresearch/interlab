@@ -1,4 +1,4 @@
-from querychains import Context
+from interlab import Context
 
 
 def test_server(storage):

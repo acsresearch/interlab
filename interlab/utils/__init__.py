@@ -5,6 +5,8 @@ import string
 from datetime import datetime
 from typing import Any
 
+from . import blob, text
+
 LOG = logging.getLogger("querychains")
 UID_CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
 ESCAPE_NAME_RE = re.compile("[^0-9a-zA-Z]+")

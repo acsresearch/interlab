@@ -1,4 +1,7 @@
-from querychains import Context
+import os
+
+from interlab import Context
+from interlab.context.storage import FileStorage
 
 
 def test_file_storage(storage):

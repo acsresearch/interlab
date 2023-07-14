@@ -7,10 +7,10 @@ import anthropic
 import backoff
 import openai
 
-from .context import Context
-from .data import Data
-from .text import group_newlines, remove_leading_spaces
-from .utils import LOG, shorten_str
+from ..context import Context
+from ..context.data import Data
+from ..utils.text import group_newlines, remove_leading_spaces
+from ..utils import LOG, shorten_str
 
 # Time window when queries qill be retried on service or network failures
 # Note that this does not limit the time of the last query itself

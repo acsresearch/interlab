@@ -1,6 +1,6 @@
 import re
 
-from .utils import QueryFailure
+from ..utils import QueryFailure
 
 
 class ParsingFailure(QueryFailure):
