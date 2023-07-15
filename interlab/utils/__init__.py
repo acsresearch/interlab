@@ -6,7 +6,7 @@ import string
 from datetime import datetime
 from typing import Hashable
 
-from . import blob, text
+from . import blob, text  # noqa: F401
 
 LOG = logging.getLogger("interlab")
 UID_CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits

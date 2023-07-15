@@ -1,8 +1,6 @@
 import json
-import re
-from typing import Optional, TypeVar
+from typing import TypeVar
 
-import jsonref
 import pydantic
 
 from ..context import Context, with_context
