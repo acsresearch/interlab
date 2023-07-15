@@ -6,13 +6,13 @@ import jsonref
 import pydantic
 
 from ..context import Context, with_context
+from .engine_wrapping import query_engine
 from .json_parsing import (
     JSON,
     find_and_parse_json_block,
     into_pydantic_model,
     json_schema,
 )
-from .engine_wrapping import query_engine
 
 _GENERATE_JSON_EXAMPLE_PROMPT = """\
 Create a minimal example JSON object conforming to the following JSON schema:\n

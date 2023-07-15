@@ -25,12 +25,14 @@ class OneShotLLMActor(Actor):
         if prompt is None:
             prompt = "What is your next action?"
         hist = self.formatted_memories()
-        q = dedent(f"""\
+        q = dedent(
+            f"""\
             {self.initial_prompt}\n
             # Past events\n
             {hist}\n
             # End of Past events\n
-            {prompt}""")
+            {prompt}"""
+        )
         return self.engine(q)
 
 
@@ -46,14 +48,17 @@ class SimpleReflectLLMActor(OneShotLLMActor):
         if prompt is None:
             prompt = "What is your next action?"
         hist = self.formatted_memories()
-        q1 = dedent(f"""\
+        q1 = dedent(
+            f"""\
             {self.initial_prompt}\n
             # Past events\n
             {hist}\n
             # End of past events\n
-            {self.REFLECT_PROMPT.format(prompt=prompt)}""")
+            {self.REFLECT_PROMPT.format(prompt=prompt)}"""
+        )
         thoughts = self.engine(q1)
-        q2 = dedent(f"""\
+        q2 = dedent(
+            f"""\
             {self.initial_prompt}\n
             # Past events\n
             {hist}\n
@@ -61,5 +66,6 @@ class SimpleReflectLLMActor(OneShotLLMActor):
             # Thoughts on the current situation\n
             {thoughts}\n
             # End of Thoughts on the current situation\n
-            {prompt}""")
+            {prompt}"""
+        )
         return self.engine(q2)

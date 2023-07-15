@@ -1,11 +1,10 @@
+import dataclasses
 import json
 import re
-from typing import Optional, TypeVar, TypeAlias
-import dataclasses
+from typing import Optional, TypeAlias, TypeVar
 
 import jsonref
 import pydantic
-
 
 JSON = dict | list | str | int | bool | float | None
 
@@ -55,7 +54,7 @@ def into_pydantic_model(T: type) -> type:
                 "Only pydantic Model, or pydantic or standard dataclasses are accepted"
             )
         T = pydantic.dataclasses.create_pydantic_model_from_dataclass(T)
-    assert issubclass(T, pydantic.BaseModel) # In lieu of a test
+    assert issubclass(T, pydantic.BaseModel)  # In lieu of a test
     return T
 
 

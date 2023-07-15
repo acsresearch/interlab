@@ -2,7 +2,8 @@ import random
 
 from ..context import Context
 from ..utils import pseudo_random_color, shorten_str
-from . import format, memory as memory_
+from . import format
+from . import memory as memory_
 from .event import Event
 
 
