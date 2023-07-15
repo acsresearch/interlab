@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from .engines import QueryEngine
+
 from ..context import Context
+from .engines import QueryEngine
 
 
 @dataclass
@@ -51,7 +52,9 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
     return name, conf, call
 
 
-def query_engine(engine: any, prompt: str, kwargs: dict = None, with_context=True) -> str:
+def query_engine(
+    engine: any, prompt: str, kwargs: dict = None, with_context=True
+) -> str:
     name, conf, call = _prepare_engine(engine, engine_kwargs=kwargs, call_async=False)
     if with_context:
         with Context(name, kind="query", inputs=dict(prompt=prompt, conf=conf)) as c:

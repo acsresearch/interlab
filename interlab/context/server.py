@@ -11,8 +11,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 
-from .storage import Storage
 from . import browser
+from .storage import Storage
 
 PATH_TO_STATIC_FILES = resources.path(browser, ".")
 
