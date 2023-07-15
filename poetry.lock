@@ -1597,6 +1597,18 @@ files = [
 ]
 
 [[package]]
+name = "jsonref"
+version = "1.1.0"
+description = "jsonref is a library for automatic dereferencing of JSON Reference objects for Python."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "jsonref-1.1.0-py3-none-any.whl", hash = "sha256:590dc7773df6c21cbf948b5dac07a72a251db28b0238ceecce0a2abfa8ec30a9"},
+    {file = "jsonref-1.1.0.tar.gz", hash = "sha256:32fe8e1d85af0fdefbebce950af85590b22b60f9e95443176adbde4e1ecea552"},
+]
+
+[[package]]
 name = "jsonschema"
 version = "4.18.3"
 description = "An implementation of JSON Schema validation for Python"
@@ -4777,4 +4789,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c84bfa21832446b1fff32a56acd4fa441b12518a605a1a049fda5d2cd1f79469"
+content-hash = "1d7a49b59eb6087951720287700241c8219a5e0f586fb579fdbfb6d8e5d95ce4"
