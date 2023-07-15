@@ -1,12 +1,12 @@
 import json
+from dataclasses import dataclass
 
 import jsonref
 import pytest
+from pydantic.dataclasses import dataclass as pdataclass
 
 from interlab import ParsingFailure, parse_tag
 from interlab.llm import json_parsing, json_querying
-from dataclasses import dataclass
-from pydantic.dataclasses import dataclass as pdataclass
 
 
 def test_parse_tag():

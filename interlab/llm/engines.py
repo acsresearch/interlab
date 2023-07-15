@@ -9,8 +9,8 @@ import openai
 
 from ..context import Context
 from ..context.data import Data
-from ..utils.text import group_newlines, remove_leading_spaces
 from ..utils import LOG, shorten_str
+from ..utils.text import group_newlines, remove_leading_spaces
 
 # Time window when queries qill be retried on service or network failures
 # Note that this does not limit the time of the last query itself

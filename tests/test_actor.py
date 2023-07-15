@@ -19,5 +19,3 @@ def test_simple_actor():
     assert a1.memory.events_for_query() == (o1,)
     a1.observe(Event("Baz"))
     assert a1.formatted_memories("ignored") == "Anna: Bar!\n\nBaz"
-
-
