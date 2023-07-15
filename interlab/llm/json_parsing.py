@@ -1,7 +1,6 @@
 import dataclasses
 import json
 import re
-from typing import Optional, TypeAlias, TypeVar
 
 import jsonref
 import pydantic
@@ -9,8 +8,8 @@ import pydantic
 JSON = dict | list | str | int | bool | float | None
 
 _JSON_REGEXPS = [
-    re.compile("```(?:json)?\s*(\{.*\})\s*```", re.I | re.M | re.S),
-    re.compile("(\{.*\})", re.I | re.M | re.S),
+    re.compile(r"```(?:json)?\s*({.*})\s*```", re.I | re.M | re.S),
+    re.compile(r"({.*})", re.I | re.M | re.S),
 ]
 
 

@@ -19,7 +19,10 @@ class FormatBase:
 
 
 class FunFormat(FormatBase):
-    "Generic wrapper for a formatter defined by function (lambda). The function can take 1 or 2 parameters (event, observing_actor)."
+    """
+    Generic wrapper for a formatter defined by function (lambda).
+    The function can take 1 or 2 parameters (event, observing_actor).
+    """
 
     def __init__(self, fun: callable):
         self.fun = fun

@@ -2,8 +2,6 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from interlab.actors.event import Event
-
 from .event import Event
 
 
