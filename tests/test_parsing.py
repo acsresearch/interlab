@@ -3,10 +3,9 @@ from dataclasses import dataclass
 
 import jsonref
 import pytest
-from pydantic.dataclasses import dataclass as pdataclass
 
 from interlab import ParsingFailure, parse_tag
-from interlab.llm import json_parsing, json_querying
+from interlab.llm import json_parsing
 
 
 def test_parse_tag():
@@ -23,6 +22,8 @@ def test_parse_tag():
 
 def test_find_and_parse_json_block():
     assert json_parsing.find_and_parse_json_block('{"b":42}') == {"b": 42}
+    assert json_parsing.find_and_parse_json_block("a ```json\n\n{ } ```") == {}
+    assert json_parsing.find_and_parse_json_block("```\n\n{ } ``` zz") == {}
     assert json_parsing.find_and_parse_json_block(
         'asd```json\n{"a":1}\n```{\n"b":2\n}da\nsd'
     ) == {"a": 1}
