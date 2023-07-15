@@ -18,9 +18,11 @@ def find_and_parse_json_block(s: str, enforce_single=False) -> JSON:
     Uses several heuristics to find a chunk of valid JSON in the input text.
 
     Finds the JSON block first as "```"-delimited block, then just by matching first and last "{}".
-    TODO(low priority): Third fallback with adding lines in reverse from last "}" until it parses as JSON.
 
     Returns the parsed JSON on success, raises ValueError on failure.
+
+    TODO: consider only allowing "```" markers to start at the beginning of a line (after only whitespace)
+    TODO(low priority): Third fallback with adding lines in reverse from last "}" until it parses as JSON.
     """
     for i, r in enumerate(_JSON_REGEXPS):
         try:
