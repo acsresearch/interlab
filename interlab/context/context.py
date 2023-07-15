@@ -249,6 +249,8 @@ class Context:
 def with_context(
     fn: Callable = None, *, name=None, kind=None, tags: Optional[List[str | Tag]] = None
 ):
+    if isinstance(fn, str):
+        raise TypeError("use `with_context()` with explicit `name=...` parameter")
     name = name or fn.__name__
 
     def helper(func):
