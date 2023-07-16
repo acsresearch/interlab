@@ -1,16 +1,15 @@
 import dataclasses
 import json
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
 class Event:
     # str or any JSON-serializable type
-    data: any
+    data: Any
     # Origin of the event, usually agent name or None (if environmental observation)
     origin: str | None = None
-    # Any styling data, currently only 'color' (as hex color) is supported
-    style: dict[str, any] = dataclasses.field(default_factory=dict)
 
     def data_as_string(self, json_indent=None):
         "Return the data as JSON string (for dataclasses) or its __str__ representation (otherwise)."
@@ -20,6 +19,12 @@ class Event:
         return str(self.data)
 
     def __str__(self) -> str:
-        if self.origin:
-            return f"{self.origin}: {str(self.data)}"
-        return str(self.data)
+        s = self.data_as_string()
+        return f"{self.origin}: {s}" if self.origin else s
+
+
+# @dataclass
+# class StyledEvent(Event):
+#     # Any styling data, currently only 'color' (as hex color) is supported
+#     _style: dict[str, Any] = dataclasses.field(default_factory=dict)
+    
