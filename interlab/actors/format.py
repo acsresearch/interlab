@@ -62,15 +62,20 @@ class HTMLFormat(TextFormat):
         return f'<div class="{self.CLASS_NAME_PREFIX}__box">\n{s}\n</div>'
 
     def format_event(self, event: Event) -> str:
-        s = event.data_as_string()
+        # Only for events with _style attribute (optional, API not quite resolved)
+        if hasattr(event, "_style") and "color" in event._style:
+            css_style = f'style="color: color-mix({event._style["color"]}, 50% black)'
+        else:
+            css_style = ""
 
+        s = event.data_as_string()
         if isinstance(event.data, str):
-            fs = f'<span class="{self.CLASS_NAME_PREFIX}__text">{html.escape(s)}</span>'
+            fs = f'<span class="{self.CLASS_NAME_PREFIX}__text" {css_style}">{html.escape(s)}</span>'
         else:
             # If the answer is a longer JSON, display over multiple lines
             if len(s) > 60:
                 s = event.data_as_string(json_indent=2)
-            fs = f'<code class="{self.CLASS_NAME_PREFIX}__json">{html.escape(s)}</code>'
+            fs = f'<code class="{self.CLASS_NAME_PREFIX}__json" {css_style}>{html.escape(s)}</code>'
 
         if event.origin is not None:
             fs = f'<span class="{self.CLASS_NAME_PREFIX}__origin">{html.escape(event.origin)}:</span> {fs}'
