@@ -1,30 +1,33 @@
 from textwrap import dedent
+from typing import Any
 
-from .actor import Actor
+from ..llm import query_engine, query_for_json
+from .actor import ActorWithMemory
 
 
-class OneShotLLMActor(Actor):
+class OneShotLLMActor(ActorWithMemory):
     def __init__(
         self,
-        engine: callable,
+        name: str,
+        engine: Any,
         initial_prompt: str,
-        action_type=str,
         *,
-        name: str | None = None,
+        action_type: type = str,
+        query_with_example: bool = False,
+        query_with_cot: bool = False,
         color: str | None = None,
     ):
         super().__init__(name=name, color=color)
         self.engine = engine
         self.initial_prompt = initial_prompt
         self.action_type = action_type
+        self.query_with_example = query_with_example
+        self.query_with_cot = query_with_cot
 
-        # TODO(gavento): Support action types other than str via JSON Pydantic parsing
-        assert action_type is str, "No other action supported for now"
-
-    def _act(self, prompt: any = None) -> str:
+    def _act(self, prompt: str = None) -> str:
         if prompt is None:
-            prompt = "What is your next action?"
-        hist = self.formatted_memories()
+            prompt = f"As {self.name}, what is your next action?"
+        hist = self.memory.get_formatted()
         q = dedent(
             f"""\
             {self.initial_prompt}\n
@@ -33,30 +36,44 @@ class OneShotLLMActor(Actor):
             # End of Past events\n
             {prompt}"""
         )
-        return self.engine(q)
+        if self.action_type is str:
+            return query_engine(
+                self.engine, f"{q}\n\nWrite only your reply to the prompt."
+            )
+        else:
+            return query_for_json(
+                self.engine,
+                self.action_type,
+                q,
+                with_example=self.query_with_example,
+                with_cot=self.query_with_cot,
+            )
 
 
 class SimpleReflectLLMActor(OneShotLLMActor):
     REFLECT_PROMPT = dedent(
         """\
         1. Summarize what you know at this point and reflect on your current situation.
-        2. State your current goal relative to the prompt: {prompt!r}
+        2. State your current goal.
         3. Propose actions to reach the goal within the setting."""
     )
 
-    def _act(self, prompt: any = None) -> str:
-        if prompt is None:
-            prompt = "What is your next action?"
-        hist = self.formatted_memories()
+    def _act(self, prompt: str = None) -> str:
+        hist = self.memory.get_formatted()
+
         q1 = dedent(
             f"""\
             {self.initial_prompt}\n
             # Past events\n
             {hist}\n
-            # End of past events\n
-            {self.REFLECT_PROMPT.format(prompt=prompt)}"""
+            # End of Past events\n
+            # Instructions\n
+            {self.REFLECT_PROMPT}"""
         )
-        thoughts = self.engine(q1)
+        if prompt is None:
+            prompt = f"As {self.name}, what is your next action?"
+        thoughts = query_engine(self.engine, q1)
+
         q2 = dedent(
             f"""\
             {self.initial_prompt}\n
@@ -66,6 +83,18 @@ class SimpleReflectLLMActor(OneShotLLMActor):
             # Thoughts on the current situation\n
             {thoughts}\n
             # End of Thoughts on the current situation\n
+            # Instructions\n
             {prompt}"""
         )
-        return self.engine(q2)
+        if self.action_type is str:
+            return query_engine(
+                self.engine, f"{q2}\n\nWrite only your reply to the prompt."
+            )
+        else:
+            return query_for_json(
+                self.engine,
+                self.action_type,
+                q2,
+                with_example=self.query_with_example,
+                with_cot=self.query_with_cot,
+            )

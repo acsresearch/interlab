@@ -1,7 +1,4 @@
-from typing import Any, Callable
-
-import numpy as np
-from pydantic.dataclasses import dataclass
+from typing import Any
 
 from .event import Event
 from .format import FormatBase
@@ -41,8 +38,11 @@ class SimpleMemory(MemoryBase):
 
 
 #
-# WIP: untested
+# WIP and untested
 #
+
+# import numpy as np
+# from pydantic.dataclasses import dataclass
 
 # @dataclass
 # class RelevanceTextMemoryItem:

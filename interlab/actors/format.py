@@ -1,5 +1,5 @@
 import html
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import Any, Iterable
 
 from .event import Event
 
