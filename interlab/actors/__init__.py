@@ -3,7 +3,6 @@ from .actor import Actor  # noqa: F401
 from .event import Event  # noqa: F401
 from .format import (  # noqa: F401
     FormatBase,
-    FunFormat,
     HTMLFormat,
     HumanTextFormat,
     LLMTextFormat,

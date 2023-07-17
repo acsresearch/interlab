@@ -4,8 +4,8 @@ from dataclasses import dataclass
 import jsonref
 import pytest
 
-from interlab import ParsingFailure, parse_tag
 from interlab.llm import json_parsing
+from interlab.llm.parsing import ParsingFailure, parse_tag
 
 
 def test_parse_tag():
