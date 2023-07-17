@@ -50,7 +50,8 @@ class OneShotLLMActor(ActorWithMemory):
             )
 
 
-class SimpleReflectLLMActor(OneShotLLMActor):
+class SimpleCoTLLMActor(OneShotLLMActor):
+    """Extension of `OneShotLLMActor` that does one extra query to do a simple chain-of-thought reasoning."""
     REFLECT_PROMPT = dedent(
         """\
         1. Summarize what you know at this point and reflect on your current situation.

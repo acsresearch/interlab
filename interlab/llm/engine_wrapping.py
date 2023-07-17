@@ -15,12 +15,16 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
     conf = dict(_class=f"{engine.__class__.__module__}.{typename}")
     if isinstance(engine, langchain.llms.base.BaseLLM):
         conf.update(engine.dict())
+        if "model_name" not in conf:
+            conf["model_name"] = getattr(engine, "model", None)
         name = (
             f"Query langchain model {engine.__class__.__name__} ({conf['model_name']})"
         )
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     elif isinstance(engine, langchain.chat_models.base.BaseChatModel):
         conf.update(engine.dict())
+        if "model_name" not in conf:
+            conf["model_name"] = getattr(engine, "model", None)
         name = f"query langchain chat model {engine.__class__.__name__} ({conf['model_name']})"
         call = lambda c: engine(  # noqa: E731
             [langchain.schema.HumanMessage(content=c)], **engine_kwargs
