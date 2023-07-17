@@ -15,7 +15,9 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
     conf = dict(_class=f"{engine.__class__.__module__}.{typename}")
     if isinstance(engine, langchain.llms.base.BaseLLM):
         conf.update(engine.dict())
-        name = f"Query langchain model {engine.__class__.__name__} ({conf['model_name']})"
+        name = (
+            f"Query langchain model {engine.__class__.__name__} ({conf['model_name']})"
+        )
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     elif isinstance(engine, langchain.chat_models.base.BaseChatModel):
         conf.update(engine.dict())
@@ -25,7 +27,9 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
         ).content
     elif isinstance(engine, QueryEngine):
         conf.update(model_name=engine.model, temperature=engine.temperature)
-        name = f"query interlab model {engine.__class__.__name__} ({conf['model_name']})"
+        name = (
+            f"query interlab model {engine.__class__.__name__} ({conf['model_name']})"
+        )
         call = lambda c: engine.query(c, **engine_kwargs)  # noqa: E731
     elif callable(engine):
         if hasattr(engine, "__name__"):

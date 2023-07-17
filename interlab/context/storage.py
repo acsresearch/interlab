@@ -50,6 +50,7 @@ class Storage:
         if self._server is None:
             self.start_server()
         from IPython.display import IFrame, display
+
         display(IFrame(self._server.url, width=width, height=height))
 
     @property
