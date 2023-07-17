@@ -1,3 +1,4 @@
 cd `dirname $0`
-mv build/* ../querychains/browser/
-git add ../querychains/browser
+rm -r ../interlab/context/browser/*
+mv build/* ../interlab/context/browser/
+git add ../interlab/context/browser
