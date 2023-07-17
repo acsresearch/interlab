@@ -25,6 +25,10 @@ class Actor:
         self.style = style if style is not None else {}
         if self.style.get("color") is None:
             self.style["color"] = pseudo_random_color(self.name)
+        # This is a bit hacky before Ada makes color variations in the UI
+        self.style["fg_color"] = f'{self.style["color"]}'
+        self.style["color"] = f'{self.style["color"]}50'
+        #self.style["bg_color"] = f'color-mix(30% {self.style["color"]}, white)'
 
     def act(self, prompt: Any = None) -> Event:
         if prompt:
