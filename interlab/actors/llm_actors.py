@@ -15,9 +15,9 @@ class OneShotLLMActor(ActorWithMemory):
         action_type: type = str,
         query_with_example: bool = False,
         query_with_cot: bool = False,
-        color: str | None = None,
+        **kwargs,
     ):
-        super().__init__(name=name, color=color)
+        super().__init__(name=name, **kwargs)
         self.engine = engine
         self.initial_prompt = initial_prompt
         self.action_type = action_type

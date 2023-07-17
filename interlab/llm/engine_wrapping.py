@@ -15,17 +15,17 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
     conf = dict(_class=f"{engine.__class__.__module__}.{typename}")
     if isinstance(engine, langchain.llms.base.BaseLLM):
         conf.update(engine.dict())
-        name = f"Query langchain model {conf.type} ({conf.model_name})"
+        name = f"Query langchain model {engine.__class__.__name__} ({conf['model_name']})"
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     elif isinstance(engine, langchain.chat_models.base.BaseChatModel):
         conf.update(engine.dict())
-        name = f"query langchain chat model {conf.type} ({conf.model_name})"
+        name = f"query langchain chat model {engine.__class__.__name__} ({conf['model_name']})"
         call = lambda c: engine(  # noqa: E731
             [langchain.schema.HumanMessage(content=c)], **engine_kwargs
         ).content
     elif isinstance(engine, QueryEngine):
         conf.update(model_name=engine.model, temperature=engine.temperature)
-        name = f"query interlab model {engine.__class__.__name__} ({conf.model_name})"
+        name = f"query interlab model {engine.__class__.__name__} ({conf['model_name']})"
         call = lambda c: engine.query(c, **engine_kwargs)  # noqa: E731
     elif callable(engine):
         if hasattr(engine, "__name__"):
@@ -37,7 +37,7 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     else:
         raise TypeError(f"Can't wrap engine of type {engine.__class__}")
-    conf.model_kwargs.update(**engine_kwargs)
+    conf.update(**engine_kwargs)
     return name, conf, call
 
 

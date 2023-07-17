@@ -42,12 +42,18 @@ class Actor:
     def _act(self, prompt: Any = None) -> Any:
         raise NotImplementedError("Implement _act in a derived actor class")
 
-    def observe(self, event: Event):
+    def observe(self, event: Event | Any, origin: str | None = None):
+        """Observe the given Event.
+
+        Instead of given Event object, you can also pass in observation and origin directly.
+        """
+        if not isinstance(event, Event):
+            event = Event(data=event, origin=origin)
         with Context(
             f"{self.name} observes {shorten_str(str(event))!r}",
             kind="observation",
             meta=self.style,
-            inputs={"event": event},
+            inputs={"origin": event.origin, "observation": event.data},
         ):
             self._observe(event)
 
