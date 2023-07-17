@@ -1,4 +1,3 @@
-import html
 from typing import Any, Iterable
 
 from .event import Event
@@ -53,30 +52,34 @@ class HumanTextFormat(TextFormat):
         return f"{event.origin}: {s}" if event.origin is not None else s
 
 
-class HTMLFormat(TextFormat):
-    CLASS_NAME_PREFIX = "InterLabHTMLFormat"
-    "Default HTML-based formatter for human actors and observers"
+#
+# WIP: THis is likely the wrong place for HTML user-facng format
+#
 
-    def format_events(self, events: Iterable[Event]) -> any:
-        s = "\n".join(self.format_event(e) for e in events)
-        return f'<div class="{self.CLASS_NAME_PREFIX}__box">\n{s}\n</div>'
+# class HTMLFormat(TextFormat):
+#     CLASS_NAME_PREFIX = "InterLabHTMLFormat"
+#     "Default HTML-based formatter for human actors and observers"
 
-    def format_event(self, event: Event) -> str:
-        # Only for events with _style attribute (optional, API not quite resolved)
-        if hasattr(event, "_style") and "color" in event._style:
-            css_style = f'style="color: color-mix({event._style["color"]}, 50% black)'
-        else:
-            css_style = ""
+#     def format_events(self, events: Iterable[Event]) -> any:
+#         s = "\n".join(self.format_event(e) for e in events)
+#         return f'<div class="{self.CLASS_NAME_PREFIX}__box">\n{s}\n</div>'
 
-        s = event.data_as_string()
-        if isinstance(event.data, str):
-            fs = f'<span class="{self.CLASS_NAME_PREFIX}__text" {css_style}">{html.escape(s)}</span>'
-        else:
-            # If the answer is a longer JSON, display over multiple lines
-            if len(s) > 60:
-                s = event.data_as_string(json_indent=2)
-            fs = f'<code class="{self.CLASS_NAME_PREFIX}__json" {css_style}>{html.escape(s)}</code>'
+#     def format_event(self, event: Event) -> str:
+#         # Only for events with _style attribute (optional, API not quite resolved)
+#         if hasattr(event, "_style") and "color" in event._style:
+#             css_style = f'style="color: color-mix({event._style["color"]}, 50% black)'
+#         else:
+#             css_style = ""
 
-        if event.origin is not None:
-            fs = f'<span class="{self.CLASS_NAME_PREFIX}__origin">{html.escape(event.origin)}:</span> {fs}'
-        return f'<div class="{self.CLASS_NAME_PREFIX}__message">{fs}:</div>'
+#         s = event.data_as_string()
+#         if isinstance(event.data, str):
+#             fs = f'<span class="{self.CLASS_NAME_PREFIX}__text" {css_style}">{html.escape(s)}</span>'
+#         else:
+#             # If the answer is a longer JSON, display over multiple lines
+#             if len(s) > 60:
+#                 s = event.data_as_string(json_indent=2)
+#             fs = f'<code class="{self.CLASS_NAME_PREFIX}__json" {css_style}>{html.escape(s)}</code>'
+
+#         if event.origin is not None:
+#             fs = f'<span class="{self.CLASS_NAME_PREFIX}__origin">{html.escape(event.origin)}:</span> {fs}'
+#         return f'<div class="{self.CLASS_NAME_PREFIX}__message">{fs}:</div>'
