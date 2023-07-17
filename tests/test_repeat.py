@@ -1,6 +1,7 @@
 import pytest
 
-from interlab import Context, QueryFailure, repeat_on_failure
+from interlab.context import Context
+from interlab.llm.repeat import QueryFailure, repeat_on_failure
 from tests.testutils import strip_tree
 
 
