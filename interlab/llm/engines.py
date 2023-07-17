@@ -165,7 +165,7 @@ class AnthropicEngine(QueryEngine):
                 api_key
             ), "need to provide either key param or ANTHROPIC_API_KEY env var"
         self.api_key = api_key
-        self.client = anthropic.Client(self.api_key)
+        self.client = anthropic.Client(api_key=self.api_key)
         self.model = model
         self.temperature = temperature
         LOG.info(
