@@ -1,8 +1,6 @@
 import random
 from typing import Any
 
-from pydantic.dataclasses import Field, dataclass
-
 from ..context import Context
 from ..utils import pseudo_random_color, shorten_str
 from . import format
@@ -28,7 +26,7 @@ class Actor:
         if self.style.get("color") is None:
             self.style["color"] = pseudo_random_color(self.name)
 
-    def act(self, prompt: any = None) -> Event:
+    def act(self, prompt: Any = None) -> Event:
         if prompt:
             name = f"{self.name} to act on {shorten_str(str(prompt))!r}"
             inputs = {"prompt": prompt}
@@ -41,7 +39,7 @@ class Actor:
             ev = Event(origin=self.name, data=action)  # _style=self.style)
         return ev
 
-    def _act(self, prompt: any = None) -> any:
+    def _act(self, prompt: Any = None) -> Any:
         raise NotImplementedError("Implement _act in a derived actor class")
 
     def observe(self, event: Event):
