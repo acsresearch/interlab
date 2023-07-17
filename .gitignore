@@ -6,3 +6,4 @@ __pycache__/
 data/
 package-lock.json
 /.pytest_cache/
+/notebooks/logs/

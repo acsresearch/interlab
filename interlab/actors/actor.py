@@ -28,10 +28,10 @@ class Actor:
 
     def act(self, prompt: Any = None) -> Event:
         if prompt:
-            name = f"{self.name} to act on {shorten_str(str(prompt))!r}"
+            name = f"{self.name} acts, prompt: {shorten_str(str(prompt))!r}"
             inputs = {"prompt": prompt}
         else:
-            name = f"{self.name} to act"
+            name = f"{self.name} acts"
             inputs = None
         with Context(name, kind="action", meta=self.style, inputs=inputs) as ctx:
             action = self._act(prompt)
