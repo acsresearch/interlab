@@ -1,15 +1,5 @@
-from dataclasses import dataclass
-
 from ..context import Context
 from .engines import QueryEngine
-
-
-@dataclass
-class WrapperRunConfig:
-    type: str
-    full_type: str
-    model_name: str | None = None
-    model_kwargs: dict | None = None
 
 
 def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = False):
@@ -22,29 +12,28 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
         engine_kwargs = {}
 
     typename = engine.__class__.__name__
-    conf = WrapperRunConfig(
-        type=typename, full_type=f"{engine.__class__.__module__}.{typename}"
-    )
+    conf = dict(_class=f"{engine.__class__.__module__}.{typename}")
     if isinstance(engine, langchain.llms.base.BaseLLM):
-        conf.model_name = engine.model_name
-        conf.model_kwargs = dict(engine.model_kwargs)
+        conf.update(engine.dict())
         name = f"Query langchain model {conf.type} ({conf.model_name})"
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     elif isinstance(engine, langchain.chat_models.base.BaseChatModel):
-        conf.model_name = engine.model_name
-        conf.model_kwargs = dict(engine.model_kwargs)
+        conf.update(engine.dict())
         name = f"query langchain chat model {conf.type} ({conf.model_name})"
         call = lambda c: engine(  # noqa: E731
             [langchain.schema.HumanMessage(content=c)], **engine_kwargs
         ).content
     elif isinstance(engine, QueryEngine):
-        conf.model_name = engine.model
-        conf.model_kwargs = dict(temperature=engine.temperature)
-        name = f"query interlab model {conf.type} ({conf.model_name})"
+        conf.update(model_name=engine.model, temperature=engine.temperature)
+        name = f"query interlab model {engine.__class__.__name__} ({conf.model_name})"
         call = lambda c: engine.query(c, **engine_kwargs)  # noqa: E731
     elif callable(engine):
-        conf.model_kwargs = {}
-        name = "unknown engine"
+        if hasattr(engine, "__name__"):
+            name = f"query function {getattr(engine, '__module__', '<unknown>')}.{engine.__name__}"
+        else:
+            name = f"query engine {engine.__module__}.{engine.__class__.__name__}"
+        getattr()
+
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     else:
         raise TypeError(f"Can't wrap engine of type {engine.__class__}")
