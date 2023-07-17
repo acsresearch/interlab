@@ -49,9 +49,8 @@ class Storage:
     def display(self, width=1200, height=1000):
         if self._server is None:
             self.start_server()
-        from IPython.display import IFrame
-
-        return IFrame(self._server.url, width=width, height=height)
+        from IPython.display import IFrame, display
+        display(IFrame(self._server.url, width=width, height=height))
 
     @property
     def server(self):

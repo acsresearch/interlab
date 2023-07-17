@@ -13,6 +13,7 @@ from starlette.responses import FileResponse
 
 from . import browser
 from .storage import Storage
+from ..utils import LOG
 
 with resources.path(browser, ".") as static_path:
     PATH_TO_STATIC_FILES = static_path
@@ -110,4 +111,5 @@ async def _server_main(handle: ServerHandle, server, cv: Condition):
 def start_server(*, storage: Optional[Storage] = None, port: int = 0):
     handle = ServerHandle(storage=storage, port=port)
     handle.start()
+    LOG.info(f"Started UI server: {handle}")
     return handle
