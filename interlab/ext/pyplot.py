@@ -1,4 +1,4 @@
-from interlab.utils.blob import Blob
+from ..utils.blob import Blob
 
 
 def capture_figure(file_format: str = "png", **kwargs):
