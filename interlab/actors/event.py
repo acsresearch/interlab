@@ -27,4 +27,3 @@ class Event:
 # class StyledEvent(Event):
 #     # Any styling data, currently only 'color' (as hex color) is supported
 #     _style: dict[str, Any] = dataclasses.field(default_factory=dict)
-    

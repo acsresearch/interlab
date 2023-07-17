@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from interlab import Context, Tag, current_context, with_context
+from interlab.context import Context, Tag, current_context, with_context
 from interlab.context.context import ContextState
 from tests.testutils import strip_tree
 

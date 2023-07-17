@@ -6,8 +6,8 @@ import threading
 from os import PathLike
 from typing import Callable, Iterator, List, Optional, Sequence
 
+from ..utils.data import Data
 from .context import Context
-from .data import Data
 
 
 class Storage:
