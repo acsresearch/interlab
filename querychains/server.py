@@ -14,7 +14,8 @@ from starlette.responses import FileResponse
 from . import browser
 from .storage import Storage
 
-PATH_TO_STATIC_FILES = resources.path(browser, ".")
+with resources.path(browser, ".") as static_path:
+    PATH_TO_STATIC_FILES = static_path
 
 
 class ServerHandle:
