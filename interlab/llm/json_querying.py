@@ -80,7 +80,7 @@ def query_for_json(
     T: type,
     prompt: str,
     with_example: bool | TOut | str = False,
-    with_deliberation: bool = False,
+    with_cot: bool = False,
     max_repeats: int = 5,
     example_engine=None,
 ) -> TOut:
@@ -103,7 +103,7 @@ def query_for_json(
       In-memory and on-disk caching of the examples for schemas is TODO.
       You can also provide your own example by passing a JSON string or JSON-serializable object in `with_example`.
       Note that a provided example is not validated (TODO: validate it).
-    * `with_deliberation=True` adds a minimal prompt for writing chain-of-thought reasoning before writing
+    * `with_cot=True` adds a minimal prompt for writing chain-of-thought reasoning before writing
       out the JSON response. This may improve response quality (via CoT deliberation) but has some risks:
       the models may include JSON in their deliberation (confusing the parser) or run out of token limit via
       lenghty deliberation.
@@ -138,7 +138,7 @@ def query_for_json(
     if _FORMAT_VAR not in prompt:
         prompt += f"\n\n\n{'{'+_FORMAT_VAR+'}'}"
 
-    deliberation = _FORMAT_PROMPT_DELIBERATE if with_deliberation else ""
+    deliberation = _FORMAT_PROMPT_DELIBERATE if with_cot else ""
 
     pdT = into_pydantic_model(T)
     schema = json_schema(pdT)
