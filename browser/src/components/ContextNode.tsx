@@ -98,6 +98,8 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
                 <strong>Inputs</strong><br />
                 <DataRenderer uid={c.uid + "/inputs"} data={c.inputs} opened={props.opened} setOpen={props.setOpen} />
             </p>}
+            {c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
+                <ContextNode context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)}
             {c.result &&
                 <p>
                     <strong>Result</strong><br />
@@ -110,8 +112,6 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
                     <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" opened={props.opened} setOpen={props.setOpen} />
                 </p>
             }
-            {c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
-                <ContextNode context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)}
         </>
     }
 
