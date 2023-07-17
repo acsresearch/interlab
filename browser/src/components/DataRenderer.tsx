@@ -1,7 +1,6 @@
 import { Button } from "@mui/material";
 import { Opener, OpenerMode } from "./DataBrowser";
-
-
+import parse from 'html-react-parser';
 
 const IMAGE_MIME_TYPES = ["image/jpeg", "image/png"];
 
@@ -37,6 +36,10 @@ export function DataRenderer(props: { data: any, uid: string, opened: Set<string
                 }
             }
         }
+    }
+
+    if (d._type === "Html" && d.html) {
+        return <div>{parse(d.html)}</div>;
     }
 
     if (d._type === "Blob" && IMAGE_MIME_TYPES.includes(d.mime_type)) {
