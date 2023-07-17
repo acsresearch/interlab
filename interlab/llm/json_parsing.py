@@ -31,7 +31,6 @@ def find_and_parse_json_block(s: str, enforce_single=False) -> JSON:
                 raise ValueError("No JSON fragment found")
             if len(m.groups()) > 1 and enforce_single:
                 raise ValueError("Multiple JSON fragments found")
-            print(repr(m.groups()[-1]))
             return json.loads(m.groups()[-1])
         except json.JSONDecodeError as e:
             if i < len(_JSON_REGEXPS) - 1:
