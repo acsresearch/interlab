@@ -51,5 +51,5 @@ def _storage_app(storage) -> FastAPI:
 def start_storage_server(*, storage: Storage, port: int = 0) -> ServerHandle:
     handle = ServerHandle()
     handle.start(_storage_app(storage), port=port)
-    LOG.info(f"Started UI server: {handle}")
+    LOG.info(f"Started context UI server: {handle}")
     return handle
