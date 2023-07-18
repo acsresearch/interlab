@@ -65,11 +65,14 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
     let open = props.opened.has(c.uid);
     //let depth = props.depth <= 4 ? props.depth : 4;
     //if (props.context.meta)
-    let color = props.context.meta?.color;
-
-    if (!color) {
-        color = DEFAULT_COLORS[props.depth % 2];
+    let colorBackground = props.context.meta?.color_bg;
+    if (!colorBackground) {
+        colorBackground = DEFAULT_COLORS[props.depth % 2];
     }
+
+    let borderColor = props.context.meta?.color;
+    let border = borderColor ? 5 : undefined;
+    let color = props.context.meta?.color_text;
 
     let icon;
 
@@ -121,7 +124,7 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
         <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span>
     }
 
-    return <Item style={{ backgroundColor: color }} variant="outlined">
+    return <Item sx={{ border, borderColor, color }} style={{ backgroundColor: colorBackground }} variant="outlined">
 
         <div style={{
             display: 'flex',
