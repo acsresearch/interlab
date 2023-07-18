@@ -1,15 +1,14 @@
-from typing import List
 import os
-
+from typing import List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import FileResponse
-from .server import PATH_TO_STATIC_FILES, ServerHandle
 from pydantic import BaseModel
+from starlette.responses import FileResponse
 
-from .storage import Storage
 from ..utils import LOG
+from .server import PATH_TO_STATIC_FILES, ServerHandle
+from .storage import Storage
 
 
 class RootsRequest(BaseModel):
@@ -45,6 +44,7 @@ def _storage_app(storage) -> FastAPI:
         if not data:
             raise HTTPException(status_code=404)
         return data
+
     return app
 
 

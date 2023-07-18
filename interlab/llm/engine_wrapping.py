@@ -18,9 +18,7 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
         # For Anthropic (and maube other) langchain models:
         if "model_name" not in conf:
             conf["model_name"] = getattr(engine, "model", None)
-        name = (
-            f"Query langchain model {typename} ({conf['model_name']})"
-        )
+        name = f"Query langchain model {typename} ({conf['model_name']})"
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     elif isinstance(engine, langchain.chat_models.base.BaseChatModel):
         conf.update(engine.dict())
@@ -32,9 +30,7 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
         ).content
     elif isinstance(engine, QueryEngine):
         conf.update(model_name=engine.model, temperature=engine.temperature)
-        name = (
-            f"query interlab model {typename} ({conf['model_name']})"
-        )
+        name = f"query interlab model {typename} ({conf['model_name']})"
         call = lambda c: engine.query(c, **engine_kwargs)  # noqa: E731
     elif callable(engine):
         if hasattr(engine, "__qualname__"):
