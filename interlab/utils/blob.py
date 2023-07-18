@@ -8,6 +8,7 @@ class Blob:
 
     def __log__(self):
         return {
+            "_type": "$blob",
             "data": base64.b64encode(self.data).decode(),
             "mime_type": self.mime_type,
         }
