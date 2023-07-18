@@ -25,25 +25,32 @@ class Actor:
         self.style = style if style is not None else {}
         if self.style.get("color") is None:
             self.style["color"] = pseudo_random_color(self.name)
-        # This is a bit hacky before Ada makes color variations in the UI
+
+        # TODO: This is a bit hacky before Ada makes color variations in the UI
         self.style["fg_color"] = f'{self.style["color"]}'
         self.style["color"] = f'{self.style["color"]}50'
-        #self.style["bg_color"] = f'color-mix(30% {self.style["color"]}, white)'
+        # self.style["bg_color"] = f'color-mix(30% {self.style["color"]}, white)'
 
-    def act(self, prompt: Any = None) -> Event:
+    def act(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
+        """Calls self._act to determine the action, wraps the action in Event, and wraps the call in Context."""
         if prompt:
             name = f"{self.name} acts, prompt: {shorten_str(str(prompt))!r}"
             inputs = {"prompt": prompt}
         else:
             name = f"{self.name} acts"
-            inputs = None
+            inputs = {}
+        if expected_type is not None:
+            inputs["expected_type"] = f"{expected_type.__module__}.{expected_type.__qualname__}"
+        inputs.update(**kwargs)
+
         with Context(name, kind="action", meta=self.style, inputs=inputs) as ctx:
-            action = self._act(prompt)
+            action = self._act(prompt, expected_type=expected_type, **kwargs)
             ctx.set_result(action)
-            ev = Event(origin=self.name, data=action)  # _style=self.style)
+            # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification
+            ev = Event(origin=self.name, data=action)
         return ev
 
-    def _act(self, prompt: Any = None) -> Any:
+    def _act(self, prompt: Any = None, **kwargs) -> Any:
         raise NotImplementedError("Implement _act in a derived actor class")
 
     def observe(self, event: Event | Any, origin: str | None = None):
