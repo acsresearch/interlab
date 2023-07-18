@@ -3,17 +3,16 @@ import os
 import threading
 from typing import List
 
-
-from starlette.responses import FileResponse
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import FileResponse
 from starlette.websockets import WebSocketDisconnect
 
+from ..utils import LOG
 from .server import PATH_TO_STATIC_FILES, ServerHandle
 
 
 class ConsoleState:
-
     def __init__(self, name: str):
         self.name = name
         self.sockets: List[WebSocket] = []
@@ -22,10 +21,7 @@ class ConsoleState:
 
     async def add_socket(self, socket: WebSocket):
         self.sockets.append(socket)
-        await socket.send_json({
-            "type": "input",
-            "value": bool(self.input_futures)
-        })
+        await socket.send_json({"type": "input", "value": bool(self.input_futures)})
         if self.messages:
             await socket.send_json(self.messages)
 
@@ -33,11 +29,7 @@ class ConsoleState:
         self.sockets.remove(socket)
 
     async def add_message(self, text: str):
-        message = {
-            "type": "message",
-            "id": len(self.messages),
-            "text": text
-        }
+        message = {"type": "message", "id": len(self.messages), "text": text}
         self.messages.append(message)
         await self.broadcast(message)
 
@@ -57,10 +49,12 @@ class ConsoleState:
         future.set_result(text)
 
     async def send_input_state(self, value: bool):
-        await self.broadcast({
-            "type": "input",
-            "value": value,
-        })
+        await self.broadcast(
+            {
+                "type": "input",
+                "value": value,
+            }
+        )
 
     async def broadcast(self, data):
         if not self.sockets:
@@ -72,10 +66,7 @@ class ConsoleState:
         self.messages = []
         for f in self.input_futures:
             f.set_exception(Exception("Receive cancelled"))
-        await self.broadcast({
-            "type": "init",
-            "name": self.name
-        })
+        await self.broadcast({"type": "init", "name": self.name})
 
 
 def _console_app(state: ConsoleState) -> FastAPI:
@@ -96,10 +87,7 @@ def _console_app(state: ConsoleState) -> FastAPI:
     @app.websocket("/ws")
     async def websocket_endpoint(websocket: WebSocket):
         await websocket.accept()
-        await websocket.send_json({
-            "type": "init",
-            "name": state.name
-        })
+        await websocket.send_json({"type": "init", "name": state.name})
         await state.add_socket(websocket)
         try:
             try:
@@ -115,13 +103,13 @@ def _console_app(state: ConsoleState) -> FastAPI:
 
 
 class ConsoleServer:
-
     def __init__(self, name: str, port=None):
         state = ConsoleState(name)
         handle = ServerHandle()
         handle.start(_console_app(state), port=port)
         self.handle = handle
         self.state = state
+        LOG.info(f"Created console UI at {self.url}")
 
     @property
     def url(self):
@@ -133,6 +121,7 @@ class ConsoleServer:
     def add_message(self, message):
         async def _helper():
             await self.state.add_message(message)
+
         self.handle.loop.call_soon_threadsafe(asyncio.create_task, _helper())
 
     def clear(self):
@@ -158,4 +147,5 @@ class ConsoleServer:
 
     def display(self, width=1000, height=700):
         from IPython.display import IFrame, display
+
         display(IFrame(self.url, width=width, height=height))
