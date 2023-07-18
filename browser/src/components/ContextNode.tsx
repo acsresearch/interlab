@@ -65,14 +65,14 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
     let open = props.opened.has(c.uid);
     //let depth = props.depth <= 4 ? props.depth : 4;
     //if (props.context.meta)
-    let colorBackground = props.context.meta?.color_bg;
+    let colorBackground = c.meta?.color_bg;
     if (!colorBackground) {
         colorBackground = DEFAULT_COLORS[props.depth % 2];
     }
 
-    let borderColor = props.context.meta?.color;
+    let borderColor = c.meta?.color;
     let border = borderColor ? 5 : undefined;
-    let color = props.context.meta?.color_text;
+    let color = c.meta?.color_text;
 
     let icon;
 

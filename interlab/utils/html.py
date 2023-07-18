@@ -3,4 +3,4 @@ class Html:
         self.html = html
 
     def __log__(self):
-        return {"html": self.html}
+        return {"_type": "$html", "html": self.html}

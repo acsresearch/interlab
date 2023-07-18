@@ -38,11 +38,13 @@ export function DataRenderer(props: { data: any, uid: string, opened: Set<string
         }
     }
 
-    if (d._type === "Html" && d.html) {
+    // TODO: Remove "Html" in future version
+    if ((d._type === "Html" || d._type === "$html") && d.html) {
         return <div>{parse(d.html)}</div>;
     }
 
-    if (d._type === "Blob" && IMAGE_MIME_TYPES.includes(d.mime_type)) {
+    // TODO: Remove "Blob" in future version
+    if ((d._type === "Blob" || d._type === "$blob") && IMAGE_MIME_TYPES.includes(d.mime_type)) {
         const data = `data:${d.mime_type};base64, ${d.data}`;
         // eslint-disable-next-line jsx-a11y/alt-text
         return <div><img src={data} /></div>

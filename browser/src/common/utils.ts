@@ -16,7 +16,13 @@ export function short_repr(obj: any): string {
     } else if (typeof obj === 'string') {
         result = obj
     } else if (obj._type) {
-        result = obj._type;
+        if (obj._type === "$html") {
+            result = "Html"
+        } else if (obj._type === "$blob") {
+            result = "Blob"
+        } else {
+            result = obj._type;
+        }
     } else {
         result = "<object>";
     }
