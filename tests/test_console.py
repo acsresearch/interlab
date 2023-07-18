@@ -1,8 +1,11 @@
-import pytest
-import json
-from interlab.context.console_srv import ConsoleServer
-import websockets
 import asyncio
+import json
+
+import pytest
+import websockets
+
+from interlab.context.console_srv import ConsoleServer
+
 
 @pytest.mark.asyncio
 async def test_console_server():
@@ -17,12 +20,18 @@ async def test_console_server():
             msg = await websocket.recv()
             assert json.loads(msg) == {"type": "input", "value": False}
             msg = await websocket.recv()
-            assert json.loads(msg) == [{'id': 0, 'text': 'First message', 'type': 'message'}]
+            assert json.loads(msg) == [
+                {"id": 0, "text": "First message", "type": "message"}
+            ]
             with pytest.raises(asyncio.TimeoutError):
                 await asyncio.wait_for(websocket.recv(), timeout=0.3)
             server.add_message("Second message")
             msg = await websocket.recv()
-            assert json.loads(msg) == {'id': 1, 'text': 'Second message', 'type': 'message'}
+            assert json.loads(msg) == {
+                "id": 1,
+                "text": "Second message",
+                "type": "message",
+            }
             with pytest.raises(asyncio.TimeoutError):
                 await asyncio.wait_for(websocket.recv(), timeout=0.3)
     finally:

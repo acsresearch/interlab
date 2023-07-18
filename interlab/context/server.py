@@ -13,6 +13,7 @@ from . import browser
 with resources.path(browser, ".") as static_path:
     PATH_TO_STATIC_FILES = static_path
 
+
 class ServerHandle:
     def __init__(self):
         self.port = None

@@ -221,7 +221,6 @@ class AnthropicEngine(QueryEngine):
 
 
 class ConsoleEngine(QueryEngine):
-
     def __init__(self, name: str, port: Optional[int] = 0):
         self.name = name
         self.server = ConsoleServer(name, port=port)
