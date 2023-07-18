@@ -1,7 +1,13 @@
 
 export type Tag = {
     name: string,
-    color?: string | null
+    color?: string,
+}
+
+export type ContextMeta = {
+    color?: string,
+    color_bg?: string,
+    color_text?: string,
 }
 
 export type Context = {
@@ -10,8 +16,8 @@ export type Context = {
     kind?: string,
     uid: string,
     state?: string,
-    meta?: { color?: string }
-    children?: Context[]
+    meta?: ContextMeta,
+    children?: Context[],
     inputs?: any,
     result?: any,
     error?: any,
