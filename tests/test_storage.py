@@ -1,6 +1,4 @@
-import os
-
-from interlab import Context
+from interlab.context import Context
 from interlab.context.storage import FileStorage
 
 

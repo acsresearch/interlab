@@ -1,4 +1,4 @@
-from interlab import Context
+from interlab.context import Context
 
 
 def test_server(storage):
