@@ -11,35 +11,36 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
     if engine_kwargs is None:
         engine_kwargs = {}
 
-    typename = engine.__class__.__name__
+    typename = engine.__class__.__qualname__
     conf = dict(_class=f"{engine.__class__.__module__}.{typename}")
     if isinstance(engine, langchain.llms.base.BaseLLM):
         conf.update(engine.dict())
+        # For Anthropic (and maube other) langchain models:
         if "model_name" not in conf:
             conf["model_name"] = getattr(engine, "model", None)
         name = (
-            f"Query langchain model {engine.__class__.__name__} ({conf['model_name']})"
+            f"Query langchain model {typename} ({conf['model_name']})"
         )
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     elif isinstance(engine, langchain.chat_models.base.BaseChatModel):
         conf.update(engine.dict())
         if "model_name" not in conf:
             conf["model_name"] = getattr(engine, "model", None)
-        name = f"query langchain chat model {engine.__class__.__name__} ({conf['model_name']})"
+        name = f"query langchain chat model {typename} ({conf['model_name']})"
         call = lambda c: engine(  # noqa: E731
             [langchain.schema.HumanMessage(content=c)], **engine_kwargs
         ).content
     elif isinstance(engine, QueryEngine):
         conf.update(model_name=engine.model, temperature=engine.temperature)
         name = (
-            f"query interlab model {engine.__class__.__name__} ({conf['model_name']})"
+            f"query interlab model {typename} ({conf['model_name']})"
         )
         call = lambda c: engine.query(c, **engine_kwargs)  # noqa: E731
     elif callable(engine):
-        if hasattr(engine, "__name__"):
-            name = f"query function {getattr(engine, '__module__', '<unknown>')}.{engine.__name__}"
+        if hasattr(engine, "__qualname__"):
+            name = f"query function {getattr(engine, '__module__', '<unknown>')}.{engine.__qualname__}"
         else:
-            name = f"query engine {engine.__module__}.{engine.__class__.__name__}"
+            name = f"query engine {engine.__module__}.{engine.__class__.__qualname__}"
         getattr()
 
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
