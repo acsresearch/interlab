@@ -231,8 +231,8 @@ class HumanEngine(QueryEngine):
         self.server.add_message(prompt)
         return self.server.receive()
 
-    def display(self):
-        return self.server.display()
+    def display(self, width=1000, height=700):
+        return self.server.display(width, height)
 
     def __repr__(self):
         return f"<HumanEngine name={self.name} url={self.server.url}"
