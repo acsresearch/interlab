@@ -46,7 +46,7 @@ class Storage:
     def list(self) -> List[str]:
         raise NotImplementedError
 
-    def display(self, width=1200, height=1000):
+    def display(self, width=1200, height=700):
         if self._server is None:
             self.start_server()
         from IPython.display import IFrame, display
