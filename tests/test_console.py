@@ -16,7 +16,7 @@ async def test_console_server():
     try:
         async with websockets.connect(url) as websocket:
             msg = await websocket.recv()
-            assert json.loads(msg) == {"name": "My console"}
+            assert json.loads(msg) == {"type": "init", "name": "My console"}
             msg = await websocket.recv()
             assert json.loads(msg) == {"type": "input", "value": False}
             msg = await websocket.recv()
