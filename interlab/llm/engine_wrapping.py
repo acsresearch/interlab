@@ -29,7 +29,10 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
             [langchain.schema.HumanMessage(content=c)], **engine_kwargs
         ).content
     elif isinstance(engine, QueryEngine):
-        conf.update(model_name=engine.model, temperature=engine.temperature)
+        conf.update(
+            model_name=getattr(engine, "model", None),
+            temperature=getattr(engine, "temperature", None),
+        )
         name = f"query interlab model {typename} ({conf['model_name']})"
         call = lambda c: engine.query(c, **engine_kwargs)  # noqa: E731
     elif callable(engine):
