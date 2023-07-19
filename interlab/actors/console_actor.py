@@ -1,5 +1,6 @@
-import json
 from typing import Any
+
+import dirtyjson
 
 from interlab.actors import Actor, Event
 from interlab.context.console_srv import ConsoleServer
@@ -25,7 +26,8 @@ class ConsoleActor(Actor):
         # TODO: Better support for JSON parsing etc
         r = self.server.receive()
         if expected_type is not None:
-            r = T(**json.loads(r))
+            r = T(**dirtyjson.loads(r))
+            r = expected_type(r)
         return r
 
     def display(self, width=1000, height=700):

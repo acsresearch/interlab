@@ -27,6 +27,7 @@ textstat = "^0.7.3"
 tqdm = "^4.65.0"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
 jsonref = "^1.1.0"
+dirtyjson = "^1.0.8"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
