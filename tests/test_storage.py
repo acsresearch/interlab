@@ -1,5 +1,4 @@
 from interlab.context import Context
-from interlab.context.storage import FileStorage
 
 
 def test_file_storage(storage):

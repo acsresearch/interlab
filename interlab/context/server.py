@@ -1,12 +1,10 @@
 import asyncio
 import importlib.resources as resources
 from threading import Condition
-from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.cors import CORSMiddleware
 
 from . import browser
 
