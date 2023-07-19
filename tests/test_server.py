@@ -1,3 +1,5 @@
+import requests
+
 from interlab.context import Context
 
 
@@ -10,7 +12,20 @@ def test_server(storage):
         pass
 
     server = storage.start_server()
+    url = server.url
     try:
-        raise Exception("TODO")
+        r = requests.get(url + "/contexts/list")
+        assert r.status_code == 200
+        assert set(r.json()) == {c1.uid, c2.uid}
+
+        for c in (c1, c2):
+            r = requests.get(url + f"/contexts/uid/{c.uid}")
+            assert r.status_code == 200
+            assert r.json() == c.to_dict()
+
+        r = requests.post(url + "/contexts/roots", json={"uids": [c1.uid]})
+        assert r.status_code == 200
+        assert r.json() == [c1.to_dict(with_children=False)]
+
     finally:
         server.stop()
