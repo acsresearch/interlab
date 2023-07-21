@@ -40,7 +40,6 @@ def _prepare_engine(engine: any, engine_kwargs: dict = None, call_async: bool = 
             name = f"query function {getattr(engine, '__module__', '<unknown>')}.{engine.__qualname__}"
         else:
             name = f"query engine {engine.__module__}.{engine.__class__.__qualname__}"
-        getattr()
 
         call = lambda c: engine(c, **engine_kwargs)  # noqa: E731
     else:
