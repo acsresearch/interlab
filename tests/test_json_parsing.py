@@ -16,11 +16,14 @@ def test_find_and_parse_json_block():
     ) == {"a": 1}
     with pytest.raises(ValueError):
         json_parsing.find_and_parse_json_block(
-            'asddf ``` json\n\n\n{"a":1}\n```{\n"b":2\n} da\nsd'
+            'asddf {"c": 4\n2} ``` json\n\n\n{"a":1}\n```{\n"b":2\n} da\nsd'
         )
     assert json_parsing.find_and_parse_json_block(
         'asd{"a":"```json\\n{a:1}\\n```"}zzz'
     ) == {"a": "```json\n{a:1}\n```"}
+    assert json_parsing.find_and_parse_json_block(
+        "asda {'A': 1} {\"B\":2} ``` {{}} ```"
+    ) == {"A": 1}
 
 
 BAZ_SCHEMA = """{

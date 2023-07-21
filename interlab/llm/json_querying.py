@@ -1,4 +1,5 @@
 import json
+import re
 from typing import TypeVar
 
 import pydantic
@@ -135,8 +136,13 @@ def query_for_json(
     # TODO(visualization): allow some richer structure of the prompt and its parameters,
     #   preserve and log this structure of the prompt into the context formatting?
     prompt = str(prompt)
-    if _FORMAT_VAR not in prompt:
-        prompt += f"\n\n\n{'{'+_FORMAT_VAR+'}'}"
+    fmt_count = len(re.findall(f'{"{"}{_FORMAT_VAR}{"}"}', prompt))
+    if fmt_count > 1:
+        raise ValueError(
+            f'Multiple instances of {"{"}{_FORMAT_VAR}{"}"} found in prompt'
+        )
+    if fmt_count == 0:
+        prompt += f'\n\n\n{"{"}{_FORMAT_VAR}{"}"}'
 
     deliberation = _FORMAT_PROMPT_DELIBERATE if with_cot else ""
 
@@ -151,7 +157,7 @@ def query_for_json(
     if with_example:
         format_prompt += _FORMAT_PROMPT_EXAMPLE.format(example=with_example)
 
-    prompt_with_fmt = prompt.replace("{" + _FORMAT_VAR + "}", format_prompt)
+    prompt_with_fmt = prompt.replace(f'{"{"}{_FORMAT_VAR}{"}"} ', format_prompt)
 
     with Context(f"query for JSON of type {T}", kind="query") as c:
         c.add_input("prompt", prompt_with_fmt)
