@@ -157,7 +157,7 @@ def query_for_json(
     if with_example:
         format_prompt += _FORMAT_PROMPT_EXAMPLE.format(example=with_example)
 
-    prompt_with_fmt = prompt.replace(f'{"{"}{_FORMAT_VAR}{"}"} ', format_prompt)
+    prompt_with_fmt = prompt.replace(f'{"{"}{_FORMAT_VAR}{"}"}', format_prompt)
 
     with Context(f"query for JSON of type {T}", kind="query") as c:
         c.add_input("prompt", prompt_with_fmt)
