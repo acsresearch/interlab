@@ -2,7 +2,7 @@ import random
 from typing import Any
 
 from ..context import Context
-from ..utils import pseudo_random_color, shorten_str
+from ..utils import colors, shorten_str
 from . import format
 from . import memory as memory_module
 from .event import Event
@@ -24,7 +24,7 @@ class Actor:
             self.name = f"{self.__class__.__name__}{random.randint(0, 9999):i04}"
         self.style = style if style is not None else {}
         if self.style.get("color") is None:
-            self.style["color"] = pseudo_random_color(self.name)
+            self.style["color"] = str(colors.HTMLColor.random_color(self.name))
 
         # TODO: This is a bit hacky before Ada makes color variations in the UI
         self.style["fg_color"] = f'{self.style["color"]}'
