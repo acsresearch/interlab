@@ -26,8 +26,9 @@ class _SubFmtString:
         if isinstance(self.value, FmtString):
             inner = self.value.into_html(level + 1)
         else:
+            assert isinstance(self.value, str)
             inner = _esc(self.value)
-        # TODO: Add color gradient (fg and bg) acc to level
+        # TODO: Add color shade (fg and/or bg) according to level
         return f'<span style="color: {_esc(color)}" data-field-name="{_esc(self.field_name)}" class="FmtString__sub">{inner}</span>'
 
 
@@ -81,7 +82,7 @@ class FmtString:
 
     def into_html(self, level=0) -> str:
         ps = [p if isinstance(p, str) else p.into_html(level) for p in self.parts]
-        return f'<span class="FmtString__span">{"".join(ps)}</span>'
+        return f'<span class="FmtString__span" style="white-space: pre-wrap;">{"".join(ps)}</span>'
 
     def __log__(self):
         return {"_type": "$html", "html": self.into_html()}
@@ -148,6 +149,9 @@ class FmtString:
                         v = _formatter.convert_field(v, p.conversion)
                     if p.format_spec:
                         v = _formatter.format_field(v, p.format_spec)
+                    # In case v is not already a string or FmtString
+                    if not isinstance(v, (FmtString, str)):
+                        v = str(v)
                     res.append(
                         _SubFmtString(
                             field_name=p.field_name,
