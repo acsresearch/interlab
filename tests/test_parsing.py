@@ -27,9 +27,11 @@ def test_find_and_parse_json_block():
     assert json_parsing.find_and_parse_json_block(
         'asd```json\n{"a":1}\n```{\n"b":2\n}da\nsd'
     ) == {"a": 1}
+    # In the following, "```"-block fails, "{.*}"-block also fails,
+    # and just {"b":2} itself is not tried
     with pytest.raises(ValueError):
         json_parsing.find_and_parse_json_block(
-            'asddf ``` json\n\n\n{"a":1}\n```{\n"b":2\n} da\nsd'
+            'asddf ``` json\n\n\n{"a\':1}\n```{\n"b":2\n} da\nsd'
         )
     assert json_parsing.find_and_parse_json_block(
         'asd{"a":"```json\\n{a:1}\\n```"}zzz'
