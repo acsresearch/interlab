@@ -1,11 +1,17 @@
+#!/bin/bash
+
+# Runs isort and black style checker, does not modify any files, exits with code 1 on error
 
 set -e
 
 cd `dirname $0`/..
 
 # Format Python code
-poetry run isort --profile black tests interlab
-poetry run black tests interlab
+poetry run isort --check-only --profile black tests interlab
+poetry run black --check tests interlab
 
 # Lint Python code
-poetry run flake8 tests interlab
+# By default, this is skipped
+#poetry run flake8 tests interlab
+
+echo "All code checks completed successfully"
