@@ -1,39 +1,41 @@
 from __future__ import annotations
 
 import copy
-import re
 import string
 from dataclasses import dataclass
 from html import escape as _esc
 from typing import Any
-from functools import cache
+
 from ..utils import pseudo_random_color
 
 _formatter = string.Formatter()
 
 
 @dataclass
-class _SubFmtString:
+class _SubFormatStr:
     field_name: str
     field_format_spec: str
-    value: str | FmtString
+    value: str | FormatStr
     color: str | None = None
 
     def into_html(self, level: int) -> str:
         color = self.color or pseudo_random_color(
             self.field_name, saturation=0.8, value=0.5
         )
-        if isinstance(self.value, FmtString):
+        if isinstance(self.value, FormatStr):
             inner = self.value.into_html(level + 1)
         else:
             assert isinstance(self.value, str)
             inner = _esc(self.value)
         # TODO: Add color shade (fg and/or bg) according to level
-        return f'<span style="color: {_esc(color)}" data-field-name="{_esc(self.field_name)}" class="FmtString__sub">{inner}</span>'
+        return (
+            f'<span style="color: {_esc(color)}" data-field-name="{_esc(self.field_name)}" '
+            f'class="FmtString__sub">{inner}</span>'
+        )
 
 
 @dataclass
-class _FmtField:
+class _FormatStrField:
     field_name: str
     format_spec: str | None
     conversion: str | None
@@ -54,12 +56,12 @@ class _FmtField:
         return f'<span style="color: {color}" class="FmtString__field">{inner}</span>'
 
 
-class FmtString:
+class FormatStr:
     """
     A partially-formatted string that remembers the substitutions made (incl. nesting). Immutable.
     """
 
-    parts: list[str | _SubFmtString | _FmtField]
+    parts: list[str | _SubFormatStr | _FormatStrField]
     text: str
 
     def __init__(self, fstr: str | None, _parts=None, _text=None):
@@ -88,7 +90,7 @@ class FmtString:
         return {"_type": "$html", "html": self.into_html()}
 
     @classmethod
-    def _parse_fstring(cls, fstr: str) -> list[str | _SubFmtString | _FmtField]:
+    def _parse_fstring(cls, fstr: str) -> list[str | _SubFormatStr | _FormatStrField]:
         """Split a given string into"""
         res = []
         for literal_text, field_name, format_spec, conversion in _formatter.parse(fstr):
@@ -96,13 +98,13 @@ class FmtString:
                 res.append(literal_text)
             if field_name is not None:
                 if not field_name or field_name.isnumeric():
-                    raise ValueError(f"Position-based format arguments are unsupported")
+                    raise ValueError("Position-based format arguments are unsupported")
                 if "{" in format_spec:
                     raise ValueError(
                         f"Format specifiers with arguments unsupported in {cls.__name__}"
                     )
                 res.append(
-                    _FmtField(
+                    _FormatStrField(
                         field_name=field_name,
                         format_spec=format_spec,
                         conversion=conversion,
@@ -119,15 +121,15 @@ class FmtString:
         for p in self.parts:
             if isinstance(p, str):
                 res.append(p)
-            elif isinstance(p, _FmtField):
+            elif isinstance(p, _FormatStrField):
                 res.append("{" + p.field_format_spec + "}")
-            elif isinstance(p, _SubFmtString):
+            elif isinstance(p, _SubFormatStr):
                 res.append(str(p.value))
             else:
                 assert False
         return "".join(res)
 
-    def format(self, _recursive=False, _partial=True, **kwargs) -> "FmtString":
+    def format(self, _recursive=False, _partial=True, **kwargs) -> "FormatStr":
         assert _recursive is True or _recursive is False
         assert _partial is True or _partial is False
 
@@ -135,14 +137,14 @@ class FmtString:
         for p in self.parts:
             if isinstance(p, str):
                 res.append(p)
-            elif isinstance(p, _SubFmtString):
+            elif isinstance(p, _SubFormatStr):
                 p2 = copy.copy(p)
                 if _recursive:
                     p2.value = p.value.format(
                         _recursive=_recursive, _partial=_partial, **kwargs
                     )
                 res.append(p2)
-            elif isinstance(p, _FmtField):
+            elif isinstance(p, _FormatStrField):
                 if p.field_name in kwargs:
                     v = kwargs[p.field_name]
                     if p.conversion:
@@ -150,10 +152,10 @@ class FmtString:
                     if p.format_spec:
                         v = _formatter.format_field(v, p.format_spec)
                     # In case v is not already a string or FmtString
-                    if not isinstance(v, (FmtString, str)):
+                    if not isinstance(v, (FormatStr, str)):
                         v = str(v)
                     res.append(
-                        _SubFmtString(
+                        _SubFormatStr(
                             field_name=p.field_name,
                             field_format_spec=p.field_format_spec,
                             value=v,
@@ -164,14 +166,14 @@ class FmtString:
                     if not _partial:
                         raise KeyError(p.field_name)
                     res.append(p)
-        return FmtString(None, _parts=res)
+        return FormatStr(None, _parts=res)
 
     def free_params(self, _recursive=False) -> set[str]:
         """Return names of all free parameters"""
         res = set()
         for p in self.parts:
-            if isinstance(p, _FmtField):
+            if isinstance(p, _FormatStrField):
                 res.add(p.field_name)
-            if isinstance(p, _SubFmtString) and _recursive:
+            if isinstance(p, _SubFormatStr) and _recursive:
                 res.update(p.value.free_params(_recursive=_recursive))
         return res
