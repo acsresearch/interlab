@@ -1,7 +1,7 @@
 
 
 import { Context, duration, getAllChildren } from "../model/Context";
-import { CircularProgress, Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { CircularProgress, Divider, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
 import { Item } from "./Item";
@@ -18,12 +18,15 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ForwardIcon from '@mui/icons-material/Forward';
 import MenuIcon from '@mui/icons-material/Menu';
 import CircleIcon from '@mui/icons-material/Circle';
-
+import InputIcon from '@mui/icons-material/Input';
+import OutputIcon from '@mui/icons-material/Output';
 
 import { humanReadableDuration, short_repr } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { Opener, OpenerMode } from "./DataBrowser";
 import { TagChip } from "./TagChip";
+import React, { ReactNode } from "react";
+import { title } from "process";
 
 //const DEFAULT_COLORS = [grey[100], grey[200], grey[300], grey[400], grey[500]];
 const DEFAULT_COLORS = [grey[100], grey[300]];
@@ -58,85 +61,153 @@ function ContextMenu(props: { context: Context, setOpen: Opener }) {
     );
 }
 
+function ContextNodeItem(props: { icon?: React.ReactNode, title?: string, children?: React.ReactNode }) {
+
+    //<div style={{ marginLeft: 10 }}>
+    return <Stack direction="row" style={{ marginLeft: 20, marginTop: 5, marginBottom: 5, }}>
+        {props.icon}
+        <div style={{ marginLeft: 10 }}>{props.children}</div>
+    </Stack>
+    // {props.icon}
+    // {props.children}
+    //</div >
+}
+
+
 export function ContextNode(props: { context: Context, depth: number, opened: Set<string>, setOpen: Opener }) {
-    //let [open, setOpen] = useState<boolean>(props.depth < 1);
+    let themeWithBoxes = false;
 
     let c = props.context;
     let open = props.opened.has(c.uid);
-    //let depth = props.depth <= 4 ? props.depth : 4;
-    //if (props.context.meta)
-    let colorBackground = c.meta?.color_bg;
-    if (!colorBackground) {
-        colorBackground = DEFAULT_COLORS[props.depth % 2];
+    let backgroundColor = c.meta?.color_bg;
+    if (!backgroundColor && themeWithBoxes) {
+        backgroundColor = DEFAULT_COLORS[props.depth % 2];
     }
 
-    let borderColor = c.meta?.color;
-    let border = borderColor ? 5 : undefined;
-    let color = c.meta?.color_text;
+    let mainColor = c.meta?.color;
 
-    let icon;
+    // // HACK =========
+    // if (mainColor === "#ffb27f50") {
+    //     mainColor = "red";
+    // }
+
+    // if (mainColor === "#ff9a7f50") {
+    //     mainColor = "green";
+    // }
+    // // ===============
+
+
+    let icon: React.ReactNode;
+    let small = false;
+
+    let iconStyle = { paddingRight: 10, color: mainColor };
 
     if (c.state === "open") {
         icon = <span style={{ paddingRight: 10 }}><CircularProgress size="1em" /></span>
     } else if (c.state === "event") {
-        icon = <CircleIcon style={{ paddingRight: 10 }} />
+        icon = <CircleIcon style={iconStyle} />
     } else if (c.state === "error") {
-        icon = <ErrorIcon style={{ paddingRight: 10 }} />
+        icon = <ErrorIcon style={iconStyle} />
     } else if (c.kind === "repeat_on_failure") {
-        icon = <ReplayIcon style={{ paddingRight: 10 }} />
+        icon = <ReplayIcon style={iconStyle} />
     } else if (c.kind === "query") {
-        icon = <QuestionMarkIcon style={{ paddingRight: 10 }} />
+        icon = <QuestionMarkIcon style={iconStyle} />
     } else if (c.kind === "action") {
-        icon = <ForwardIcon style={{ paddingRight: 10 }} />
+        icon = <ForwardIcon style={iconStyle} />
     } else if (c.kind === "observation") {
-        icon = <VisibilityIcon style={{ paddingRight: 10 }} />
+        icon = <VisibilityIcon style={iconStyle} fontSize="small" />
+        small = true;
     } else {
-        icon = <AccountTreeIcon style={{ paddingRight: 10 }} />
+        icon = <AccountTreeIcon style={iconStyle} />
     }
+
+    const borderColor = c.meta?.color_border;
+
 
     function body() {
-        return <>
-            {(c.inputs || c.result || c.error) && <Divider />}
-            {c.inputs && <p>
-                <strong>Inputs</strong><br />
-                <DataRenderer uid={c.uid + "/inputs"} data={c.inputs} opened={props.opened} setOpen={props.setOpen} />
-            </p>}
-            {c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
-                <ContextNode context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)}
-            {c.result &&
-                <p>
-                    <strong>Result</strong><br />
+        let inputs;
+
+        if (c.inputs) {
+            inputs = [];
+            for (const property in c.inputs) {
+                const value = c.inputs[property];
+                inputs.push({ property, value });
+            }
+        }
+
+        let borderLeft;
+        if (!themeWithBoxes) {
+            borderLeft = "2px " + (mainColor || "black") + " solid"
+        }
+
+        return <div style={{ borderLeft, textAlign: "left", marginLeft: "16px" }}>
+            {inputs &&
+                (
+                    inputs.map(({ property, value }, i) =>
+
+                        <ContextNodeItem key={i} icon={<InputIcon />}>
+                            <div><strong>{property}</strong></div>
+                            <DataRenderer uid={c.uid + "/inputs/" + property} data={value} opened={props.opened} setOpen={props.setOpen} />
+                        </ContextNodeItem>
+                    )
+
+                )
+            }
+            {
+                c.children && (
+
+                    c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
+                        <ContextNode context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)
+
+                )
+            }
+            {
+                c.result &&
+                <ContextNodeItem icon={<OutputIcon />}>
                     <DataRenderer uid={c.uid + "/result"} data={c.result} opened={props.opened} setOpen={props.setOpen} />
-                </p>
+                </ContextNodeItem>
             }
-            {c.error &&
-                <p>
-                    <strong>Error</strong><br />
+            {
+                c.error &&
+                <ContextNodeItem icon={<ErrorIcon />}>
                     <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" opened={props.opened} setOpen={props.setOpen} />
-                </p>
+                </ContextNodeItem>
             }
-        </>
+        </div >
     }
 
-    let short_result = c.result ? short_repr(c.result) : null;
-    const dur = duration(props.context);
-    if (dur && dur > 0) {
-        <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span>
-    }
-
-    return <Item sx={{ border, borderColor, color }} style={{ backgroundColor: colorBackground }} variant="outlined">
-
-        <div style={{
+    const header = () => {
+        let short_result = undefined; // c.result ? short_repr(c.result) : null;
+        const dur = duration(props.context);
+        if (dur && dur > 0) {
+            <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span>
+        }
+        return <div style={{ display: "flex", alignContent: "space-between" }}><div style={{
             display: 'flex',
             alignItems: 'center',
             flexWrap: 'wrap',
+            width: "100%",
         }}>
-            <IconButton onClick={() => props.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
-            {c.name} {short_result && <><ArrowRightAltIcon /> {short_result}</>} {c.kind ? " [" + c.kind + "]" : ""}
+            <IconButton size="small" onClick={() => props.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
+            <span style={{ color: mainColor, fontSize: small ? "75%" : undefined }}>{c.name}</span> {short_result && <><ArrowRightAltIcon /> {short_result}</>} {/*c.kind ? " [" + c.kind + "]" : ""*/}
             {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
-            <ContextMenu context={c} setOpen={props.setOpen} />
             {c.tags?.map((t, i) => <TagChip key={i} tag={t} />)}
         </div>
-        {open && body()}
-    </Item >
+            <ContextMenu context={c} setOpen={props.setOpen} />
+        </div>
+    }
+
+    if (themeWithBoxes) {
+        return <Item style={{ backgroundColor, paddingTop: small ? 0 : undefined, paddingBottom: small ? 0 : undefined, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
+            <>
+                {header()}
+                {open && body()}
+            </>
+        </Item >
+    } else {
+        return <div style={{ backgroundColor, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
+            {header()}
+            {open && body()}
+        </div>
+    }
 }

@@ -7,7 +7,7 @@ export type Tag = {
 export type ContextMeta = {
     color?: string,
     color_bg?: string,
-    color_text?: string,
+    color_border?: string,
 }
 
 export type Context = {
