@@ -1,6 +1,12 @@
-from dataclasses import dataclass
+import asyncio
+import os
 
-from interlab.llm.engines import AnthropicEngine, OpenAiChatEngine
+from dataclasses import dataclass
+from typing import Type
+
+import pytest
+
+from interlab.llm.engines import AnthropicEngine, OpenAiChatEngine, QueryEngine
 from interlab.utils.data import serialize_with_type
 
 
@@ -25,3 +31,24 @@ def test_serialize_engines():
         "temperature": 1.0,
         "_type": "AnthropicEngine",
     }
+
+
+@pytest.mark.parametrize("engine", [AnthropicEngine, OpenAiChatEngine])
+def test_query(engine: Type[QueryEngine]):
+    engine = engine()
+    output = engine.query("Hello", max_tokens=10)
+    assert isinstance(output, str)
+    assert output
+
+
+@pytest.mark.skipif(
+    not all(os.getenv(key) for key in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY"]),
+    reason="Requires API keys",
+)
+@pytest.mark.parametrize("engine", [AnthropicEngine, OpenAiChatEngine])
+async def test_aquery(engine: Type[QueryEngine]):
+    engine = engine()
+    output = engine.aquery("Hello", max_tokens=10)
+    await output
+    assert isinstance(output, str)
+    assert output
