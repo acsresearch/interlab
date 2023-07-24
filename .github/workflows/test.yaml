@@ -67,5 +67,8 @@ jobs:
       # so this line is super-simple. But it could be as complex as you need.
       - run: poetry run pytest
 
-      # Also run style checker
+      # Run style checker
       - run: poetry run bash scripts/check.sh
+
+      # Check if requirements*.txt are up to date
+      - run: poetry run bash scripts/requirements.sh --check

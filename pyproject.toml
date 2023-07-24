@@ -1,41 +1,52 @@
 [tool.poetry]
-name = "interlab"
-version = "0.2.0"
-description = ""
 authors = ["Tomas Gavenciak <gavento@gmail.com>"]
-readme = "README.md"
+description = ""
+name = "interlab"
 packages = [{include = "interlab"}]
+readme = "README.md"
+version = "0.2.0"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+
 addict = "^2.4.0"
 anthropic = "^0.3.0"
 backoff = "^2.2.1"
-clearml = "^1.10.3"
+dirtyjson = "^1.0.8"
 fastapi = "^0.95.2"
-jupyter = "^1.0.0"
-jupyterlab = "^4.0.0"
+jsonref = "^1.1.0"
 langchain = "^0.0.235"
 matplotlib = "^3.7.1"
-numpy = "^1.24.2"
 openai = "^0.27.4"
-pandas = "^2.0.0"
 pyserde = "^0.10.5"
 python-dotenv = "^1.0.0"
-spacy = "^3.5.2"
-textstat = "^0.7.3"
+tornado = "6.3.1"
 tqdm = "^4.65.0"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
-jsonref = "^1.1.0"
-dirtyjson = "^1.0.8"
+
+# Removed:
+# clearml
+# spacy
+# textstat
+
+[tool.poetry.group.notebooks.dependencies]
+# Packages for notebook development: Jupyter, Pandas
+# Incompatible with google colab
+ipykernel = "^6.24.0"
+ipython = "^8.14.0"
+jupyter = "^1.0"
+jupyterlab = "^4.0"
+notebook = "^7.0.0"
+numpy = "^1.25.1"
+pandas = "^2.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
+flake8 = "^6.0.0"
+isort = "^5.12.0"
 pytest = "^7.3.1"
 pytest-asyncio = "^0.21"
-isort = "^5.12.0"
-flake8 = "^6.0.0"
 
 [build-system]
-requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
