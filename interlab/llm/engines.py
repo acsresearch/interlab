@@ -167,6 +167,7 @@ class AnthropicEngine(QueryEngine):
             ), "need to provide either key param or ANTHROPIC_API_KEY env var"
         self.api_key = api_key
         self.client = anthropic.Client(api_key=self.api_key)
+        self.aclient = anthropic.AsyncAnthropic(api_key=self.api_key)
         self.model = model
         self.temperature = temperature
         LOG.info(
@@ -191,14 +192,14 @@ class AnthropicEngine(QueryEngine):
             prompt = remove_leading_spaces(group_newlines(prompt.strip()))
         inputs = self._prepare_inputs(prompt, max_tokens)
         with Context(f"Anthropic {self.model}", inputs=inputs) as c:
-            r = self.client.completion(
+            r = self.client.completions.create(
                 prompt=f"{anthropic.HUMAN_PROMPT} {prompt}{anthropic.AI_PROMPT}",
                 stop_sequences=[anthropic.HUMAN_PROMPT],
                 max_tokens_to_sample=max_tokens,
                 temperature=self.temperature,
                 model=self.model,
             )
-            d = r["completion"].strip()
+            d = r.completion.strip()
             if strip is True:
                 d = group_newlines(d.strip())
             c.set_result(d)
@@ -208,14 +209,14 @@ class AnthropicEngine(QueryEngine):
         inputs = self._prepare_inputs(prompt, max_tokens)
         with Context(f"Anthropic {self.model}", inputs=inputs) as c:
             async with _anthropic_semaphore:
-                r = await self.client.acompletion(
+                r = await self.aclient.completions.create(
                     prompt=f"{anthropic.HUMAN_PROMPT} {prompt}{anthropic.AI_PROMPT}",
                     stop_sequences=[anthropic.HUMAN_PROMPT],
                     max_tokens_to_sample=max_tokens,
                     temperature=self.temperature,
                     model=self.model,
                 )
-                d = r["completion"].strip()
+                d = r.completion.strip()
                 c.set_result(d)
                 return d
 
