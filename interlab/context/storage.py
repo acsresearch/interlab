@@ -46,12 +46,18 @@ class Storage:
     def list(self) -> List[str]:
         raise NotImplementedError
 
-    def display(self, width=1200, height=700):
+    def display(self, width="95%", height=700):
         if self._server is None:
             self.start_server()
+
         from IPython.display import IFrame, display
 
-        display(IFrame(self._server.url, width=width, height=height))
+        from interlab.ext.google_colab import detect_colab, iframe_for_port
+
+        if detect_colab():
+            display(iframe_for_port(self._server.port, width=width, height=height))
+        else:
+            display(IFrame(self._server.url, width=width, height=height))
 
     @property
     def server(self):
