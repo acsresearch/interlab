@@ -161,14 +161,12 @@ async def test_async_context():
         "children": [
             {
                 "_type": "Context",
-                "inputs": {},
                 "name": "make_queries",
                 "kind": "acall",
                 "result": "a",
             },
             {
                 "_type": "Context",
-                "inputs": {},
                 "name": "make_queries",
                 "kind": "acall",
                 "result": "a",
