@@ -163,7 +163,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     return <Grid container>
         <Grid item xs={2}>
             <IconButton onClick={refresh}><SyncIcon /></IconButton>
-            <Paper>
+            <Paper style={{ maxHeight: "calc(100vh - 40px)", overflow: 'auto' }}>
                 {roots.map((root) => <ListItem key={root.uid} root={root} selectedCtx={selectedCtx} selectRoot={selectRoot} />
                     // <ListItemButton selected={selectedCtx !== null && root.uid === selectedCtx.uid} key={root.uid} component="a" onClick={() => selectRoot(root.uid)}>
                     //     <ListItemText primary={root.uid.slice(0, 40)} primaryTypographyProps={{ fontSize: '80%' }} />
@@ -180,7 +180,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             >
                 {sortedKinds.map((kind) => <ToggleButton value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
             </Box>
-            {selectedCtx && <ContextNode context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} />}
+            {selectedCtx && <div style={{ maxHeight: "calc(100vh - 40px)", overflow: 'auto' }}><ContextNode context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} /></div>}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
         </Grid>
     </Grid >
