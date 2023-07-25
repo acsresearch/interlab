@@ -117,10 +117,12 @@ class Context:
             result = {"_type": "Context", "name": self.name, "uid": self.uid}
             if self.state != ContextState.FINISHED:
                 result["state"] = self.state.value
-            for name in ["kind", "inputs", "result", "error", "tags"]:
+            for name in ["kind", "result", "error", "tags"]:
                 value = getattr(self, name)
                 if value is not None:
                     result[name] = value
+            if self.inputs:
+                result["inputs"] = self.inputs
             if with_children and self.children:
                 result["children"] = [c.to_dict() for c in self.children]
             if not with_children and self.children:
