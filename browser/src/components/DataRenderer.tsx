@@ -73,7 +73,7 @@ export function DataRenderer(props: { data: any, uid: string, opened: Set<string
     return (<>
         {(props.hideType !== type && type) && <span>{type}</span>}
         {isLong && <Button onClick={() => props.setOpen(props.uid, OpenerMode.Close)}>Hide items</Button>}
-        <div>
-            {children.map(({ property, value }) => <div key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} data={value} opened={props.opened} setOpen={props.setOpen} /></div>)}
-        </div></>);
+        <ul style={{ paddingTop: 0, paddingBottom: 0, margin: 0, paddingLeft: 25 }}>
+            {children.map(({ property, value }) => <li style={{ padding: 0, margin: 0 }} key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} data={value} opened={props.opened} setOpen={props.setOpen} /></li>)}
+        </ul></>);
 }
