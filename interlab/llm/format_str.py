@@ -66,8 +66,8 @@ class FormatStr:
     A partially-formatted string that remembers the substitutions made (incl. nesting). Immutable.
     """
 
-    _parts: list[str | _SubFormatStr | _FormatStrField]
-    _text: str
+    _parts: tuple[str | _SubFormatStr | _FormatStrField]
+    _text: str | None
 
     def __init__(self, fstr: str | None, _parts=None, _text=None):
         if _parts is not None:
