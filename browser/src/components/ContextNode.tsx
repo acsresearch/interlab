@@ -23,7 +23,7 @@ import OutputIcon from '@mui/icons-material/Output';
 
 import { humanReadableDuration, short_repr } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
-import { Opener, OpenerMode } from "./DataBrowser";
+import { BrowserConfig, Opener, OpenerMode } from "./DataBrowser";
 import { TagChip } from "./TagChip";
 import React, { ReactNode } from "react";
 import { title } from "process";
@@ -74,8 +74,8 @@ function ContextNodeItem(props: { icon?: React.ReactNode, title?: string, childr
 }
 
 
-export function ContextNode(props: { context: Context, depth: number, opened: Set<string>, setOpen: Opener }) {
-    let themeWithBoxes = false;
+export function ContextNode(props: { config: BrowserConfig, context: Context, depth: number, opened: Set<string>, setOpen: Opener }) {
+    const themeWithBoxes = props.config.themeWithBoxes;
 
     let c = props.context;
     let open = props.opened.has(c.uid);
@@ -157,7 +157,7 @@ export function ContextNode(props: { context: Context, depth: number, opened: Se
                 c.children && (
 
                     c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
-                        <ContextNode context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)
+                        <ContextNode config={props.config} context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)
 
                 )
             }

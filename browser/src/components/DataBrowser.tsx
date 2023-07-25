@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
+import { Box, CircularProgress, Grid, IconButton, ListItemButton, ListItemText, Paper, Switch } from "@mui/material";
 import { Context, gatherKinds, getContextAge } from "../model/Context";
 import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";
@@ -18,6 +18,12 @@ import { humanReadableDuration } from "../common/utils";
 //     name: string,
 //     uuid: string,
 // }
+
+
+export type BrowserConfig = {
+    themeWithBoxes: boolean
+}
+
 
 export enum OpenerMode {
     Toggle,
@@ -57,11 +63,14 @@ function ListItem(props: { root: Context, selectedCtx: Context | null, selectRoo
     )
 }
 
+
 export function DataBrowser(props: { addInfo: AddInfo }) {
+    const [config, setConfig] = useState<BrowserConfig>({ themeWithBoxes: false });
     const [roots, setRoots] = useState<Context[]>([]);
     const [selectedCtx, setSelectedCtx] = useState<Context | null>(null);
     let [opened, setOpened] = useState<Set<string>>(new Set());
     const [kinds, setKinds] = useState<Set<string>>(new Set());
+
 
     function refresh() {
         callGuard(async () => {
@@ -187,9 +196,13 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                 justifyContent="flex-start"
                 alignItems="flex-start"
             >
+                <Switch
+                    checked={config.themeWithBoxes}
+                    onChange={(e) => setConfig({ ...config, themeWithBoxes: e.target.checked })}
+                />
                 {sortedKinds.map((kind) => <ToggleButton value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
             </Box>
-            {selectedCtx && <div style={{ maxHeight: "calc(100vh - 70px)", overflow: 'auto' }}><ContextNode context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} /></div>}
+            {selectedCtx && <div style={{ maxHeight: "calc(100vh - 70px)", overflow: 'auto' }}><ContextNode config={config} context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} /></div>}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
         </div>
     </div >
