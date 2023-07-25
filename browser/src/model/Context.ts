@@ -50,6 +50,17 @@ export function duration(ctx: Context): number | null {
     }
 }
 
+
+export function getContextAge(ctx: Context): number | null {
+    if (ctx.end_time) {
+        const start = new Date(ctx.end_time);
+        return Date.now() - start.getTime();
+    } else {
+        return null;
+    }
+}
+
+
 export function getAllChildren(ctx: Context): string[] {
     const result: string[] = [];
     function _crawl(ctx: Context) {

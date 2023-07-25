@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Grid, IconButton, ListItemButton, ListItemText, Paper } from "@mui/material";
-import { Context, gatherKinds } from "../model/Context";
+import { Context, gatherKinds, getContextAge } from "../model/Context";
 import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -12,6 +12,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorIcon from '@mui/icons-material/Error';
 import { TagChip } from "./TagChip";
+import { humanReadableDuration } from "../common/utils";
 
 // type Root = {
 //     name: string,
@@ -29,7 +30,13 @@ export type Opener = (keys: string | string[], mode: OpenerMode) => void
 
 function ListItem(props: { root: Context, selectedCtx: Context | null, selectRoot: (uid: string) => void }) {
     const { root, selectedCtx, selectRoot } = props;
-    const primary = root.uid.slice(0, 40);
+    let primary = <>{root.uid.slice(0, 40)}</>;
+
+    const age = getContextAge(root);
+    if (age) {
+        primary = <>{primary} <span style={{ color: "gray" }}>{humanReadableDuration(age)} old</span></>;
+    }
+
     let icon;
     let color;
 
@@ -83,11 +90,13 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             final_roots.sort()
 
             final_roots.sort((a, b) => {
-                if (a.uid < b.uid) {
-                    return -1;
-                }
-                if (a.uid > b.uid) {
-                    return 1;
+                if (a.start_time && b.start_time) {
+                    if (a.start_time < b.start_time) {
+                        return 1;
+                    }
+                    if (a.start_time > b.start_time) {
+                        return -1;
+                    }
                 }
                 return 0;
             });
@@ -160,8 +169,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { refresh() }, []);
 
-    return <Grid container>
-        <Grid item xs={2}>
+    return <div>
+        <div style={{ width: 360, float: "left" }}>
             <IconButton onClick={refresh}><SyncIcon /></IconButton>
             <Paper style={{ maxHeight: "calc(100vh - 40px)", overflow: 'auto' }}>
                 {roots.map((root) => <ListItem key={root.uid} root={root} selectedCtx={selectedCtx} selectRoot={selectRoot} />
@@ -170,8 +179,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                     // </ListItemButton>
                 )}
             </Paper>
-        </Grid>
-        <Grid item xs={9}>
+        </div>
+        <div style={{ float: "left", width: "calc(100% - 365px)", overflow: 'auto' }}>
             <Box
                 m={1} //margin
                 display="flex"
@@ -180,8 +189,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             >
                 {sortedKinds.map((kind) => <ToggleButton value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
             </Box>
-            {selectedCtx && <div style={{ maxHeight: "calc(100vh - 40px)", overflow: 'auto' }}><ContextNode context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} /></div>}
+            {selectedCtx && <div style={{ maxHeight: "calc(100vh - 70px)", overflow: 'auto' }}><ContextNode context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} /></div>}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
-        </Grid>
-    </Grid >
+        </div>
+    </div >
 }
