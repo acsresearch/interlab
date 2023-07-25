@@ -34,8 +34,8 @@ class _SubFormatStr:
             inner = _esc(self.value)
 
         return (
-            f'<span style="background: {_esc(str(color))}" data-field-name="{_esc(self.field_name)}" '
-            f'class="FmtString__sub">{inner}</span>'
+            f'<span style="background: {_esc(str(color))}; padding-top: 1px; padding-bottom: 1px;" '
+            f'data-field-name="{_esc(self.field_name)}" class="FmtString__sub">{inner}</span>'
         )
 
 
