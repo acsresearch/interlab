@@ -4,7 +4,7 @@ import copy
 import string
 from dataclasses import dataclass
 from html import escape as _esc
-from typing import Any
+from typing import Any, Iterable
 
 from ..utils import pseudo_random_color
 
@@ -61,20 +61,20 @@ class FormatStr:
     A partially-formatted string that remembers the substitutions made (incl. nesting). Immutable.
     """
 
-    parts: list[str | _SubFormatStr | _FormatStrField]
-    text: str
+    _parts: list[str | _SubFormatStr | _FormatStrField]
+    _text: str
 
     def __init__(self, fstr: str | None, _parts=None, _text=None):
         if _parts is not None:
             assert fstr is None
-            self.parts = tuple(_parts)
-            self.text = _text
-            if self.text is None:
-                self.text = self._gen_text()
+            self._parts = tuple(_parts)
+            self._text = _text
+            if self._text is None:
+                self._text = self._gen_text()
         else:
             assert fstr is not None
-            self.parts = tuple(self._parse_fstring(fstr))
-            self.text = fstr
+            self._parts = tuple(self._parse_fstring(fstr))
+            self._text = fstr
         self._initialized = True
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -83,7 +83,7 @@ class FormatStr:
         return super().__setattr__(name, value)
 
     def into_html(self, level=0) -> str:
-        ps = [p if isinstance(p, str) else p.into_html(level) for p in self.parts]
+        ps = [p if isinstance(p, str) else p.into_html(level) for p in self._parts]
         return f'<span class="FmtString__span" style="white-space: pre-wrap;">{"".join(ps)}</span>'
 
     def __log__(self):
@@ -113,12 +113,12 @@ class FormatStr:
         return res
 
     def __str__(self) -> str:
-        return self.text
+        return self._text
 
     def _gen_text(self) -> str:
         """Generate the underlying (partially formatted) string"""
         res = []
-        for p in self.parts:
+        for p in self._parts:
             if isinstance(p, str):
                 res.append(p)
             elif isinstance(p, _FormatStrField):
@@ -129,12 +129,39 @@ class FormatStr:
                 assert False
         return "".join(res)
 
+    def __add__(self, other: str | FormatStr) -> FormatStr:
+        parts = list(self._parts)
+        if isinstance(other, str):
+            parts.append(other)
+        elif isinstance(other, FormatStr):
+            parts.extend(other._parts)
+        else:
+            raise TypeError(
+                f"{self.__class__.__name__}.__add__() only accepts str and FormatStr, got {type(other)}"
+            )
+        return self.__class__(None, _parts=parts)
+
+    def join(self, iter: Iterable[str | FormatStr]) -> FormatStr:
+        parts = []
+        for i, s in enumerate(iter):
+            if i > 0:
+                parts.extend(self._parts)
+            if isinstance(s, str):
+                parts.append(s)
+            elif isinstance(s, FormatStr):
+                parts.extend(s._parts)
+            else:
+                raise TypeError(
+                    f"{self.__class__.__name__}.join() only accepts str and FormatStr, got {type(s)}"
+                )
+        return self.__class__(None, _parts=parts)
+
     def format(self, _recursive=False, _partial=True, **kwargs) -> "FormatStr":
         assert _recursive is True or _recursive is False
         assert _partial is True or _partial is False
 
         res = []
-        for p in self.parts:
+        for p in self._parts:
             if isinstance(p, str):
                 res.append(p)
             elif isinstance(p, _SubFormatStr):
@@ -171,7 +198,7 @@ class FormatStr:
     def free_params(self, _recursive=False) -> set[str]:
         """Return names of all free parameters"""
         res = set()
-        for p in self.parts:
+        for p in self._parts:
             if isinstance(p, _FormatStrField):
                 res.add(p.field_name)
             if isinstance(p, _SubFormatStr) and _recursive:
