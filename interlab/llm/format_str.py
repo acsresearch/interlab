@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from html import escape as _esc
 from typing import Any, Iterable
 
-from ..utils import pseudo_random_color
+from ..utils.colors import HTMLColor
 
 _formatter = string.Formatter()
 
@@ -19,17 +19,22 @@ class _SubFormatStr:
     color: str | None = None
 
     def into_html(self, level: int) -> str:
-        color = self.color or pseudo_random_color(
-            self.field_name, saturation=0.8, value=0.5
-        )
+        if self.color:
+            color = HTMLColor(self.color)
+        else:
+            color = HTMLColor.random_color(
+                self.field_name, saturation=0.8, lighness=0.5
+            )
+        color = color.with_alpha(0.2)
+
         if isinstance(self.value, FormatStr):
             inner = self.value.into_html(level + 1)
         else:
             assert isinstance(self.value, str)
             inner = _esc(self.value)
-        # TODO: Add color shade (fg and/or bg) according to level
+
         return (
-            f'<span style="color: {_esc(color)}" data-field-name="{_esc(self.field_name)}" '
+            f'<span style="background: {_esc(str(color))}" data-field-name="{_esc(self.field_name)}" '
             f'class="FmtString__sub">{inner}</span>'
         )
 
