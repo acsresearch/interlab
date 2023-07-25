@@ -1,9 +1,8 @@
-import collections
 import colorsys
 import copy
 import random
 import re
-from typing import Any, Hashable
+from typing import Any
 
 
 class HTMLColor:
@@ -63,9 +62,9 @@ class HTMLColor:
         return copy.copy(self)
 
     def _blend_lightness(self, tgt: float, rate: float) -> "HTMLColor":
-        h, l, s = colorsys.rgb_to_hls(*self.as_floats())
-        l = rate * tgt + (1 - rate) * l
-        c = self.from_floats(*colorsys.hls_to_rgb(h, l, s))
+        hue, light, sat = colorsys.rgb_to_hls(*self.as_floats())
+        light = rate * tgt + (1 - rate) * light
+        c = self.from_floats(*colorsys.hls_to_rgb(hue, light, sat))
         c.a = self.a
         return c
 
@@ -98,7 +97,8 @@ class HTMLColor:
 
         The color is primarily determined by a random hue and given saturation and lightness.
         By default, the lightness and saturation of the generated color slightly varies from the given values.
-        The returned color is guaranteed to be stable across runs for string seeds (or objects with stable __repr__ value).
+        The returned color is guaranteed to be stable across runs for string seeds
+        (or objects with stable __repr__ value).
         """
         if (seed is not None) and (not isinstance(seed, str)):
             # This can bring instability between versions of your __repr__ or Python
