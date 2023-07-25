@@ -216,7 +216,10 @@ def test_find_contexts():
     assert c.find_contexts(lambda ctx: ctx.has_tag_name("x")) == [c3, c4]
 
 
-@pytest.mark.parametrize("result", [pytest.param(None, id="None"), pytest.param("", id='""'), 0, 1, "abc", {"x": 10}])
+@pytest.mark.parametrize(
+    "result",
+    [pytest.param(None, id="None"), pytest.param("", id='""'), 0, 1, "abc", {"x": 10}],
+)
 def test_to_dict(result):
     with Context("root") as c:
         c.set_result(result)

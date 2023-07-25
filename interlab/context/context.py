@@ -119,7 +119,7 @@ class Context:
                 result["state"] = self.state.value
             for name in ["kind", "inputs", "result", "error", "tags"]:
                 value = getattr(self, name)
-                if value is not None:   # todo: why not also seriolize None?
+                if value is not None:  # todo: why not also serialize None?
                     result[name] = value
             if with_children and self.children:
                 result["children"] = [c.to_dict() for c in self.children]
