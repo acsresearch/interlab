@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.local
-          key: poetry-1.4.2
+          key: "poetry-1.5.1"
 
       # Install Poetry. You could do this manually, or there are several actions that do this.
       # `snok/install-poetry` seems to be minimal yet complete, and really just calls out to
@@ -37,7 +37,7 @@ jobs:
       # cache it.
       - uses: snok/install-poetry@v1
         with:
-          version: "1.4.2"
+          version: "1.5.1"
           virtualenvs-create: true
           virtualenvs-in-project: true
 
