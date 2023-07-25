@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from functools import partial
 
 import pytest
 
@@ -16,7 +17,8 @@ class Foo:
 FOO_SCHEMA_RE = r"```json\s*\n\s*{'type':\s*'object',\s'properties':\s{'z':"
 
 
-def test_query_for_json():
+@pytest.mark.parametrize("with_example", [False, Foo(z=False, x=33, y=["a", "b"])])
+def test_query_for_json(with_example=False):
     def eng(q):
         if "TEST_A" in q:
             return "heh {'z': \"0\"} zzz"
@@ -27,11 +29,13 @@ def test_query_for_json():
             return "{'x':3}"
         raise Exception()
 
-    assert json_querying.query_for_json(eng, Foo, "TEST_A") == Foo(z=False)
-    assert json_querying.query_for_json(
-        eng, Foo, "{absent} TEST_B {FORMAT_PROMPT} zzz"
-    ) == Foo(z=False, x=33)
+    query_for_json = partial(json_querying.query_for_json, with_example=with_example)
+
+    assert query_for_json(eng, Foo, "TEST_A") == Foo(z=False)
+    assert query_for_json(eng, Foo, "{absent} TEST_B {FORMAT_PROMPT} zzz") == Foo(
+        z=False, x=33
+    )
     with pytest.raises(ValueError):
-        json_querying.query_for_json(eng, Foo, "{FORMAT_PROMPT} TEST_A {FORMAT_PROMPT}")
-    json_querying.query_for_json(eng, Foo, "zzz {FORMAT_PROMPT}TEST_C") == Foo(x=3)
-    json_querying.query_for_json(eng, Foo, "TEST_C") == Foo(x=3)
+        query_for_json(eng, Foo, "{FORMAT_PROMPT} TEST_A {FORMAT_PROMPT}")
+    query_for_json(eng, Foo, "zzz {FORMAT_PROMPT}TEST_C") == Foo(x=3)
+    query_for_json(eng, Foo, "TEST_C") == Foo(x=3)
