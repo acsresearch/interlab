@@ -87,7 +87,7 @@ def jsonref_deref(d: jsonref.JsonRef, check_json=True) -> JSON:
     d2 = _rec(d, seen_ids=())
     d2.pop("definitions", None)
     if check_json:
-        # Check for a clean JSON tree (no JSONRefs)
+        # Check for a clean JSON tree (e.g. no JSONRefs)
         json.dumps(d2)
     return d2
 
