@@ -1,4 +1,4 @@
-import { Divider, Fab, Grid, Input, Paper, Stack, TextField } from "@mui/material";
+import { Fab, Grid, Paper, Stack, TextField } from "@mui/material";
 import { AddInfo } from "../common/info";
 import { MutableRefObject, useRef, useState } from "react";
 import SendIcon from '@mui/icons-material/Send';

@@ -1,5 +1,3 @@
-import { type } from "os";
-
 
 export function shorten_string(text: string, max_length: number = 35): string {
     if (text.length >= max_length) {

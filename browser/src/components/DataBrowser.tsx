@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid, IconButton, ListItemButton, ListItemText, Paper, Switch } from "@mui/material";
+import { Box, CircularProgress, IconButton, ListItemButton, ListItemText, Paper, Switch } from "@mui/material";
 import { Context, gatherKinds, getContextAge } from "../model/Context";
 import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";

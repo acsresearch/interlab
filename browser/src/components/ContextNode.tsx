@@ -1,7 +1,7 @@
 
 
 import { Context, duration, getAllChildren } from "../model/Context";
-import { CircularProgress, Divider, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from "@mui/material";
+import { CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
 import { Item } from "./Item";
@@ -21,12 +21,11 @@ import CircleIcon from '@mui/icons-material/Circle';
 import InputIcon from '@mui/icons-material/Input';
 import OutputIcon from '@mui/icons-material/Output';
 
-import { humanReadableDuration, short_repr } from "../common/utils";
+import { humanReadableDuration } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { BrowserConfig, Opener, OpenerMode } from "./DataBrowser";
 import { TagChip } from "./TagChip";
-import React, { ReactNode } from "react";
-import { title } from "process";
+import React from "react";
 
 //const DEFAULT_COLORS = [grey[100], grey[200], grey[300], grey[400], grey[500]];
 const DEFAULT_COLORS = [grey[100], grey[300]];
