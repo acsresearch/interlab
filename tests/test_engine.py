@@ -33,6 +33,10 @@ def test_serialize_engines():
     }
 
 
+@pytest.mark.skipif(
+    not all(os.getenv(key) for key in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY"]),
+    reason="Requires API keys",
+)
 @pytest.mark.parametrize("engine", [AnthropicEngine, OpenAiChatEngine])
 def test_query(engine: Type[QueryEngine]):
     engine = engine()
