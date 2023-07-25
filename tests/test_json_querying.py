@@ -18,7 +18,7 @@ FOO_SCHEMA_RE = r"```json\s*\n\s*{'type':\s*'object',\s'properties':\s{'z':"
 
 
 @pytest.mark.parametrize("with_example", [False, Foo(z=False, x=33, y=["a", "b"])])
-def test_query_for_json(with_example=False):
+def test_query_for_json(with_example):
     def eng(q):
         if "TEST_A" in q:
             return "heh {'z': \"0\"} zzz"
