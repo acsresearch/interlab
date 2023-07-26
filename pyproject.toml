@@ -2,7 +2,7 @@
 authors = ["Tomas Gavenciak <gavento@gmail.com>"]
 description = ""
 name = "interlab"
-packages = [{include = "interlab"}]
+packages = [{include = "interlab"}, {include = "interlab_zoo"}]
 readme = "README.md"
 version = "0.2.0"
 

@@ -3,11 +3,11 @@ from pathlib import Path
 
 import pytest
 
-import interlab
+import interlab_zoo
 
-P0 = Path(interlab.__path__[0])
+P0 = Path(interlab_zoo.__path__[0])
 MODS = [
-    "interlab." + str((p.relative_to(P0)).with_suffix("")).replace("/", ".")
+    "interlab_zoo." + str((p.relative_to(P0)).with_suffix("")).replace("/", ".")
     for p in P0.glob("**/*.py")
 ]
 

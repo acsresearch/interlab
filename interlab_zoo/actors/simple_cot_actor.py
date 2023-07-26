@@ -4,7 +4,9 @@ from interlab.interactions.actor import ActorWithMemory
 from interlab.models import query_engine, query_for_json
 
 
-class OneShotLLMActor(ActorWithMemory):
+class SimpleCoTLLMActor(ActorWithMemory):
+    """Extension of `OneShotLLMActor` that does one extra query to do a simple chain-of-thought reasoning."""
+
     def __init__(
         self,
         name: str,
@@ -20,34 +22,6 @@ class OneShotLLMActor(ActorWithMemory):
         self.initial_prompt = initial_prompt
         self.query_with_example = query_with_example
         self.query_with_cot = query_with_cot
-
-    def _act(self, prompt: str = None, *, expected_type=None) -> str:
-        if prompt is None:
-            prompt = f"As {self.name}, what is your next action?"
-        hist = self.memory.get_formatted()
-        q = f"""\
-{self.initial_prompt}\n
-# Past events\n
-{hist}\n
-# End of Past events\n
-{prompt}"""
-
-        if expected_type is str or expected_type is None:
-            return query_engine(
-                self.engine, f"{q}\n\nWrite only your reply to the prompt."
-            )
-        else:
-            return query_for_json(
-                self.engine,
-                expected_type,
-                q,
-                with_example=self.query_with_example,
-                with_cot=self.query_with_cot,
-            )
-
-
-class SimpleCoTLLMActor(OneShotLLMActor):
-    """Extension of `OneShotLLMActor` that does one extra query to do a simple chain-of-thought reasoning."""
 
     REFLECT_PROMPT = """\
 1. Summarize what you know at this point and reflect on your current situation.
