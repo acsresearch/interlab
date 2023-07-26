@@ -1,18 +1,21 @@
+import abc
 from typing import Any
 
 from ..event import Event
 from .format import FormatBase
 
 
-class MemoryBase:
+class MemoryBase(abc.ABC):
     """Base class for memory systems; formatter may be None for unformatted events"""
 
     def __init__(self, *, format: FormatBase = None):
         self.format = format
 
+    @abc.abstractmethod
     def add_event(self, event: Event):
         raise NotImplementedError()
 
+    @abc.abstractmethod
     def get_events(self, query: Any = None, limit: int = None) -> tuple[Event]:
         raise NotImplementedError()
 

@@ -34,7 +34,7 @@ class Context:
         inputs: Optional[Dict[str, Any]] = None,
         meta: Optional[Dict[str, Data]] = None,
         tags: Optional[List[str | Tag]] = None,
-        storage: Optional["Storage"] = None,
+        storage: Optional["StorageBase"] = None,
         directory=False,
         result=None,
     ):
@@ -298,4 +298,4 @@ def current_context(check: bool = True) -> Optional[Context]:
 
 
 # Solving circular dependencies
-from .storage import Storage  # noqa
+from .storage import StorageBase  # noqa

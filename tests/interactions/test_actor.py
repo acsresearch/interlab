@@ -1,11 +1,12 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
-from interlab.interactions.actor.actor import Actor, ActorWithMemory
+from interlab.interactions.actor.base import ActorBase, ActorWithMemory
 from interlab.interactions.event import Event
 
 
+@patch.multiple(ActorBase, __abstractmethods__=set())
 def test_simple_actor():
-    a1 = Actor("Anna")
+    a1 = ActorBase("Anna")
     a1._act = MagicMock()
     a1._act.return_value = "Bar!"
     o1 = a1.act("Foo?")
@@ -14,6 +15,7 @@ def test_simple_actor():
     assert a1._act.call_args.args == ("Foo?",)
 
 
+@patch.multiple(ActorWithMemory, __abstractmethods__=set())
 def test_memory_actor():
     a1 = ActorWithMemory("Barbara")
     a1._act = MagicMock()
