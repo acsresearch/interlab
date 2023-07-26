@@ -8,7 +8,7 @@ import backoff
 import openai
 
 from ..context import Context
-from ..context.console_srv import ConsoleServer
+from ..ui.console_srv import ConsoleServer
 from ..utils import LOG, shorten_str
 from ..utils.data import Data
 from ..utils.text import group_newlines, remove_leading_spaces

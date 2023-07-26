@@ -1,4 +1,7 @@
 cd `dirname $0`
-rm -r ../interlab/context/browser/*
-mv build/* ../interlab/context/browser/
-git add ../interlab/context/browser
+
+TARGET_PATH=../interlab/ui/browser
+
+rm -r ${TARGET_PATH:?}/*
+mv build/* ${TARGET_PATH}
+git add ${TARGET_PATH}

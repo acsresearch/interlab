@@ -3,9 +3,9 @@ from typing import Any
 import dirtyjson
 
 from interlab.actors import Actor, Event
-from interlab.context.console_srv import ConsoleServer
 
 from ..llm.json_parsing import into_pydantic_model
+from ..ui.console_srv import ConsoleServer
 
 
 class ConsoleActor(Actor):
