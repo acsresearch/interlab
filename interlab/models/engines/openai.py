@@ -3,15 +3,15 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
-import anthropic
 import backoff
 import openai
 
-from ..context import Context
-from ..ui.console_srv import ConsoleServer
-from ..utils import LOG, shorten_str
-from ..utils.data import Data
-from ..utils.text import group_newlines, remove_leading_spaces
+from ...context import Context
+from ...utils import LOG, shorten_str
+from ...utils.text import group_newlines, remove_leading_spaces
+from .base import QueryConf, QueryEngine
+
+_openai_semaphore = asyncio.Semaphore(12)
 
 # Time window when queries qill be retried on service or network failures
 # Note that this does not limit the time of the last query itself
@@ -21,26 +21,6 @@ BACKOFF_EXCEPTIONS = (
     openai.error.ServiceUnavailableError,
     openai.error.APIError,
 )
-
-
-class QueryEngine:
-    def query(self, prompt: str, max_tokens: Optional[int]) -> Data:
-        raise NotImplementedError()
-
-    async def aquery(self, prompt: str, max_tokens: Optional[int]) -> Data:
-        raise NotImplementedError()
-
-
-@dataclass
-class QueryConf:
-    api: str
-    model: str
-    temperature: float
-    max_tokens: int
-
-
-_openai_semaphore = asyncio.Semaphore(12)
-_anthropic_semaphore = asyncio.Semaphore(12)
 
 
 @backoff.on_exception(
@@ -150,89 +130,3 @@ class OpenAiChatEngine(QueryEngine):
                 )
             c.set_result(result)
             return result
-
-
-@dataclass
-class AnthropicEngine(QueryEngine):
-    model: str
-    temperature: float
-
-    def __init__(
-        self, api_key: str = None, model="claude-v1", temperature: float = 1.0
-    ):
-        if not api_key:
-            api_key = os.getenv("ANTHROPIC_API_KEY")
-            assert (
-                api_key
-            ), "need to provide either key param or ANTHROPIC_API_KEY env var"
-        self.api_key = api_key
-        self.client = anthropic.Client(api_key=self.api_key)
-        self.aclient = anthropic.AsyncAnthropic(api_key=self.api_key)
-        self.model = model
-        self.temperature = temperature
-        LOG.info(
-            f"Created AnthropicEngine with API_KEY={shorten_str(self.api_key, 17)}, default model={self.model}"
-        )
-
-    def _prepare_inputs(self, prompt: str, max_tokens: int):
-        conf = QueryConf(
-            api="Anthropic",
-            model=self.model,
-            temperature=self.temperature,
-            max_tokens=max_tokens,
-        )
-        inputs = {
-            "prompt": prompt,
-            "conf": conf,
-        }
-        return inputs
-
-    def query(self, prompt: str, max_tokens=1024, strip=None) -> str:
-        if strip is True:
-            prompt = remove_leading_spaces(group_newlines(prompt.strip()))
-        inputs = self._prepare_inputs(prompt, max_tokens)
-        with Context(f"Anthropic {self.model}", inputs=inputs) as c:
-            r = self.client.completions.create(
-                prompt=f"{anthropic.HUMAN_PROMPT} {prompt}{anthropic.AI_PROMPT}",
-                stop_sequences=[anthropic.HUMAN_PROMPT],
-                max_tokens_to_sample=max_tokens,
-                temperature=self.temperature,
-                model=self.model,
-            )
-            d = r.completion.strip()
-            if strip is True:
-                d = group_newlines(d.strip())
-            c.set_result(d)
-            return d
-
-    async def aquery(self, prompt: str, max_tokens=1024) -> str:
-        inputs = self._prepare_inputs(prompt, max_tokens)
-        with Context(f"Anthropic {self.model}", inputs=inputs) as c:
-            async with _anthropic_semaphore:
-                r = await self.aclient.completions.create(
-                    prompt=f"{anthropic.HUMAN_PROMPT} {prompt}{anthropic.AI_PROMPT}",
-                    stop_sequences=[anthropic.HUMAN_PROMPT],
-                    max_tokens_to_sample=max_tokens,
-                    temperature=self.temperature,
-                    model=self.model,
-                )
-                d = r.completion.strip()
-                c.set_result(d)
-                return d
-
-
-class ConsoleEngine(QueryEngine):
-    def __init__(self, name: str, port: Optional[int] = 0):
-        self.name = name
-        self.server = ConsoleServer(name, port=port)
-
-    def query(self, prompt: str, max_tokens=1024, strip=None) -> str:
-        self.server.clear()
-        self.server.add_message(prompt)
-        return self.server.receive()
-
-    def display(self, width=900, height=500):
-        return self.server.display(width, height)
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} name={self.name} url={self.server.url}"

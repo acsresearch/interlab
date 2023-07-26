@@ -1,11 +1,11 @@
 import random
 from typing import Any
 
-from ..context import Context
-from ..utils import colors, shorten_str
-from . import format
-from . import memory as memory_module
-from .event import Event
+from ...context import Context
+from ...utils import html_color, shorten_str
+from .. import memory as memory_module
+from ..event import Event
+from ..memory import format
 
 
 class Actor:
@@ -24,7 +24,7 @@ class Actor:
             self.name = f"{self.__class__.__name__}{random.randint(0, 9999):i04}"
         self.style = style if style is not None else {}
         if self.style.get("color") is None:
-            self.style["color"] = str(colors.HTMLColor.random_color(self.name))
+            self.style["color"] = str(html_color.HTMLColor.random_color(self.name))
 
         # TODO: This is a bit hacky before Ada makes color variations in the UI
         self.style["fg_color"] = f'{self.style["color"]}'
@@ -85,7 +85,7 @@ class ActorWithMemory(Actor):
     """
 
     DEFAULT_FORMAT = format.LLMTextFormat
-    DEFAULT_MEMORY = memory_module.SimpleMemory
+    DEFAULT_MEMORY = memory_module.ListMemory
 
     def __init__(self, name=None, *, memory: memory_module.MemoryBase = None, **kwargs):
         super().__init__(name, **kwargs)

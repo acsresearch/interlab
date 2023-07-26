@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from html import escape as _esc
 from typing import Any, Iterable
 
-from ..utils.colors import HTMLColor
+from ..utils.html_color import HTMLColor
 
 _formatter = string.Formatter()
 

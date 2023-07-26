@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import jsonref
 import pytest
 
-from interlab.llm import json_parsing
+from interlab.text import json_parsing, json_schema
 
 
 def test_find_and_parse_json_block():
@@ -59,10 +59,10 @@ REC_SCHEMA = """{
 
 def test_jsonref_deref():
     baz_schema = jsonref.loads(BAZ_SCHEMA)
-    assert json_parsing.jsonref_deref(baz_schema) == json.loads(BAZ_SCHEMA_DEREF)
+    assert json_schema.deref_jsonref(baz_schema) == json.loads(BAZ_SCHEMA_DEREF)
     rec_schema = jsonref.loads(REC_SCHEMA)
     with pytest.raises(ValueError):
-        json_parsing.jsonref_deref(rec_schema)
+        json_schema.deref_jsonref(rec_schema)
 
 
 @dataclass
@@ -84,8 +84,8 @@ B_SCHEMA_DEREF_FULL = """{
 
 
 def test_json_schema():
-    sch = json_parsing.json_schema(B)
+    sch = json_schema.get_json_schema(B)
     print(json.dumps(sch))
     assert sch == json.loads(B_SCHEMA_DEREF_FULL)
     with pytest.raises(TypeError):
-        json_parsing.json_schema(str)
+        json_schema.get_json_schema(str)

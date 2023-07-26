@@ -2,10 +2,10 @@ from typing import Any
 
 import dirtyjson
 
-from interlab.actors import Actor, Event
-
-from ..llm.json_parsing import into_pydantic_model
-from ..ui.console_srv import ConsoleServer
+from ...text import get_pydantic_model
+from ...ui.console_srv import ConsoleServer
+from ..event import Event
+from .actor import Actor
 
 
 class ConsoleActor(Actor):
@@ -19,7 +19,7 @@ class ConsoleActor(Actor):
     def _act(self, prompt: Any = None, expected_type=None):
         self.server.add_message(str(prompt))
         if expected_type is not None:
-            T = into_pydantic_model(expected_type)
+            T = get_pydantic_model(expected_type)
             self.server.add_message(
                 f"Format note: output is expected to be valid JSON of type {T.schema()}"
             )

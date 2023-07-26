@@ -4,7 +4,7 @@ from functools import partial
 
 import pytest
 
-from interlab.llm import json_querying
+from interlab.models.query_for_json import query_for_json
 
 
 @dataclass
@@ -29,13 +29,13 @@ def test_query_for_json(with_example):
             return "{'x':3}"
         raise Exception()
 
-    query_for_json = partial(json_querying.query_for_json, with_example=with_example)
+    query_for_json_ex = partial(query_for_json, with_example=with_example)
 
-    assert query_for_json(eng, Foo, "TEST_A") == Foo(z=False)
-    assert query_for_json(eng, Foo, "{absent} TEST_B {FORMAT_PROMPT} zzz") == Foo(
+    assert query_for_json_ex(eng, Foo, "TEST_A") == Foo(z=False)
+    assert query_for_json_ex(eng, Foo, "{absent} TEST_B {FORMAT_PROMPT} zzz") == Foo(
         z=False, x=33
     )
     with pytest.raises(ValueError):
-        query_for_json(eng, Foo, "{FORMAT_PROMPT} TEST_A {FORMAT_PROMPT}")
-    query_for_json(eng, Foo, "zzz {FORMAT_PROMPT}TEST_C") == Foo(x=3)
-    query_for_json(eng, Foo, "TEST_C") == Foo(x=3)
+        query_for_json_ex(eng, Foo, "{FORMAT_PROMPT} TEST_A {FORMAT_PROMPT}")
+    query_for_json_ex(eng, Foo, "zzz {FORMAT_PROMPT}TEST_C") == Foo(x=3)
+    query_for_json_ex(eng, Foo, "TEST_C") == Foo(x=3)

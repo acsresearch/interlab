@@ -1,7 +1,7 @@
 from typing import Any
 
-from ..llm import query_engine, query_for_json
-from .actor import ActorWithMemory
+from interlab.interactions.actor import ActorWithMemory
+from interlab.models import query_engine, query_for_json
 
 
 class OneShotLLMActor(ActorWithMemory):

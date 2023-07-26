@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from interlab.utils.data import serialize_with_type
+from interlab.context.data.data import serialize_with_type
 
 
 def test_custom_serialize():
