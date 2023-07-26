@@ -3,13 +3,14 @@
 #
 
 import numpy as np
+from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from ...event import Event
 from ..base import MemoryBase
 
 
-@dataclass
+@dataclass(config=ConfigDict(arbitrary_types_allowed=True))
 class RelevanceTextMemoryItem:
     event: Event
     text: str
