@@ -22,28 +22,37 @@ grep 'key: "\?poetry-[0-9\.]\+"\?$' "$ROOT/.github/workflows/test.yaml"
 
 # Update default (full) requirements
 echo
-echo "### Writing standard requirements.txt"
+echo "### Writing standard requirements.txt and requirements-full.txt"
 cp "$ROOT/pyproject.toml" "$ROOT/poetry.lock" .
 poetry lock --check
 poetry export -o "requirements.txt" --without-hashes --without-urls
+poetry export -o "requirements-full.txt" --with dev --with notebooks --without-hashes --without-urls
 
 # Update requirements for google colab
 echo
 echo "### Writing tweaked requirements.txt for google colab"
-# First, remove the "notebooks" group
-sed 'H;1h;$!d;x;s/\[tool.poetry.group.notebooks.dependencies\][^[]*//' -i pyproject.toml
-# google-colab specific versions
+# First, remove the "notebooks" and "dev" groups entirely from pyproject.toml
+poetry -C "$ROOT" run python <<EOF
+import toml
+with open("$TEMP/pyproject.toml") as f: c = toml.load(f)
+del c["tool"]["poetry"]["group"]["notebooks"]
+del c["tool"]["poetry"]["group"]["dev"]
+with open("$TEMP/pyproject.toml", "wt") as f: toml.dump(c, f)
+EOF
+
+# Force google-colab specific versions
 poetry add --lock "requests==2.27.1" "numpy==1.22.4" "decorator==4.4.2"
-poetry export -o "requirements-colab.txt" --without dev --without-hashes --without-urls
+poetry export -o "requirements-colab.txt" --without-hashes --without-urls
 
 echo
 if [ "$1" == "--check" ]; then
     echo "### Checking requirement files being up-to-date ..."
     diff "$ROOT/requirements.txt" ./requirements.txt
+    diff "$ROOT/requirements-full.txt" ./requirements-full.txt
     diff "$ROOT/requirements-colab.txt" ./requirements-colab.txt
 else
     echo "### Updating requirement files in $ROOT ..."
-    cp ./requirements.txt ./requirements-colab.txt "$ROOT"
+    cp ./requirements.txt ./requirements-colab.txt ./requirements-full.txt "$ROOT"
 fi
 
 echo "### Finished, cleaning up"
