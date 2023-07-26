@@ -1,10 +1,8 @@
-import colorsys
 import logging
 import random
 import re
 import string
 from datetime import datetime
-from typing import Hashable
 
 from . import blob, data, text  # noqa: F401
 
@@ -40,10 +38,3 @@ def generate_uid(name: str) -> str:
     uid = f"{datetime.now().isoformat(timespec='seconds')}-{name}-{random_part}"
     # Replace ':' to appease windows, and also both slashes just in case
     return uid.replace(":/\\", "-")
-
-
-def pseudo_random_color(seed: Hashable, saturation=0.5, value=1.0) -> str:
-    r, g, b = colorsys.hsv_to_rgb((hash(seed) % 256) / 255, saturation, value)
-    res = f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}"
-    assert len(res) == 7
-    return res

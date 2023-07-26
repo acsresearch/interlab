@@ -3,6 +3,7 @@ import re
 from typing import TypeVar
 
 import pydantic
+from fastapi.encoders import jsonable_encoder
 
 from ..context import Context, with_context
 from .engine_wrapping import query_engine
@@ -153,7 +154,7 @@ def query_for_json(
     if with_example is True:
         with_example = generate_json_example(schema, engine=example_engine)
     if with_example and not isinstance(with_example, str):
-        with_example = json.dumps(with_example)
+        with_example = json.dumps(jsonable_encoder(with_example))
     if with_example:
         format_prompt += _FORMAT_PROMPT_EXAMPLE.format(example=with_example)
 
