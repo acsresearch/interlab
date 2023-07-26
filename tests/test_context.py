@@ -212,3 +212,24 @@ def test_find_contexts():
             pass
 
     assert c.find_contexts(lambda ctx: ctx.has_tag_name("x")) == [c3, c4]
+
+
+@pytest.mark.parametrize(
+    "result",
+    [pytest.param(None, id="None"), pytest.param("", id='""'), 0, 1, "abc", {"x": 10}],
+)
+def test_to_dict(result):
+    with Context("root") as c:
+        c.set_result(result)
+    assert c.result == result
+
+    c_dict = c.to_dict()
+    for key, c_dict_val in c_dict.items():
+        if key.startswith("_"):
+            # ignore private attributes
+            continue
+        c_val = getattr(c, key)
+        if type(c_val) not in (int, float, str, bool, list, dict, type(None)):
+            # only check attributes which are json serializable
+            continue
+        assert c_dict_val == c_val
