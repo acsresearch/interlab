@@ -68,7 +68,7 @@ jobs:
       - run: poetry run pytest
 
       # Run style checker
-      - run: poetry run bash scripts/check.sh
+      - run: poetry run bash scripts/format.sh --check
 
       # Check if requirements*.txt are up to date
       - run: poetry run bash scripts/requirements.sh --check
