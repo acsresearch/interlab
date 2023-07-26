@@ -6,13 +6,9 @@ import pydantic
 from fastapi.encoders import jsonable_encoder
 
 from ..context import Context, with_context
-from .engine_wrapping import query_engine
-from .json_parsing import (
-    JSON,
-    find_and_parse_json_block,
-    into_pydantic_model,
-    json_schema,
-)
+from ..text.json_parsing import find_and_parse_json_block
+from ..text.json_schema import get_json_schema, get_pydantic_model
+from .query_engine import query_engine
 
 _GENERATE_JSON_EXAMPLE_PROMPT = """\
 Create a minimal example JSON object conforming to the following JSON schema:\n
@@ -25,7 +21,7 @@ _GENERATE_JSON_DEFAULT_ENGINE = "gpt-3.5-turbo"
 
 
 # TODO: add caching (files or at least memory)
-def generate_json_example(json_schema: JSON, engine=None, max_repeats=3) -> JSON | None:
+def generate_json_example(json_schema: dict, engine=None, max_repeats=3) -> dict | None:
     """
     Uses the given engine (or gpt-3.5-turbo by default) to generate a single example JSON for the given schema.
 
@@ -147,8 +143,8 @@ def query_for_json(
 
     deliberation = _FORMAT_PROMPT_DELIBERATE if with_cot else ""
 
-    pdT = into_pydantic_model(T)
-    schema = json_schema(pdT)
+    pdT = get_pydantic_model(T)
+    schema = get_json_schema(pdT)
     format_prompt = _FORMAT_PROMPT.format(schema=schema, deliberation=deliberation)
 
     if with_example is True:

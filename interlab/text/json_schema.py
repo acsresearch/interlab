@@ -1,51 +1,12 @@
 import dataclasses
 import json
-import re
+from typing import Any
 
-import dirtyjson
 import jsonref
 import pydantic
 
-JSON = dict | list | str | int | bool | float | None
 
-_JSON_REGEXPS = [
-    re.compile(r"```(?:json)?\s*({.*})\s*```", re.I | re.M | re.S),
-    re.compile(r"({.*})", re.I | re.M | re.S),
-]
-
-
-def find_and_parse_json_block(s: str, enforce_single=False) -> JSON:
-    """
-    Uses several heuristics to find a chunk of valid JSON in the input text.
-
-    Finds the JSON block first as "```"-delimited block, then just by matching first and last "{}".
-
-    Returns the parsed JSON on success, raises ValueError on failure.
-
-    TODO: consider only allowing "```" markers to start at the beginning of a line (after only whitespace)
-    TODO(low priority): Third fallback with adding lines in reverse from last "}" until it parses as JSON.
-    """
-    for i, r in enumerate(_JSON_REGEXPS):
-        try:
-            m = r.search(s)
-            if not m:
-                raise ValueError("No JSON fragment found")
-            if len(m.groups()) > 1 and enforce_single:
-                raise ValueError("Multiple JSON fragments found")
-            return dirtyjson.loads(m.groups()[-1])
-        except json.JSONDecodeError as e:
-            if i < len(_JSON_REGEXPS) - 1:
-                continue
-            raise ValueError(
-                "Failed to find valid JSON, candidate blocks failed parsing"
-            ) from e
-        except ValueError as e:
-            if i < len(_JSON_REGEXPS) - 1:
-                continue
-            raise e
-
-
-def into_pydantic_model(T: type) -> type:
+def get_pydantic_model(T: type) -> type:
     """
     Convert the type to pydantic BaseModel.
     """
@@ -59,7 +20,7 @@ def into_pydantic_model(T: type) -> type:
     return T
 
 
-def jsonref_deref(d: jsonref.JsonRef, check_json=True) -> JSON:
+def deref_jsonref(d: jsonref.JsonRef, check_json=True) -> Any:
     """
     Recursively replace JSONRef nested structure with normal dicts.
 
@@ -92,9 +53,9 @@ def jsonref_deref(d: jsonref.JsonRef, check_json=True) -> JSON:
     return d2
 
 
-def json_schema(T: type, strip_root=True) -> JSON:
+def get_json_schema(T: type, strip_root=True) -> Any:
     # pydantic schema
-    schema = into_pydantic_model(T).schema()
+    schema = get_pydantic_model(T).schema()
     if strip_root:
         # remove root title and description (usually misleading to LLMs in dataclasses)
         schema.pop("title", None)
@@ -103,4 +64,4 @@ def json_schema(T: type, strip_root=True) -> JSON:
     schema_ref = jsonref.replace_refs(schema)
 
     # dereference all $refs, keep the old ref when recursive types are encountered
-    return jsonref_deref(schema_ref)
+    return deref_jsonref(schema_ref)

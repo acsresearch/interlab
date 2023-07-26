@@ -4,8 +4,8 @@ from typing import Type
 
 import pytest
 
-from interlab.llm.engines import AnthropicEngine, OpenAiChatEngine, QueryEngine
-from interlab.utils.data import serialize_with_type
+from interlab.context.data.data import serialize_with_type
+from interlab.models.engines import AnthropicEngine, OpenAiChatEngine, QueryEngine
 
 
 def test_serialize_engines():

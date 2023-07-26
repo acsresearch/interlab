@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
-from interlab.actors.actor import Actor, ActorWithMemory
-from interlab.actors.event import Event
+from interlab.interactions.actor.actor import Actor, ActorWithMemory
+from interlab.interactions.event import Event
 
 
 def test_simple_actor():

@@ -1,6 +1,6 @@
 import pytest
 
-from interlab.llm.format_str import FormatStr
+from interlab.text.format_str import FormatStr
 
 
 def test_fmtstring():

@@ -1,6 +1,6 @@
 import pytest
 
-from interlab.llm.parsing import ParsingFailure, parse_tag
+from interlab.text.simple_tag_parsing import ParsingFailure, parse_tag
 
 
 def test_parse_tag():

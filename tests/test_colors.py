@@ -1,4 +1,4 @@
-from interlab.utils.colors import HTMLColor
+from interlab.utils.html_color import HTMLColor
 
 
 def test_colors():

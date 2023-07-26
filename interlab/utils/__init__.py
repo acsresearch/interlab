@@ -4,7 +4,8 @@ import re
 import string
 from datetime import datetime
 
-from . import blob, data, text  # noqa: F401
+from . import text  # noqa: F401
+from .html_color import HTMLColor  # noqa: F401
 
 LOG = logging.getLogger("interlab")
 UID_CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
