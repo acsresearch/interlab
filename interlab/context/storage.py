@@ -10,7 +10,7 @@ from .context import Context
 from .data.data import Data
 
 
-class Storage:
+class StorageBase:
     def __init__(self):
         self._lock = threading.Lock()
         self._ephemeral_contexts = {}
@@ -78,7 +78,7 @@ class Storage:
             yield from context.find_contexts(predicate)
 
 
-class FileStorage(Storage):
+class FileStorage(StorageBase):
     def __init__(self, directory: PathLike | str):
         super().__init__()
         directory = os.path.abspath(directory)

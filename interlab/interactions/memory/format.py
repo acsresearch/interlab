@@ -1,13 +1,16 @@
+import abc
 from typing import Any, Iterable
 
 from ..event import Event
 
 
-class FormatBase:
+class FormatBase(abc.ABC):
+    @abc.abstractmethod
     def format_event(self, event: Event) -> Any:
         "Format the given Event for the given Actor. To be overriden in subclasses."
         raise NotImplementedError("Use one of the subclasses")
 
+    @abc.abstractmethod
     def format_events(self, events: Iterable[Event]) -> Any:
         "Format and join the given Events for the given Actor. To be overriden in subclasses."
         raise NotImplementedError("Use one of the subclasses")

@@ -1,7 +1,7 @@
 from typing import Any
 
 from ...models import query_engine, query_for_json
-from .actor import ActorWithMemory
+from .base import ActorWithMemory
 
 
 class OneShotLLMActor(ActorWithMemory):

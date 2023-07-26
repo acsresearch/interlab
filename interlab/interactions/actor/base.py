@@ -1,3 +1,4 @@
+import abc
 import random
 from typing import Any
 
@@ -8,7 +9,7 @@ from ..event import Event
 from ..memory import format
 
 
-class Actor:
+class ActorBase(abc.ABC):
     """
     Interface for generic actor, to be used with LLMs, game theory or otherwise.
 
@@ -52,6 +53,7 @@ class Actor:
             ev = Event(origin=self.name, data=action)
         return ev
 
+    @abc.abstractmethod
     def _act(self, prompt: Any = None, **kwargs) -> Any:
         raise NotImplementedError("Implement _act in a derived actor class")
 
@@ -70,6 +72,7 @@ class Actor:
         ):
             self._observe(event)
 
+    @abc.abstractmethod
     def _observe(self, event: Event):
         raise NotImplementedError("Implement _observe in a derived actor class")
 
@@ -77,7 +80,7 @@ class Actor:
         return f"<{self.__class__.__name__} {self.name}>"
 
 
-class ActorWithMemory(Actor):
+class ActorWithMemory(ActorBase):
     """
     Actor with an instance of MemoryBase recording all observations.
 

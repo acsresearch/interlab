@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 
-from ..context.storage import Storage
+from ..context.storage import StorageBase
 from ..utils import LOG
 from .server import PATH_TO_STATIC_FILES, ServerHandle
 
@@ -48,7 +48,7 @@ def _storage_app(storage) -> FastAPI:
     return app
 
 
-def start_storage_server(*, storage: Storage, port: int = 0) -> ServerHandle:
+def start_storage_server(*, storage: StorageBase, port: int = 0) -> ServerHandle:
     handle = ServerHandle()
     handle.start(_storage_app(storage), port=port)
     LOG.info(f"Started context UI server: {handle}")
