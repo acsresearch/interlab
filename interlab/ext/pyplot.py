@@ -1,4 +1,4 @@
-from ..utils.blob import Blob
+from ..context.data.blob import Blob
 
 
 def capture_figure(file_format: str = "png", **kwargs):
