@@ -1,7 +1,6 @@
 import argparse
 
-from .server import start_server
-from .storage import FileStorage
+from interlab.context.storage import FileStorage
 
 
 def main():
@@ -13,8 +12,7 @@ def main():
     args = parser.parse_args()
 
     storage = FileStorage(args.directory)
-    server = start_server(storage=storage, port=args.port)
-    server.serve_forever()
+    storage.start_server(port=args.port)
 
 
 if __name__ == "__main__":

@@ -6,9 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 
+from ..context.storage import Storage
 from ..utils import LOG
 from .server import PATH_TO_STATIC_FILES, ServerHandle
-from .storage import Storage
 
 
 class RootsRequest(BaseModel):
