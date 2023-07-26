@@ -7,8 +7,8 @@ set -e
 cd `dirname $0`/..
 
 # Format Python code
-poetry run isort --check-only --profile black tests interlab
-poetry run black --check tests interlab
+poetry run isort --check-only --profile black tests interlab interlab_zoo
+poetry run black --check tests interlab interlab_zoo
 
 # Lint Python code
 # By default, this is skipped
