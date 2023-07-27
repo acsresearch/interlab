@@ -79,7 +79,7 @@ TOut = TypeVar("TOut")
 
 def query_for_json(
     engine: any,
-    T: type,
+    T: type[TOut],
     prompt: str,
     with_example: bool | TOut | str = False,
     with_cot: bool = False,
