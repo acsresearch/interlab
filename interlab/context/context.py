@@ -1,13 +1,16 @@
 import contextvars
 import datetime
 import inspect
+import logging
 from dataclasses import dataclass
 from enum import Enum
 from threading import Lock
 from typing import Any, Callable, Dict, List, Optional
 
-from ..utils import LOG, generate_uid, shorten_str
+from ..utils.text import generate_uid, shorten_str
 from .serialization import Data, serialize_with_type
+
+_LOG = logging.getLogger(__name__)
 
 _CONTEXT_STACK = contextvars.ContextVar("_CONTEXT_STACK", default=())
 
@@ -150,7 +153,7 @@ class Context:
                 self._depth = depth
                 self._token = _CONTEXT_STACK.set(parents + (self,))
                 self.state = ContextState.OPEN
-                LOG.debug(
+                _LOG.debug(
                     f"{self._pad}Context {self.kind} inputs={shorten_str(self.inputs, 50)}"
                 )
 
@@ -174,12 +177,12 @@ class Context:
                 # Do not call set_error here as it takes a lock
                 self.state = ContextState.ERROR
                 self.error = serialize_with_type(exc_val)
-                LOG.debug(
+                _LOG.debug(
                     f"{self._pad}-> ERR  {self.kind} error={shorten_str(exc_val, 50)}"
                 )
             else:
                 self.state = ContextState.FINISHED
-                LOG.debug(
+                _LOG.debug(
                     f"{self._pad}-> OK   {self.kind} result={shorten_str(repr(self.result), 50)}"
                 )
             self.end_time = datetime.datetime.now()

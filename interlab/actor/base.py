@@ -3,7 +3,7 @@ import random
 from typing import Any
 
 from ..context import Context
-from ..utils import html_color, shorten_str
+from ..utils import html_color, text
 from . import memory as memory_module
 from .event import Event
 from .memory import format
@@ -35,7 +35,7 @@ class ActorBase(abc.ABC):
     def act(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
         """Calls self._act to determine the action, wraps the action in Event, and wraps the call in Context."""
         if prompt:
-            name = f"{self.name} acts, prompt: {shorten_str(str(prompt))!r}"
+            name = f"{self.name} acts, prompt: {text.shorten_str(str(prompt))!r}"
             inputs = {"prompt": prompt}
         else:
             name = f"{self.name} acts"
@@ -65,7 +65,7 @@ class ActorBase(abc.ABC):
         if not isinstance(event, Event):
             event = Event(data=event, origin=origin)
         with Context(
-            f"{self.name} observes {shorten_str(str(event))!r}",
+            f"{self.name} observes {text.shorten_str(str(event))!r}",
             kind="observation",
             meta=self.style,
             inputs={"origin": event.origin, "observation": event.data},
