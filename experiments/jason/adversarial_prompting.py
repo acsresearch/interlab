@@ -207,7 +207,7 @@ def main(cfg: DictConfig):
     storage = context.FileStorage(Path.cwd())  # Directory for storing contexts (structured logs)
     logging.info(storage.directory)
     with Context(f"adversarial-prompting", storage=storage) as c:
-        r = adversarial_prompting(attacker=attacker, victim=victim, judge=judge, rounds=1)
+        r = adversarial_prompting(attacker=attacker, victim=victim, judge=judge)
         c.set_result(r)
         logging.info(f"Result: {r}")
 
