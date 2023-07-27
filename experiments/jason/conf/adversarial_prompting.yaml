@@ -26,4 +26,4 @@ hydra:
 
 defaults:
   - _self_
-  - override hydra/launcher: joblib  # joblib launches runs in parallel; comment out if undesired
+#  - override hydra/launcher: joblib  # joblib launches runs in parallel; comment out if undesired
