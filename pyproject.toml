@@ -1,6 +1,6 @@
 [tool.poetry]
 authors = ["Tomas Gavenciak <gavento@gmail.com>"]
-description = ""
+description = "A research framework for artificial agent interactions"
 name = "interlab"
 packages = [{include = "interlab"}, {include = "interlab_zoo"}]
 readme = "README.md"
