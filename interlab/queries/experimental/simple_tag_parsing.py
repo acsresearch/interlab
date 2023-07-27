@@ -1,10 +1,6 @@
 import re
 
-from ...queries import QueryFailure
-
-
-class ParsingFailure(QueryFailure):
-    pass
+from ...queries import ParsingFailure
 
 
 def parse_tag(tag: str, text: str, required=False, parse=None) -> str | None:

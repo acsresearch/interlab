@@ -10,6 +10,7 @@ from ..lang_models.query_model import query_model
 from .json_examples import generate_json_example
 from .json_parsing import find_and_parse_json_block
 from .json_schema import get_json_schema, get_pydantic_model
+from .query_failure import ParsingFailure
 
 _FORMAT_PROMPT = """\
 # Instructions to format the answer:\n
@@ -76,7 +77,7 @@ def query_for_json(
     * `model_for_examples` can specify an model to use to generate the example JSON. By default,
       `gpt-3.5-turbo` is used.
 
-    Returns a valid instance of `T` or raises `ValueError` if all retries failed to find valid JSON.
+    Returns a valid instance of `T` or raises `ParsingFailure` if all retries failed to find valid JSON.
 
     *Notes:*
 
@@ -139,6 +140,6 @@ def query_for_json(
                 if i < max_repeats - 1:
                     continue
                 # Errors on last turn get logged into context and propagated
-                raise ValueError(
+                raise ParsingFailure(
                     f"model repeatedly returned a response without a valid JSON instance of {T.__class__.__name__}"
                 ) from e
