@@ -1,5 +1,5 @@
 import { Box, CircularProgress, IconButton, ListItemButton, ListItemText, Paper, Switch } from "@mui/material";
-import { Context, gatherKinds, getContextAge } from "../model/Context";
+import { Context, gatherKindsAndTags, getContextAge } from "../model/Context";
 import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -140,7 +140,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                 return o;
             })
             const newKinds = new Set(kinds);
-            gatherKinds(ctx, newKinds);
+            gatherKindsAndTags(ctx, newKinds);
             if (newKinds.size !== kinds.size) {
                 setKinds(newKinds);
             }
@@ -200,7 +200,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                     checked={config.themeWithBoxes}
                     onChange={(e) => setConfig({ ...config, themeWithBoxes: e.target.checked })}
                 />
-                {sortedKinds.map((kind) => <ToggleButton value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
+                {sortedKinds.map((kind) => <ToggleButton sx={{ paddingTop: 0.2, paddingBottom: 0.2, marginLeft: 0.5 }} value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
             </Box>
             {selectedCtx && <div style={{ maxHeight: "calc(100vh - 70px)", overflow: 'auto' }}><ContextNode config={config} context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} /></div>}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}

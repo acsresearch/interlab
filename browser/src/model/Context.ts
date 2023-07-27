@@ -26,13 +26,22 @@ export type Context = {
     tags?: Tag[],
 }
 
-export function gatherKinds(ctx: Context, kinds: Set<string>) {
+export function gatherKindsAndTags(ctx: Context, result: Set<string>) {
     if (ctx.kind !== undefined && ctx.kind !== null) {
-        kinds.add(ctx.kind)
+        result.add(ctx.kind)
+    }
+    if (ctx.tags) {
+        for (const tag of ctx.tags) {
+            if (typeof tag === 'string') {
+                result.add(tag)
+            } else {
+                result.add(tag.name)
+            }
+        }
     }
     if (ctx.children) {
         for (const child of ctx.children) {
-            gatherKinds(child, kinds)
+            gatherKindsAndTags(child, result)
         }
     }
 }

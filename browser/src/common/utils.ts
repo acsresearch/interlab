@@ -44,6 +44,6 @@ export function humanReadableDuration(value: number) {
         return `${(value).toFixed(0)}h`
     }
     value /= 24;
-    return `${(value).toFixed(1)} days`
+    return `${(value).toFixed(0)} days`
 
 }

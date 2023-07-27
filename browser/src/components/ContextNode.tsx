@@ -118,6 +118,23 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
 
     const borderColor = c.meta?.color_border;
 
+    function isVisible(ctx: Context) {
+        if (ctx.kind) {
+            if (!props.opened.has(ctx.kind)) {
+                return false;
+            }
+        }
+        if (ctx.tags) {
+            return ctx.tags.every((tag) => {
+                if (typeof tag === 'string') {
+                    return props.opened.has(tag)
+                } else {
+                    return props.opened.has(tag.name)
+                }
+            })
+        }
+        return true;
+    }
 
     function body() {
         let inputs;
@@ -150,7 +167,7 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
             }
             {
                 c.children && (
-                    c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 5 }}>
+                    c.children?.filter(isVisible).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 5 }}>
                         <ContextNode config={props.config} context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)
                 )
             }
@@ -184,7 +201,7 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
             <IconButton size="small" onClick={() => props.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
             <span style={{ color: mainColor, fontSize: small ? "75%" : undefined }}>{c.name}</span> {short_result && <><ArrowRightAltIcon /> {short_result}</>} {/*c.kind ? " [" + c.kind + "]" : ""*/}
             {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
-            {c.tags?.map((t, i) => <TagChip key={i} tag={t} />)}
+            {c.tags?.map((t, i) => <span style={{ marginLeft: 5 }} key={i}><TagChip tag={t} /></span>)}
         </div>
             <ContextMenu context={c} setOpen={props.setOpen} />
         </div>
