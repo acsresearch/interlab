@@ -151,6 +151,15 @@ def adversarial_prompting(
         attacker.observe(f"The response of {VICTIM}: {victim_action}")
         attacker.observe(judge_action.reasoning)
 
+        # update victim memory with some observations
+        victim.observe(f"The question I was asked: {attacker_action.question}")
+        victim.observe(f"My response: {victim_action}")
+
+        # update judge memory with some observations
+        judge.observe(f"The response I was asked to judge: {victim_action}")
+        judge.observe(f"My reasoning: {judge_action.reasoning}")
+        judge.observe(f"The informativeness of the answer: {judge_action.informativeness}")
+
     # no success within allowed number of rounds
     return False
 
