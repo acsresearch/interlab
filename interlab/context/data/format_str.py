@@ -11,6 +11,17 @@ from ...utils.html_color import HTMLColor
 _formatter = string.Formatter()
 
 
+def _gen_bg_color(name: str, color: str | HTMLColor | None = None) -> HTMLColor:
+    if color is not None:
+        color = HTMLColor(color)
+    else:
+        color = HTMLColor.random_color(name, saturation=0.8, lighness=0.5)
+    if color.a is None:
+        color = color.with_alpha(0.2)
+    else:
+        color.a = min(color.a, 0x80)
+
+
 @dataclass
 class _SubFormatStr:
     field_name: str
@@ -19,14 +30,7 @@ class _SubFormatStr:
     color: str | None = None
 
     def into_html(self, level: int) -> str:
-        if self.color:
-            color = HTMLColor(self.color)
-        else:
-            color = HTMLColor.random_color(
-                self.field_name, saturation=0.8, lighness=0.5
-            )
-        color = color.with_alpha(0.2)
-
+        color = str(_gen_bg_color(self.field_name, self.color))
         if isinstance(self.value, FormatStr):
             inner = self.value.into_html(level + 1)
         else:
@@ -34,7 +38,7 @@ class _SubFormatStr:
             inner = _esc(self.value)
 
         return (
-            f'<span style="background: {_esc(str(color))}; padding-top: 1px; padding-bottom: 1px;" '
+            f'<span style="background: {_esc(color)}; padding-top: 1px; padding-bottom: 1px;" '
             f'data-field-name="{_esc(self.field_name)}" class="FmtString__sub">{inner}</span>'
         )
 
@@ -50,15 +54,20 @@ class _FormatStrField:
     def __post_init__(self):
         if self.field_format_spec is None:
             self.field_format_spec = self.field_name
+            if self.color is not None:
+                self.field_format_spec += f"#{self.color}"
             if self.conversion:
                 self.field_format_spec += f"!{self.conversion}"
             if self.format_spec:
                 self.field_format_spec += f":{self.format_spec}"
 
     def into_html(self, level: int) -> str:
-        color = _esc(self.color or "#e40000")
-        inner = _esc("{" + self.field_format_spec + "}")
-        return f'<span style="color: {color}" class="FmtString__field">{inner}</span>'
+        color = str(_gen_bg_color(self.field_name, self.color))
+        inner = "{" + self.field_format_spec + "}"
+        return (
+            f'<span style="background: {_esc(color)}; padding-top: 1px; padding-bottom: 1px; color: #e40000;" '
+            f'class="FmtString__field">{_esc(inner)}</span>'
+        )
 
 
 class FormatStr:
@@ -104,6 +113,10 @@ class FormatStr:
             if literal_text:
                 res.append(literal_text)
             if field_name is not None:
+                if "#" in field_name:
+                    field_name, color = field_name.split("#", 1)
+                else:
+                    color = None
                 if not field_name or field_name.isnumeric():
                     raise ValueError("Position-based format arguments are unsupported")
                 if "{" in format_spec:
@@ -115,6 +128,7 @@ class FormatStr:
                         field_name=field_name,
                         format_spec=format_spec,
                         conversion=conversion,
+                        color=color,
                     )
                 )
         return res
