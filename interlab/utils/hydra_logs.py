@@ -1,5 +1,6 @@
 import functools
 import logging
+from pathlib import Path
 from typing import Any
 
 import git  # installed with `pip install gitpython`
@@ -63,3 +64,40 @@ def _log_git_sha():
     diff = repo.git.diff()
     if diff:
         log.info(f"Git diff:\n{diff}")
+
+
+class SymbolicLinkCallback(Callback):
+    """
+    SymbolicLinkCallback creates a symbolic link to all '.gz' files in Hydra's output directory in the parent directory.
+    The '.gz' files are the gzipped log files created by the context and read by the server.
+    This trick allows the server (which expects a flat directory structure) to find the log files.
+    The callback runs at the end of every run.
+
+    To use it include the following in your config:
+        ```yaml
+        hydra:
+          callbacks:
+            symlink:
+              _target_: interlab.utils.logs.SymbolicLinkCallback
+        ```
+    """
+
+    def on_job_end(self, config: DictConfig, **kwargs: Any) -> None:
+        _create_symlinks()
+
+
+def _create_symlinks():
+    """
+    Create symbolic links to all '.gz' files or '.ctx' directories in the current directory inside the parent directory.
+    """
+    logger.info("Creating symbolic links to log files and directories in parent directory")
+
+    parent_dir = Path.cwd().parent
+    for extension in ["gz", "ctx"]:
+        for file_or_folder in Path.cwd().glob(f"*.{extension}"):
+            symlink = parent_dir / file_or_folder.name
+            if symlink.exists():
+                logger.warning(f"Symlink {symlink} already exists, skipping")
+                continue
+            symlink.symlink_to(file_or_folder)
+            logger.info(f"Created symlink {symlink} -> {file_or_folder}")
