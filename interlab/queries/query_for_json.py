@@ -6,6 +6,7 @@ import pydantic
 from fastapi.encoders import jsonable_encoder
 
 from ..context import Context
+from ..context.data import FormatStr
 from ..lang_models.query_model import query_model
 from .json_examples import generate_json_example
 from .json_parsing import find_and_parse_json_block
@@ -21,9 +22,11 @@ _FORMAT_PROMPT = """\
 The answer should contain exactly one markdown JSON code block delimited by "```json" and "```".
 """
 
+
 _FORMAT_PROMPT_DELIBERATE = """\
 1. Deliberate about the task at hand and write out your thoughts as free-form text containing no JSON.
 2. """
+
 
 _FORMAT_PROMPT_EXAMPLE = """\
 Here is an example JSON instance of the given schema.\n
@@ -95,16 +98,21 @@ def query_for_json(
 
     - The schema presented to LLM is reference-free; all `$ref`s from the JSON schema are resolved.
     """
-    # TODO(visualization): allow some richer structure of the prompt and its parameters,
-    #   preserve and log this structure of the prompt into the context formatting?
-    prompt = str(prompt)
-    fmt_count = len(re.findall(f'{"{"}{_FORMAT_VAR}{"}"}', prompt))
-    if fmt_count > 1:
-        raise ValueError(
-            f'Multiple instances of {"{"}{_FORMAT_VAR}{"}"} found in prompt'
-        )
-    if fmt_count == 0:
-        prompt += f'\n\n\n{"{"}{_FORMAT_VAR}{"}"}'
+    if isinstance(prompt, str):
+        fmt_count = len(re.findall(f'{"{"}{_FORMAT_VAR}{"}"}', prompt))
+        if fmt_count > 1:
+            raise ValueError(
+                f'Multiple instances of {"{"}{_FORMAT_VAR}{"}"} found in prompt'
+            )
+        if fmt_count == 0:
+            prompt = (
+                FormatStr() + prompt + FormatStr("\n\n{" + _FORMAT_VAR + "#77777726}")
+            )
+    elif isinstance(prompt, FormatStr):
+        if _FORMAT_VAR not in prompt.free_params():
+            prompt += FormatStr("\n\n{" + _FORMAT_VAR + "#77777726}")
+    else:
+        raise TypeError("query_for_json only accepts str or FormatStr as `prompt`")
 
     deliberation = _FORMAT_PROMPT_DELIBERATE if with_cot else ""
 
@@ -119,10 +127,22 @@ def query_for_json(
     if with_example:
         format_prompt += _FORMAT_PROMPT_EXAMPLE.format(example=with_example)
 
-    prompt_with_fmt = prompt.replace(f'{"{"}{_FORMAT_VAR}{"}"}', format_prompt)
+    if isinstance(prompt, str):
+        prompt_with_fmt = prompt.replace(f'{"{"}{_FORMAT_VAR}{"}"}', format_prompt)
+    else:
+        prompt_with_fmt = prompt.format(**{_FORMAT_VAR: format_prompt})
 
-    with Context(f"query for JSON of type {T}", kind="query") as c:
-        c.add_input("prompt", prompt_with_fmt)
+    with Context(
+        f"query for JSON of type {T}",
+        kind="query",
+        inputs=dict(
+            prompt=prompt,
+            with_example=with_example,
+            with_cot=with_cot,
+            max_repeats=max_repeats,
+            T=str(T),
+        ),
+    ) as c:
         for i in range(max_repeats):
             res = query_model(model, prompt_with_fmt)
             assert isinstance(res, str)

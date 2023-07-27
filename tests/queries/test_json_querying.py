@@ -4,6 +4,7 @@ from functools import partial
 
 import pytest
 
+from interlab.context.data import FormatStr
 from interlab.queries.query_for_json import query_for_json
 
 
@@ -19,7 +20,7 @@ FOO_SCHEMA_RE = r"```json\s*\n\s*{'type':\s*'object',\s'properties':\s{'z':"
 
 @pytest.mark.parametrize("with_example", [False, Foo(z=False, x=33, y=["a", "b"])])
 def test_query_for_json(with_example):
-    def eng(q):
+    def test_model(q):
         if "TEST_A" in q:
             return "heh {'z': \"0\"} zzz"
         if "TEST_B" in q:
@@ -31,11 +32,12 @@ def test_query_for_json(with_example):
 
     query_for_json_ex = partial(query_for_json, with_example=with_example)
 
-    assert query_for_json_ex(eng, Foo, "TEST_A") == Foo(z=False)
-    assert query_for_json_ex(eng, Foo, "{absent} TEST_B {FORMAT_PROMPT} zzz") == Foo(
-        z=False, x=33
-    )
+    assert query_for_json_ex(test_model, Foo, "TEST_A") == Foo(z=False)
+    assert query_for_json_ex(
+        test_model, Foo, "{absent} TEST_B {FORMAT_PROMPT} zzz"
+    ) == Foo(z=False, x=33)
     with pytest.raises(ValueError):
-        query_for_json_ex(eng, Foo, "{FORMAT_PROMPT} TEST_A {FORMAT_PROMPT}")
-    query_for_json_ex(eng, Foo, "zzz {FORMAT_PROMPT}TEST_C") == Foo(x=3)
-    query_for_json_ex(eng, Foo, "TEST_C") == Foo(x=3)
+        query_for_json_ex(test_model, Foo, "{FORMAT_PROMPT} TEST_A {FORMAT_PROMPT}")
+    query_for_json_ex(test_model, Foo, "zzz {FORMAT_PROMPT}TEST_C") == Foo(x=3)
+    query_for_json_ex(test_model, Foo, "TEST_C") == Foo(x=3)
+    query_for_json_ex(test_model, Foo, FormatStr("TEST_{c}").format(c="C")) == Foo(x=3)
