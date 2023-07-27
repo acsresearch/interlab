@@ -69,7 +69,7 @@ class FormatStr:
     _parts: tuple[str | _SubFormatStr | _FormatStrField]
     _text: str | None
 
-    def __init__(self, fstr: str | None, _parts=None, _text=None):
+    def __init__(self, fstr: str | None = None, _parts=None, _text=None):
         if _parts is not None:
             assert fstr is None
             self._parts = tuple(_parts)
@@ -77,7 +77,9 @@ class FormatStr:
             if self._text is None:
                 self._text = self._gen_text()
         else:
-            assert fstr is not None
+            assert _text is None
+            if fstr is None:
+                fstr = ""
             self._parts = tuple(self._parse_fstring(fstr))
             self._text = fstr
         self._initialized = True
