@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Type
 
 import pytest
-import pytest_asyncio
+
 from interlab.context.serialization import serialize_with_type
 from interlab.lang_models import AnthropicModel, LangModelBase, OpenAiChatModel
 
