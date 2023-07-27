@@ -1,7 +1,7 @@
 
 
 import { Context, duration, getAllChildren } from "../model/Context";
-import { CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from "@mui/material";
+import { CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
 import { Item } from "./Item";
@@ -10,16 +10,17 @@ import { DataRenderer } from "./DataRenderer";
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import ReplayIcon from '@mui/icons-material/Replay';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import ErrorIcon from '@mui/icons-material/Error';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import ForwardIcon from '@mui/icons-material/Forward';
 import MenuIcon from '@mui/icons-material/Menu';
 import CircleIcon from '@mui/icons-material/Circle';
-import InputIcon from '@mui/icons-material/Input';
-import OutputIcon from '@mui/icons-material/Output';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import GamepadIcon from '@mui/icons-material/Gamepad';
 
 import { humanReadableDuration } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
@@ -61,15 +62,10 @@ function ContextMenu(props: { context: Context, setOpen: Opener }) {
 }
 
 function ContextNodeItem(props: { icon?: React.ReactNode, title?: string, children?: React.ReactNode }) {
-
-    //<div style={{ marginLeft: 10 }}>
     return <Stack direction="row" style={{ marginLeft: 20, marginTop: 5, marginBottom: 5, }}>
         {props.icon}
         <div style={{ marginLeft: 10 }}>{props.children}</div>
     </Stack>
-    // {props.icon}
-    // {props.children}
-    //</div >
 }
 
 
@@ -85,7 +81,7 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
 
     let mainColor = c.meta?.color;
 
-    // // HACK =========
+    // HACK =========
     // if (mainColor === "#ffb27f50") {
     //     mainColor = "red";
     // }
@@ -93,7 +89,7 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
     // if (mainColor === "#ff9a7f50") {
     //     mainColor = "green";
     // }
-    // // ===============
+    // ===============
 
 
     let icon: React.ReactNode;
@@ -112,7 +108,7 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
     } else if (c.kind === "query") {
         icon = <QuestionMarkIcon style={iconStyle} />
     } else if (c.kind === "action") {
-        icon = <ForwardIcon style={iconStyle} />
+        icon = <GamepadIcon style={iconStyle} />
     } else if (c.kind === "observation") {
         icon = <VisibilityIcon style={iconStyle} fontSize="small" />
         small = true;
@@ -136,15 +132,15 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
 
         let borderLeft;
         if (!themeWithBoxes) {
-            borderLeft = "2px " + (mainColor || "black") + " solid"
+            borderLeft = "1.5px " + (mainColor || "#666") + " solid"
         }
 
-        return <div style={{ borderLeft, textAlign: "left", marginLeft: "16px" }}>
+        return <div style={{ borderLeft, textAlign: "left", marginLeft: "45px" }}>
             {inputs &&
                 (
                     inputs.map(({ property, value }, i) =>
 
-                        <ContextNodeItem key={i} icon={<InputIcon />}>
+                        <ContextNodeItem key={i} icon={<ArrowForwardIcon />}>
                             <div><strong>{property}</strong></div>
                             <DataRenderer uid={c.uid + "/inputs/" + property} data={value} opened={props.opened} setOpen={props.setOpen} />
                         </ContextNodeItem>
@@ -154,21 +150,19 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
             }
             {
                 c.children && (
-
-                    c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 15 }}>
+                    c.children?.filter((ctx) => !ctx.kind || props.opened.has(ctx.kind)).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 5 }}>
                         <ContextNode config={props.config} context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)
-
                 )
             }
             {
                 c.result &&
-                <ContextNodeItem icon={<OutputIcon />}>
+                <ContextNodeItem icon={<ArrowBackIcon />}>
                     <DataRenderer uid={c.uid + "/result"} data={c.result} opened={props.opened} setOpen={props.setOpen} />
                 </ContextNodeItem>
             }
             {
                 c.error &&
-                <ContextNodeItem icon={<ErrorIcon />}>
+                <ContextNodeItem icon={<ReportProblemIcon />}>
                     <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" opened={props.opened} setOpen={props.setOpen} />
                 </ContextNodeItem>
             }
@@ -205,8 +199,10 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
         </Item >
     } else {
         return <div style={{ backgroundColor, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
-            {header()}
-            {open && body()}
+            <Typography color="text.secondary">
+                {header()}
+                {open && body()}
+            </Typography>
         </div>
     }
 }
