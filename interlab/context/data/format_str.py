@@ -20,6 +20,7 @@ def _gen_bg_color(name: str, color: str | HTMLColor | None = None) -> HTMLColor:
         color = color.with_alpha(0.2)
     else:
         color.a = min(color.a, 0x80)
+    return color
 
 
 @dataclass
