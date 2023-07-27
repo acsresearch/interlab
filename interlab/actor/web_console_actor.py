@@ -3,7 +3,7 @@ from typing import Any
 import dirtyjson
 
 from ..queries import get_pydantic_model
-from ..ui.console_srv import ConsoleServer
+from ..ui.console_server import ConsoleServer
 from .base import ActorBase
 from .event import Event
 

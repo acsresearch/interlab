@@ -68,7 +68,7 @@ class StorageBase:
     def start_server(self, port=0):
         if self._server is not None:
             raise Exception("Server already started")
-        from ..ui.storage_srv import start_storage_server
+        from ..ui.storage_server import start_storage_server
 
         self._server = start_storage_server(storage=self, port=port)
         return self._server
