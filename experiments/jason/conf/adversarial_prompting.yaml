@@ -19,7 +19,10 @@ hydra:
 
   callbacks:
     git_logging:
-      _target_: interlab.utils.logs.LogGitHashCallback
+      _target_: interlab.utils.hydra_logs.LogGitHashCallback
+    symlink:
+      _target_: interlab.utils.hydra_logs.SymbolicLinkCallback
+
 
 defaults:
   - _self_
