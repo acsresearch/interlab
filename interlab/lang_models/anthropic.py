@@ -1,13 +1,15 @@
 import asyncio
+import logging
 import os
 from dataclasses import dataclass
 
 import anthropic
 
 from ..context import Context
-from ..utils import LOG, shorten_str
-from ..utils.text import group_newlines, remove_leading_spaces
+from ..utils.text import group_newlines, remove_leading_spaces, shorten_str
 from .base import LangModelBase, ModelConf
+
+_LOG = logging.getLogger(__name__)
 
 _anthropic_semaphore = asyncio.Semaphore(12)
 
@@ -30,7 +32,7 @@ class AnthropicModel(LangModelBase):
         self.aclient = anthropic.AsyncAnthropic(api_key=self.api_key)
         self.model = model
         self.temperature = temperature
-        LOG.info(
+        _LOG.info(
             f"Created {self.__class__.__name__} with API_KEY={shorten_str(self.api_key, 17)}, "
             f"default model={self.model}"
         )

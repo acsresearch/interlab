@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import threading
 from typing import List
@@ -8,8 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 from starlette.websockets import WebSocketDisconnect
 
-from ..utils import LOG
 from .server import PATH_TO_STATIC_FILES, ServerHandle
+
+_LOG = logging.getLogger(__name__)
 
 
 class ConsoleState:
@@ -109,7 +111,7 @@ class ConsoleServer:
         handle.start(_console_app(state), port=port)
         self.handle = handle
         self.state = state
-        LOG.info(f"Created console UI at {self.url}")
+        _LOG.info(f"Created console UI at {self.url}")
 
     @property
     def url(self):

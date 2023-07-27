@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -7,8 +8,9 @@ from pydantic import BaseModel
 from starlette.responses import FileResponse
 
 from ..context.storage import StorageBase
-from ..utils import LOG
 from .server import PATH_TO_STATIC_FILES, ServerHandle
+
+_LOG = logging.getLogger(__name__)
 
 
 class RootsRequest(BaseModel):
@@ -51,5 +53,5 @@ def _storage_app(storage) -> FastAPI:
 def start_storage_server(*, storage: StorageBase, port: int = 0) -> ServerHandle:
     handle = ServerHandle()
     handle.start(_storage_app(storage), port=port)
-    LOG.info(f"Started context UI server: {handle}")
+    _LOG.info(f"Started context UI server: {handle}")
     return handle

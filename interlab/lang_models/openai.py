@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 from dataclasses import dataclass
 from typing import Optional
@@ -7,9 +8,10 @@ import backoff
 import openai
 
 from ..context import Context
-from ..utils import LOG, shorten_str
-from ..utils.text import group_newlines, remove_leading_spaces
+from ..utils.text import group_newlines, remove_leading_spaces, shorten_str
 from .base import LangModelBase, ModelConf
+
+_LOG = logging.getLogger(__name__)
 
 _openai_semaphore = asyncio.Semaphore(12)
 
@@ -85,7 +87,7 @@ class OpenAiChatModel(LangModelBase):
             api_org = os.getenv("OPENAI_API_ORG")
         self.api_org = api_org
         self.model = model
-        LOG.info(
+        _LOG.info(
             f"Created {self.__class__.__name__} with API_KEY={shorten_str(self.api_key, 13)} and "
             f"API_ORG={shorten_str(self.api_org, 14)}, model={self.model}"
         )
