@@ -1,3 +1,5 @@
+from interlab.context.data.format_str import FormatStr
+
 from ..context import Context
 from .base import LangModelBase
 
@@ -48,10 +50,16 @@ def _prepare_model(model: any, model_kwargs: dict = None, call_async: bool = Fal
     return name, conf, call
 
 
-def query_model(model: any, prompt: str, kwargs: dict = None, with_context=True) -> str:
+def query_model(
+    model: any, prompt: str | FormatStr, kwargs: dict = None, with_context=True
+) -> str:
+    if not isinstance(prompt, (str, FormatStr)):
+        raise TypeError("query_model accepts only str and FormatStr as prompt")
     name, conf, call = _prepare_model(model, model_kwargs=kwargs, call_async=False)
     if with_context:
         with Context(name, kind="query", inputs=dict(prompt=prompt, conf=conf)) as c:
+            if isinstance(prompt, FormatStr):
+                prompt = str(prompt)
             r = call(prompt)
             assert isinstance(r, str)
             c.set_result(r)
