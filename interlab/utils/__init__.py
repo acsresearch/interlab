@@ -12,10 +12,6 @@ UID_CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
 ESCAPE_NAME_RE = re.compile("[^0-9a-zA-Z]+")
 
 
-class QueryFailure(Exception):
-    pass
-
-
 def shorten_str(s: str | None, max_len=32) -> str:
     if s is None:
         return "None"
