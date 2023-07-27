@@ -7,7 +7,7 @@ from os import PathLike
 from typing import Callable, Iterator, List, Optional, Sequence
 
 from .context import Context
-from .data.data import Data
+from .serialization import Data
 
 
 class StorageBase:

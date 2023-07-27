@@ -1,4 +1,4 @@
-from ..context.data.blob import Blob
+from ..context.data.blob import DataWithMime
 
 
 def capture_figure(file_format: str = "png", **kwargs):
@@ -13,4 +13,4 @@ def capture_figure(file_format: str = "png", **kwargs):
         mime = "image/png"
     else:
         mime = None
-    return Blob(buf.read(), mime_type=mime)
+    return DataWithMime(buf.read(), mime_type=mime)

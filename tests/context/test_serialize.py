@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from interlab.context.data.data import serialize_with_type
+from interlab.context.serialization import serialize_with_type
 
 
 def test_custom_serialize():
@@ -9,7 +9,7 @@ def test_custom_serialize():
         def __init__(self):
             self.x = "hi!"
 
-        def __log__(self):
+        def __log_to_context__(self):
             return {"attr": self.x}
 
     class MyOtherClass:
