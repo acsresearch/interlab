@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Type
 
 import pytest
-
+import pytest_asyncio
 from interlab.context.serialization import serialize_with_type
 from interlab.lang_models import AnthropicModel, LangModelBase, OpenAiChatModel
 
@@ -48,9 +48,9 @@ def test_query(model: Type[LangModelBase]):
     reason="Requires API keys",
 )
 @pytest.mark.parametrize("model", [AnthropicModel, OpenAiChatModel])
+@pytest.mark.asyncio
 async def test_aquery(model: Type[LangModelBase]):
     model = model()
-    output = model.aquery("Hello", max_tokens=10)
-    await output
+    output = await model.aquery("Hello", max_tokens=10)
     assert isinstance(output, str)
     assert output
