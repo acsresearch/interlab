@@ -1,6 +1,6 @@
 from typing import Optional
 
-from ..ui.console_srv import ConsoleServer
+from ..ui.console_server import ConsoleServer
 from .base import LangModelBase
 
 

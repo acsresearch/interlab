@@ -4,7 +4,7 @@ import json
 import pytest
 import websockets
 
-from interlab.ui.console_srv import ConsoleServer
+from interlab.ui.console_server import ConsoleServer
 
 
 @pytest.mark.asyncio

@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 from starlette.websockets import WebSocketDisconnect
 
-from .server import PATH_TO_STATIC_FILES, ServerHandle
+from .server_handle import PATH_TO_STATIC_FILES, ServerHandle
 
 _LOG = logging.getLogger(__name__)
 
