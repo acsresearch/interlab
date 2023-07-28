@@ -6,3 +6,4 @@ package-lock.json
 /.venv
 /.pytest_cache/
 /notebooks/logs/
+/dist

@@ -3,6 +3,7 @@ authors = ["Tomas Gavenciak <gavento@acsresearch.org>"]
 description = "A research framework for artificial agent interactions"
 name = "interlab"
 packages = [{include = "interlab"}, {include = "interlab_zoo"}]
+include = ["requirements*.txt", "assets/logo3-cut.webp"]
 readme = "README.md"
 version = "0.3.0"
 
