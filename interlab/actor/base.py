@@ -25,12 +25,11 @@ class ActorBase(abc.ABC):
             self.name = f"{self.__class__.__name__}{random.randint(0, 9999):i04}"
         self.style = style if style is not None else {}
         if self.style.get("color") is None:
-            self.style["color"] = str(html_color.HTMLColor.random_color(self.name))
-
-        # TODO: This is a bit hacky before Ada makes color variations in the UI
-        self.style["fg_color"] = f'{self.style["color"]}'
-        self.style["color"] = f'{self.style["color"]}50'
-        # self.style["bg_color"] = f'color-mix(30% {self.style["color"]}, white)'
+            self.style["color"] = str(
+                html_color.HTMLColor.random_color(
+                    self.name, saturation=0.5, lighness=0.3
+                )
+            )
 
     def act(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
         """Calls self._act to determine the action, wraps the action in Event, and wraps the call in Context."""
