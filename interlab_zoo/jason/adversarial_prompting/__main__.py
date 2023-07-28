@@ -1,14 +1,12 @@
 import json
 import logging
-import os
-from distutils.util import strtobool
 from pathlib import Path
+from time import sleep
 
 import hydra
 from fastapi.encoders import jsonable_encoder
-import langchain
-from langchain import OpenAI
-from langchain.chat_models import ChatAnthropic, ChatOpenAI
+from hydra.core.hydra_config import HydraConfig
+from hydra.utils import to_absolute_path
 from omegaconf import DictConfig, OmegaConf
 
 from interlab.actor import ActorBase, OneShotLLMActor
@@ -16,10 +14,6 @@ from interlab.context import Context, FileStorage
 from interlab.utils.hydra_logs import log_exceptions
 from interlab_zoo.jason.adversarial_prompting.utils import ATTACKER, VICTIM, JUDGE, AttackerAction, JudgeAction, \
     ATTACKER_PROMPT, JUDGE_PROMPT, GameState
-
-if strtobool(os.getenv("CACHE", "False")):
-    from langchain.cache import SQLiteCache
-    langchain.llm_cache = SQLiteCache()
 
 LOGGER = logging.getLogger(__name__)
 
@@ -95,12 +89,22 @@ def adversarial_prompting(
 @hydra.main(version_base=None, config_path="conf", config_name="main")
 @log_exceptions(LOGGER)
 def main(cfg: DictConfig):
-    if cache := langchain.llm_cache:
-        LOGGER.info(f"Using cache: {cache}.")
-        try:
-            LOGGER.info(f"Cache URL: {cache.engine.url}")  # type: ignore
-        except AttributeError:
-            pass
+    hydra_cfg = HydraConfig.get()
+    if job_num := hydra_cfg.job.num:
+        LOGGER.info(f"Job number: {job_num}")
+        sleep_time = 1. * (job_num - 1)  # job numbers start at 1
+        LOGGER.info(f"Sleeping for {sleep_time} seconds.")
+        sleep(sleep_time)
+
+    import langchain
+    from langchain import OpenAI
+    from langchain.chat_models import ChatAnthropic, ChatOpenAI
+
+    if cfg.cache:
+        from langchain.cache import SQLiteCache
+        langchain.llm_cache = SQLiteCache(to_absolute_path(".langchain.db"))
+        LOGGER.warning(f"Using cache: {langchain.llm_cache}.")
+        LOGGER.info(f"Cache URL: {langchain.llm_cache.engine.url}")
     else:
         LOGGER.info("Not using cache.")
 
