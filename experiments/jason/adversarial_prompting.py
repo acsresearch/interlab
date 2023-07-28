@@ -9,8 +9,8 @@ from langchain.chat_models import ChatAnthropic, ChatOpenAI
 from omegaconf import DictConfig, OmegaConf
 from pydantic.dataclasses import dataclass, Field
 
-from interlab import actors, context
-from interlab.context import Context
+from interlab.actor import ActorBase, OneShotLLMActor
+from interlab.context import Context, FileStorage
 from interlab.utils.hydra_logs import log_exceptions
 
 LOGGER = logging.getLogger(__name__)
@@ -104,9 +104,9 @@ class GameState:
 
 
 def adversarial_prompting(
-        attacker: actors.Actor,
-        victim: actors.Actor,
-        judge: actors.Actor,
+        attacker: ActorBase,
+        victim: ActorBase,
+        judge: ActorBase,
         rounds: int = 10,
 ) -> list[GameState]:
     game_states = []
@@ -185,24 +185,24 @@ def main(cfg: DictConfig):
             return OpenAI(model_name=model, **cfg)
         raise ValueError(f"Unknown model name: {model}")
 
-    attacker = actors.llm_actors.OneShotLLMActor(
+    attacker = OneShotLLMActor(
         name=ATTACKER,
-        engine=get_engine(cfg.attacker),
+        model=get_engine(cfg.attacker),
         initial_prompt=ATTACKER_PROMPT,
     )
 
-    victim = actors.llm_actors.OneShotLLMActor(
+    victim = OneShotLLMActor(
         name=VICTIM,
-        engine=get_engine(cfg.victim),
+        model=get_engine(cfg.victim),
         initial_prompt="",
     )
 
-    judge = actors.llm_actors.OneShotLLMActor(
+    judge = OneShotLLMActor(
         name=JUDGE,
-        engine=get_engine(cfg.judge),
+        model=get_engine(cfg.judge),
         initial_prompt=JUDGE_PROMPT,
     )
-    storage = context.FileStorage(Path.cwd())  # Directory for storing contexts (structured logs)
+    storage = FileStorage(Path.cwd())  # Directory for storing contexts (structured logs)
     logging.info(storage.directory)
     with Context(f"adversarial-prompting", storage=storage) as c:
         game_states = adversarial_prompting(attacker=attacker, victim=victim, judge=judge, rounds=cfg.rounds)
