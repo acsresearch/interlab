@@ -4,17 +4,19 @@
 
 Welcome to InterLab, a research-focused toolkit created to facilitate study and experimentation in the realm of agent interactions, particularly those based on Language Learning Models (LLMs). Our primary objective is to simplify the process of crafting, deploying, and inspecting complex and structured queries within the context of agent interactions, while also providing robust support for interaction logging, UI and visualization. While we maintain a broad scope and plan to include game theoretic agents and a variety of scenarios, our main emphasis lies in the sphere of LLM interactions.
 
+InterLab is developed at the [Alignment of Complex Systems Research Group](https://acsresearch.org/).
+
 ## Overview
 
 InterLab is composed of several core modules, each providing distinct functionalities:
 
-* `context` offers comprehensive structured logging of nested `Context`s, storage for contexts, and custom visualization of content such as Images, generic HTML, and f-string field substitutions.
-* `actor` provides `ActorBase` and a few basic agents, including a generic LLM agent and a web console for playing as an actor, along with an actor memory system.
-* `lang_models` includes several LLM APIs, a web-console "LLM" for debugging, and a generic `query_model` wrapper to unify the APIs of our models, LangChain models (both chat and non-chat), and general callable functions while maintaining context logging.
-* `queries` presents powerful helpers for advanced queries to the models: querying the model for structured data for any dataclass or Pydantic model, generating schemas optionally, generating examples, and providing robust and comprehensive response parsing for JSON (with repeat and validation options).
-* `ui` contains a server for context browser and web consoles (actor and model), along with pre-compiled web apps.
-* `utils` encompasses several text utilities, color handling, and other helpers.
-* `ext` includes extensions and integrations with other systems, currently Matplotlib and Google Colab.
+- `context` offers comprehensive structured logging of nested `Context`s, storage for contexts, and custom visualization of content such as Images, generic HTML, and f-string field substitutions.
+- `actor` provides `ActorBase` and a few basic agents, including a generic LLM agent and a web console for playing as an actor, along with an actor memory system.
+- `lang_models` includes several LLM APIs, a web-console "LLM" for debugging, and a generic `query_model` wrapper to unify the APIs of our models, LangChain models (both chat and non-chat), and general callable functions while maintaining context logging.
+- `queries` presents powerful helpers for advanced queries to the models: querying the model for structured data for any dataclass or Pydantic model, generating schemas optionally, generating examples, and providing robust and comprehensive response parsing for JSON (with repeat and validation options).
+- `ui` contains a server for context browser and web consoles (actor and model), along with pre-compiled web apps.
+- `utils` encompasses several text utilities, color handling, and other helpers.
+- `ext` includes extensions and integrations with other systems, currently Matplotlib and Google Colab.
 
 ### InterLab Zoo
 
@@ -67,3 +69,52 @@ You can then import these variables from the `.env` file into a Jupyter notebook
 import dotenv
 dotenv.load_dotenv()
 ```
+
+## Roadmap
+
+A rough overview where the project is heading in our minds, incomplete and subject to prioritization based on experimentor's needs. Contact us if you want to get involved in developing interlab with us.
+
+### Documentation
+
+- A more detailed overview of what is already in interlab (although we already have demo notebooks that demonstrate most of it)
+- Generated API docs, add improved documentation of functions and classes.
+
+### Games, scenarios, game theory
+
+- More agent implementations
+  - Deliberative agent, internal debate agent, constitutional agent, ...
+- Memory systems
+  - Recall-based memory system
+- A stateful scenario (game) system, storing state of games in progress (likely as a pickle)
+  - Support for counterfactual development of situation from a checkpoint
+- Integration with Gymnasium environments (former OpenAI Gym), interactive OpenAI evals, and others (may need mostly wrappers)
+
+### Language models
+
+- Better support for token counting and limiting tokens of LLMs
+- Support for retrieving activation vectors from LLMs (e.g. HuggingFace ones), then support for influence vectors
+
+### More integrations
+
+- Experiment tracking and management (e.g. Hydra)
+- Visualizations, e.g. Plotly charts
+
+### Public release
+
+ACS is likely to release the core of InterLab publicly as open-source (though note this is not a given yet). This mostly needs a few use-cases, some of the docs, and some internal capacity for presenting this in the AI alignment researcher community (writing a blog-post etc). The goal is primarily alignnment community and related academia, and not general open-source/ML publicity.
+
+### Research LLM sensitivity to framings and formulations in the framework
+
+Listing a few directly related to the framework:
+
+- How much does asking for JSON change the nature/properties of the responses (vs asking for response in natural language only)? 
+  - If it tunrs it does, we can do all JSON requests in two steps: first answer in free-form text, then use a second independent request to just extract the response information into the JSON.
+  - The request for free-form text reply needs to ask about all the fields of the expected data type. Can this question creation be automated?
+- Other sensitivity to formulations: Use an LLM to generate variants of prompts (GPT-4 can do this) and evaluate differences in outcomes.
+- Evaluate memory recall quality (for vector-embedding memory systems, or other adaptive recall), to tune the systems and be sure information is not lost in longer interactions.
+
+
+### Other ideas and directions
+
+- Active actor interactions - actors decide _when_ to act instead of being prompted for action, either in simulated or in real time.
+- Network protocol for remote agents, connection to other actor frameworks, games, or UIs.
