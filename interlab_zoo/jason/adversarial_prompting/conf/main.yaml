@@ -1,3 +1,4 @@
+cache: false # set to true for quick debugging/development
 rounds: 10
 attacker:
   model: gpt-3.5-turbo
@@ -24,6 +25,8 @@ hydra:
     symlink:
       _target_: interlab.utils.hydra_logs.SymbolicLinkCallback
 
+  launcher:
+    n_jobs: 8  # set to -1 to use all available cores
 
 defaults:
   - _self_
