@@ -45,6 +45,8 @@ class Context:
             inputs = serialize_with_type(inputs)
         if meta:
             meta = serialize_with_type(meta)
+        if result:
+            result = serialize_with_type(result)
 
         self.name = name
         self.kind = kind
