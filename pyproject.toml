@@ -5,7 +5,7 @@ name = "interlab"
 packages = [{include = "interlab"}, {include = "interlab_zoo"}]
 include = ["requirements*.txt", "assets/logo3-cut.webp"]
 readme = "README.md"
-version = "0.3.0"
+version = "0.3.1"
 
 [tool.poetry.dependencies]
 python = "^3.10"
