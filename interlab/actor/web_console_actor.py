@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import dirtyjson
@@ -6,7 +7,6 @@ from ..queries import get_pydantic_model
 from ..ui.console_server import ConsoleServer
 from .base import ActorBase
 from .event import Event
-import json
 
 
 class WebConsoleActor(ActorBase):
@@ -22,7 +22,8 @@ class WebConsoleActor(ActorBase):
         if expected_type is not None:
             T = get_pydantic_model(expected_type)
             self.server.add_message(
-                f"Format note: output is expected to be valid JSON of type\nSCHEMA\n```json\n{json.dumps(T.schema())}\n```\nEND_OF_SCHEMA"
+                "Format note: output is expected to be valid JSON of type\nSCHEMA\n"
+                f"```json\n{json.dumps(T.schema())}\n```\nEND_OF_SCHEMA"
             )
         # TODO: Better support for JSON parsing etc
         r = self.server.receive()
