@@ -1,9 +1,12 @@
 import json
 import logging
+import os
+from distutils.util import strtobool
 from pathlib import Path
 
 import hydra
 from fastapi.encoders import jsonable_encoder
+import langchain
 from langchain import OpenAI
 from langchain.chat_models import ChatAnthropic, ChatOpenAI
 from omegaconf import DictConfig, OmegaConf
@@ -13,6 +16,10 @@ from interlab.context import Context, FileStorage
 from interlab.utils.hydra_logs import log_exceptions
 from interlab_zoo.jason.adversarial_prompting.utils import ATTACKER, VICTIM, JUDGE, AttackerAction, JudgeAction, \
     ATTACKER_PROMPT, JUDGE_PROMPT, GameState
+
+if strtobool(os.getenv("CACHE", "False")):
+    from langchain.cache import SQLiteCache
+    langchain.llm_cache = SQLiteCache()
 
 LOGGER = logging.getLogger(__name__)
 
@@ -85,9 +92,18 @@ def adversarial_prompting(
     return game_states
 
 
-@hydra.main(config_path="conf", config_name="main")
+@hydra.main(version_base=None, config_path="conf", config_name="main")
 @log_exceptions(LOGGER)
 def main(cfg: DictConfig):
+    if cache := langchain.llm_cache:
+        LOGGER.info(f"Using cache: {cache}.")
+        try:
+            LOGGER.info(f"Cache URL: {cache.engine.url}")  # type: ignore
+        except AttributeError:
+            pass
+    else:
+        LOGGER.info("Not using cache.")
+
     def get_engine(cfg: DictConfig):
         cfg = OmegaConf.to_container(cfg, resolve=True)
         model = cfg.pop("model")
