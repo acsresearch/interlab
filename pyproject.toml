@@ -1,5 +1,5 @@
 [tool.poetry]
-authors = ["Tomas Gavenciak <gavento@gmail.com>"]
+authors = ["Tomas Gavenciak <gavento@acsresearch.org>"]
 description = "A research framework for artificial agent interactions"
 name = "interlab"
 packages = [{include = "interlab"}, {include = "interlab_zoo"}]
@@ -24,14 +24,9 @@ tornado = "6.3.1"
 tqdm = "^4.65.0"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
 
-# Removed:
-# clearml
-# spacy
-# textstat
-
 [tool.poetry.group.notebooks.dependencies]
-# Packages for notebook development: Jupyter, Pandas
-# Incompatible with google colab
+# Packages for notebook development: Jupyter, Pandas, etc.
+# Note: these are incompatible with google colab
 ipykernel = "^6.24.0"
 ipython = "^8.14.0"
 jupyter = "^1.0"
