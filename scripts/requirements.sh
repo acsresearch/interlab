@@ -18,7 +18,7 @@ echo
 echo "### Running poetry version:"
 poetry --version
 echo "### Note: Github CI is using Poetry version:"
-grep 'key: "\?poetry-[0-9\.]\+"\?$' "$ROOT/.github/workflows/test.yaml"
+grep 'key: "\?poetry-[0-9\.]\+"\?$' "$ROOT/.github/workflows/ci.yaml"
 
 # Update default (full) requirements
 echo
