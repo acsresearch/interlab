@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
     tags:
-      - "v*.*.*"
   pull_request:
 
 jobs:
@@ -56,8 +55,11 @@ jobs:
         run: |
           if [[ ${{ github.event.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "release=true" >> $GITHUB_OUTPUT
-            echo "Detected version release tag"
+            echo "Detected version release tag ${{ github.event.ref }}"
           fi
+          PROJECT_VERSION=$(poetry version --short)
+          echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
+          echo "Interlab version: $PROJECT_VERSION"
 
       - name: GH release on version tag
         if: steps.check-tag.outputs.release == 'true'
