@@ -13,20 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the source
-        uses: actions/checkout@v2
-
-      # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
-      # reference the matrixe python version here.
-      - name: Setup python version
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.10"
-
-      - name: Cache poetry and entire .local
-        uses: actions/cache@v2
-        with:
-          path: ~/.local
-          key: "poetry-1.5.1"
+        uses: actions/checkout@v3
 
       # The key configuration value here is `virtualenvs-in-project: true`: this creates the
       # venv as a `.venv` in your testing directory, which allows the next step to easily
@@ -38,24 +25,16 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      # Cache your dependencies (i.e. all the stuff in your `pyproject.toml`). Note the cache
-      # key: if you're using multiple Python versions, or multiple OSes, you'd need to include
-      # them in the cache key. I'm not, so it can be simple and just depend on the poetry.lock.
-      - name: Cache dependencies
-        id: cache-deps
-        uses: actions/cache@v2
+      # If you wanted to use multiple Python versions, you'd have specify a matrix in the job and
+      # reference the matrixe python version here.
+      # Note this also caches python poetry dependencies
+      - name: Setup python version
+        uses: actions/setup-python@v4
         with:
-          path: .venv
-          key: pydeps-${{ hashFiles('**/poetry.lock') }}
+          python-version: "3.10"
+          cache: 'poetry'
 
-      # Install dependencies. `--no-root` means "install all dependencies but not the project
-      # itself", which is what you want to avoid caching _your_ code. The `if` statement
-      # ensures this only runs on a cache miss.
-      - name: Install dependencies
-        run: poetry install --no-interaction --no-root
-        if: steps.cache-deps.outputs.cache-hit != 'true'
-
-      - name: Install the package
+      - name: Install dependencies and interlab itself
         run: poetry install --no-interaction
   
       - name: Run pytest
