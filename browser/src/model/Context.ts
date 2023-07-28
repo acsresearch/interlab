@@ -7,7 +7,7 @@ export type Tag = {
 export type ContextMeta = {
     color?: string,
     color_bg?: string,
-    color_text?: string,
+    color_border?: string,
 }
 
 export type Context = {
@@ -26,13 +26,22 @@ export type Context = {
     tags?: Tag[],
 }
 
-export function gatherKinds(ctx: Context, kinds: Set<string>) {
+export function gatherKindsAndTags(ctx: Context, result: Set<string>) {
     if (ctx.kind !== undefined && ctx.kind !== null) {
-        kinds.add(ctx.kind)
+        result.add(ctx.kind)
+    }
+    if (ctx.tags) {
+        for (const tag of ctx.tags) {
+            if (typeof tag === 'string') {
+                result.add(tag)
+            } else {
+                result.add(tag.name)
+            }
+        }
     }
     if (ctx.children) {
         for (const child of ctx.children) {
-            gatherKinds(child, kinds)
+            gatherKindsAndTags(child, result)
         }
     }
 }
@@ -49,6 +58,17 @@ export function duration(ctx: Context): number | null {
         return null;
     }
 }
+
+
+export function getContextAge(ctx: Context): number | null {
+    if (ctx.end_time) {
+        const start = new Date(ctx.end_time);
+        return Date.now() - start.getTime();
+    } else {
+        return null;
+    }
+}
+
 
 export function getAllChildren(ctx: Context): string[] {
     const result: string[] = [];

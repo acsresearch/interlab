@@ -1,4 +1,4 @@
-import { Divider, Fab, Grid, Input, Paper, Stack, TextField } from "@mui/material";
+import { Button, Fab, IconButton, Paper, Stack, TextField } from "@mui/material";
 import { AddInfo } from "../common/info";
 import { MutableRefObject, useRef, useState } from "react";
 import SendIcon from '@mui/icons-material/Send';
@@ -6,15 +6,40 @@ import { useWebSocket } from "react-use-websocket/dist/lib/use-websocket";
 import { WS_SERVICE } from "../config";
 import { Item } from "./Item";
 import { flushSync } from "react-dom";
+import DynamicFormIcon from '@mui/icons-material/DynamicForm';
+import { FormDialog } from "./FormDialog";
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { RJSFSchema } from "@rjsf/utils";
 
+
+const SCHEMA_FORMAT = /\n?SCHEMA\s*```json\n(.*)```\s*END_OF_SCHEMA\n?/gs;
 
 type Message = {
     id: number,
     text: string,
 }
 
+function MessageBody(props: { text: string, setSchema: (schema: string) => void }) {
+    const parts = props.text.split(SCHEMA_FORMAT);
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-function MessageView(props: { messages: Message[], msgList: MutableRefObject<HTMLDivElement | null> }) {
+    return <Item style={{ backgroundColor: "#EEE" }}>{parts.map((part, i) => {
+        if (i % 2 === 0) {
+            return <div key={i} style={{ whiteSpace: "pre-wrap" }}>{part}</div>
+        } else {
+            const open = i === openIndex;
+            return (<Item key={i}>
+                <IconButton size="small" onClick={() => setOpenIndex(open ? null : i)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>
+                Schema
+                <Button style={{ marginLeft: 40 }} color="primary" startIcon={<DynamicFormIcon />} onClick={() => props.setSchema(part)}>Open form</Button>
+                {open && <div key={i} style={{ whiteSpace: "pre-wrap" }}>{part}</div>}
+            </Item>)
+        }
+    })}</Item >
+}
+
+function MessageView(props: { messages: Message[], msgList: MutableRefObject<HTMLDivElement | null>, setSchema: (schema: string) => void }) {
     return (
         <Paper style={{
             height: "150",
@@ -26,32 +51,26 @@ function MessageView(props: { messages: Message[], msgList: MutableRefObject<HTM
             maxHeight: "calc(100vh - 210px)",
         }}>
             <Stack ref={props.msgList}>
-                {props.messages.map((m, i) => <Item key={m.id}><div style={{ whiteSpace: "pre-wrap" }}>{m.text}</div></Item>)}
+                {props.messages.map((m, i) => <MessageBody key={m.id} text={m.text} setSchema={props.setSchema} />)}
             </Stack>
         </Paper>
     )
 }
 
 
-function UserInput(props: { enabled: boolean, onSubmit: (text: string) => void }) {
-    const [input, setInput] = useState<string>("");
-
-    function submit() {
-        props.onSubmit(input)
-        setInput("")
-    }
+function UserInput(props: { enabled: boolean, input: string, setInput: (text: string) => void, onSubmit: () => void }) {
 
     return (
         <Stack>
-            <Grid container style={{ margin: '10px' }}>
-                <Grid item xs={11}>
-                    <TextField label={props.enabled ? "Input" : "Input disabled"} fullWidth value={input} multiline={true} disabled={!props.enabled}
-                        onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.ctrlKey && e.key === 'Enter') { submit(); } }} />
-                </Grid>
-                <Grid item xs={1}>
-                    <Fab disabled={!props.enabled} color="primary" aria-label="add" onClick={() => submit()}><SendIcon /></Fab>
-                </Grid>
-            </Grid>
+            <div style={{ margin: '10px' }}>
+                <div style={{ float: "left", width: "calc(100% - 145px)" }}>
+                    <TextField label={props.enabled ? "Input" : "Input disabled"} fullWidth value={props.input} multiline={true} disabled={!props.enabled}
+                        onChange={(e) => props.setInput(e.target.value)} onKeyDown={(e) => { if (e.ctrlKey && e.key === 'Enter') { props.onSubmit(); } }} />
+                </div>
+                <div style={{ float: "right", width: 140 }}>
+                    <Fab disabled={!props.enabled} color="primary" aria-label="add" onClick={props.onSubmit}><SendIcon /></Fab>
+                </div>
+            </div>
         </Stack>)
 }
 
@@ -61,6 +80,9 @@ export function Console(props: { addInfo: AddInfo }) {
     const [title, setTitle] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [enabledInput, setEnabledInput] = useState<boolean>(false);
+    const [schema, setSchema] = useState<RJSFSchema | null>(null);
+    const [input, setInput] = useState<string>("");
+
 
     const { sendMessage } = useWebSocket(WS_SERVICE, {
         onError: (e) => {
@@ -72,8 +94,6 @@ export function Console(props: { addInfo: AddInfo }) {
             if (!Array.isArray(msgs)) {
                 msgs = [msgs]
             }
-            console.log(msgs);
-
             let new_messages = messages;
             let messages_changed = false;
 
@@ -108,10 +128,39 @@ export function Console(props: { addInfo: AddInfo }) {
         }
     });
 
+    function parseSchema(text: string) {
+        let schema: RJSFSchema;
+        try {
+            schema = JSON.parse(text);
+            setSchema(schema);
+        } catch (e) {
+            props.addInfo("error", "" + e);
+        }
+
+    }
+
+    function finishDialog(text?: string, send?: boolean) {
+        setSchema(null);
+        if (text) {
+            if (send) {
+                setInput("");
+                sendMessage(text);
+            } else {
+                setInput(text)
+            }
+        }
+    }
+
+    function submit() {
+        sendMessage(input);
+        setInput("")
+    }
+
 
     return <>
         {title && <div>{title}</div>}
-        <MessageView msgList={msgList} messages={messages} />
-        <UserInput enabled={enabledInput} onSubmit={sendMessage} />
+        <MessageView msgList={msgList} messages={messages} setSchema={parseSchema} />
+        <UserInput enabled={enabledInput} onSubmit={submit} input={input} setInput={setInput} />
+        {schema && <FormDialog onClose={finishDialog} schema={schema} />}
     </>
 }

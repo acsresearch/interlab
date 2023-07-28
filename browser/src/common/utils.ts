@@ -1,5 +1,3 @@
-import { type } from "os";
-
 
 export function shorten_string(text: string, max_length: number = 35): string {
     if (text.length >= max_length) {
@@ -37,5 +35,15 @@ export function humanReadableDuration(value: number) {
     if (value < 120) {
         return `${(value).toFixed(1)}s`
     }
-    return `${(value / 60).toFixed(1)} minutes`
+    value /= 60;
+    if (value < 120) {
+        return `${(value).toFixed(0)}m`
+    }
+    value /= 60;
+    if (value < 48) {
+        return `${(value).toFixed(0)}h`
+    }
+    value /= 24;
+    return `${(value).toFixed(0)} days`
+
 }
