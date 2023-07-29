@@ -26,7 +26,7 @@ hydra:
       _target_: interlab.utils.hydra_logs.SymbolicLinkCallback
 
   launcher:
-    n_jobs: 8  # set to -1 to use all available cores
+    n_jobs: 4  # set to -1 to use all available cores
 
 defaults:
   - _self_
