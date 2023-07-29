@@ -43,11 +43,7 @@ class JudgeAction:
 
 
 def format_as_json_example(obj):
-    return (
-        f"""```json
-{json.dumps(jsonable_encoder(obj))}
-```"""
-    )
+    return f"```json\n{json.dumps(jsonable_encoder(obj))}\n```"
 
 
 ATTACKER_PROMPT = f"""
