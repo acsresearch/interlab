@@ -18,13 +18,14 @@ const SCHEMA_FORMAT = /\n?SCHEMA\s*```json\n(.*)```\s*END_OF_SCHEMA\n?/gs;
 type Message = {
     id: number,
     text: string,
+    echo: boolean,
 }
 
-function MessageBody(props: { text: string, setSchema: (schema: string) => void }) {
-    const parts = props.text.split(SCHEMA_FORMAT);
+function MessageBody(props: { message: Message, setSchema: (schema: string) => void }) {
+    const parts = props.message.text.split(SCHEMA_FORMAT);
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-    return <Item style={{ backgroundColor: "#EEE" }}>{parts.map((part, i) => {
+    return <Item style={{ backgroundColor: props.message.echo ? "#BBF" : "#EEE" }}>{parts.map((part, i) => {
         if (i % 2 === 0) {
             return <div key={i} style={{ whiteSpace: "pre-wrap" }}>{part}</div>
         } else {
@@ -51,7 +52,7 @@ function MessageView(props: { messages: Message[], msgList: MutableRefObject<HTM
             maxHeight: "calc(100vh - 210px)",
         }}>
             <Stack ref={props.msgList}>
-                {props.messages.map((m, i) => <MessageBody key={m.id} text={m.text} setSchema={props.setSchema} />)}
+                {props.messages.map((m, i) => <MessageBody key={m.id} message={m} setSchema={props.setSchema} />)}
             </Stack>
         </Paper>
     )
@@ -104,7 +105,7 @@ export function Console(props: { addInfo: AddInfo }) {
                     setEnabledInput(false);
                 }
                 if (msg.type === "message") {
-                    new_messages = [...new_messages, { id: msg.id, text: msg.text }];
+                    new_messages = [...new_messages, { id: msg.id, text: msg.text, echo: msg.echo }];
                     if (new_messages.length > 2 && msg.id <= new_messages[new_messages.length - 2].id) {
                         new_messages.sort((a, b) => {
                             if (a.id < b.id) return -1;

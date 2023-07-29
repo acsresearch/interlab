@@ -21,7 +21,7 @@ async def test_console_server():
             assert json.loads(msg) == {"type": "input", "value": False}
             msg = await websocket.recv()
             assert json.loads(msg) == [
-                {"id": 0, "text": "First message", "type": "message"}
+                {"id": 0, "text": "First message", "type": "message", "echo": False}
             ]
             with pytest.raises(asyncio.TimeoutError):
                 await asyncio.wait_for(websocket.recv(), timeout=0.3)
@@ -31,6 +31,7 @@ async def test_console_server():
                 "id": 1,
                 "text": "Second message",
                 "type": "message",
+                "echo": False,
             }
             with pytest.raises(asyncio.TimeoutError):
                 await asyncio.wait_for(websocket.recv(), timeout=0.3)
