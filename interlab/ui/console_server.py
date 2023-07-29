@@ -30,8 +30,13 @@ class ConsoleState:
     def remove_socket(self, socket: WebSocket):
         self.sockets.remove(socket)
 
-    async def add_message(self, text: str):
-        message = {"type": "message", "id": len(self.messages), "text": text}
+    async def add_message(self, text: str, echo: bool = False):
+        message = {
+            "type": "message",
+            "id": len(self.messages),
+            "text": text,
+            "echo": bool(echo),
+        }
         self.messages.append(message)
         await self.broadcast(message)
 
@@ -46,6 +51,7 @@ class ConsoleState:
         if not self.input_futures:
             return
         future = self.input_futures.pop()
+        await self.add_message(text, echo=True)
         if not self.input_futures:
             await self.send_input_state(False)
         future.set_result(text)
