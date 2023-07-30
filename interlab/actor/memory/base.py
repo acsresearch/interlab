@@ -16,7 +16,7 @@ class MemoryBase(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_events(self, query: Any = None, limit: int = None) -> tuple[Event]:
+    def get_events(self, query: Any = None) -> tuple[Event]:
         raise NotImplementedError()
 
     def get_formatted(self, *args, **kwargs) -> Any:
