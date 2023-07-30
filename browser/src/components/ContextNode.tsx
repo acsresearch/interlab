@@ -21,10 +21,11 @@ import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import GamepadIcon from '@mui/icons-material/Gamepad';
+import DataObjectIcon from '@mui/icons-material/DataObject';
 
 import { humanReadableDuration } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
-import { BrowserConfig, Opener, OpenerMode } from "./DataBrowser";
+import { BrowserEnv, Opener, OpenerMode } from "./DataBrowser";
 import { TagChip } from "./TagChip";
 import React from "react";
 
@@ -54,6 +55,12 @@ function ContextMenu(props: { context: Context, setOpen: Opener }) {
                             </ListItemIcon>
                             <ListItemText>Collapse all children</ListItemText>
                         </MenuItem>
+                        <MenuItem onClick={() => { props.setOpen(getAllChildren(props.context), OpenerMode.Close); popupState.close() }}>
+                            <ListItemIcon>
+                                <DataObjectIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Show JSON</ListItemText>
+                        </MenuItem>
                     </Menu>
                 </>
             )}
@@ -69,11 +76,11 @@ function ContextNodeItem(props: { icon?: React.ReactNode, title?: string, childr
 }
 
 
-export function ContextNode(props: { config: BrowserConfig, context: Context, depth: number, opened: Set<string>, setOpen: Opener }) {
-    const themeWithBoxes = props.config.themeWithBoxes;
+export function ContextNode(props: { env: BrowserEnv, context: Context, depth: number }) {
+    const themeWithBoxes = props.env.config.themeWithBoxes;
 
     let c = props.context;
-    let open = props.opened.has(c.uid);
+    let open = props.env.opened.has(c.uid);
     let backgroundColor = c.meta?.color_bg;
     if (!backgroundColor && themeWithBoxes) {
         backgroundColor = DEFAULT_COLORS[props.depth % 2];
@@ -120,16 +127,16 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
 
     function isVisible(ctx: Context) {
         if (ctx.kind) {
-            if (!props.opened.has(ctx.kind)) {
+            if (!props.env.opened.has(ctx.kind)) {
                 return false;
             }
         }
         if (ctx.tags) {
             return ctx.tags.every((tag) => {
                 if (typeof tag === 'string') {
-                    return props.opened.has(tag)
+                    return props.env.opened.has(tag)
                 } else {
-                    return props.opened.has(tag.name)
+                    return props.env.opened.has(tag.name)
                 }
             })
         }
@@ -159,7 +166,7 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
 
                         <ContextNodeItem key={i} icon={<ArrowForwardIcon />}>
                             <div><strong>{property}</strong></div>
-                            <DataRenderer uid={c.uid + "/inputs/" + property} data={value} opened={props.opened} setOpen={props.setOpen} />
+                            <DataRenderer uid={c.uid + "/inputs/" + property} data={value} env={props.env} />
                         </ContextNodeItem>
                     )
 
@@ -168,19 +175,19 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
             {
                 c.children && (
                     c.children?.filter(isVisible).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 5 }}>
-                        <ContextNode config={props.config} context={ctx} depth={props.depth + 1} opened={props.opened} setOpen={props.setOpen} /></div>)
+                        <ContextNode env={props.env} context={ctx} depth={props.depth + 1} /></div>)
                 )
             }
             {
                 c.result &&
                 <ContextNodeItem icon={<ArrowBackIcon />}>
-                    <DataRenderer uid={c.uid + "/result"} data={c.result} opened={props.opened} setOpen={props.setOpen} />
+                    <DataRenderer uid={c.uid + "/result"} data={c.result} env={props.env} />
                 </ContextNodeItem>
             }
             {
                 c.error &&
                 <ContextNodeItem icon={<ReportProblemIcon />}>
-                    <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" opened={props.opened} setOpen={props.setOpen} />
+                    <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" env={props.env} />
                 </ContextNodeItem>
             }
         </div >
@@ -198,12 +205,12 @@ export function ContextNode(props: { config: BrowserConfig, context: Context, de
             flexWrap: 'wrap',
             width: "100%",
         }}>
-            <IconButton size="small" onClick={() => props.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
+            <IconButton size="small" onClick={() => props.env.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
             <span style={{ color: mainColor, fontSize: small ? "75%" : undefined }}>{c.name}</span> {short_result && <><ArrowRightAltIcon /> {short_result}</>} {/*c.kind ? " [" + c.kind + "]" : ""*/}
             {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
             {c.tags?.map((t, i) => <span style={{ marginLeft: 5 }} key={i}><TagChip tag={t} /></span>)}
         </div>
-            <ContextMenu context={c} setOpen={props.setOpen} />
+            <ContextMenu context={c} setOpen={props.env.setOpen} />
         </div>
     }
 

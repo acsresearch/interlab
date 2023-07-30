@@ -1,10 +1,11 @@
 import { Button } from "@mui/material";
-import { Opener, OpenerMode } from "./DataBrowser";
+import { BrowserEnv, OpenerMode } from "./DataBrowser";
 import parse from 'html-react-parser';
 
 const IMAGE_MIME_TYPES = ["image/jpeg", "image/png"];
 
-export function DataRenderer(props: { data: any, uid: string, opened: Set<string>, setOpen: Opener, hideType?: string }) {
+export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, hideType?: string }) {
+    const { opened, setOpen } = props.env;
     let d = props.data;
     if (d === null) {
         return <span>None</span>
@@ -23,15 +24,15 @@ export function DataRenderer(props: { data: any, uid: string, opened: Set<string
             if (lines.length <= 5) {
                 return <div style={{ whiteSpace: "pre-wrap" }}>{d}</div>
             } else {
-                if (props.opened.has(props.uid)) {
+                if (opened.has(props.uid)) {
                     return <>
                         <div style={{ whiteSpace: "pre-wrap" }}>{d}</div>
-                        <Button onClick={() => props.setOpen(props.uid, OpenerMode.Close)}>Hide lines</Button>
+                        <Button onClick={() => setOpen(props.uid, OpenerMode.Close)}>Hide lines</Button>
                     </>
                 } else {
                     return <>
                         <div style={{ whiteSpace: "pre-wrap" }}>{lines.slice(0, 3).join("\n")} ...</div>
-                        <Button onClick={() => props.setOpen(props.uid, OpenerMode.Open)}>Show {lines.length} lines</Button>
+                        <Button onClick={() => setOpen(props.uid, OpenerMode.Open)}>Show {lines.length} lines</Button>
                     </>
                 }
             }
@@ -63,17 +64,17 @@ export function DataRenderer(props: { data: any, uid: string, opened: Set<string
 
     const isLong = children.length > 3;
 
-    if (isLong && !props.opened.has(props.uid)) {
+    if (isLong && !opened.has(props.uid)) {
         return <>
             {(props.hideType !== type && type) && <span>{type}</span>}
-            <Button onClick={() => props.setOpen(props.uid, OpenerMode.Open)}>Show {children.length} items</Button>
+            <Button onClick={() => setOpen(props.uid, OpenerMode.Open)}>Show {children.length} items</Button>
         </>
     }
 
     return (<>
         {(props.hideType !== type && type) && <span>{type}</span>}
-        {isLong && <Button onClick={() => props.setOpen(props.uid, OpenerMode.Close)}>Hide items</Button>}
+        {isLong && <Button onClick={() => setOpen(props.uid, OpenerMode.Close)}>Hide items</Button>}
         <ul style={{ paddingTop: 0, paddingBottom: 0, margin: 0, paddingLeft: 25 }}>
-            {children.map(({ property, value }) => <li style={{ padding: 0, margin: 0 }} key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} data={value} opened={props.opened} setOpen={props.setOpen} /></li>)}
+            {children.map(({ property, value }) => <li style={{ padding: 0, margin: 0 }} key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} data={value} env={props.env} /></li>)}
         </ul></>);
 }

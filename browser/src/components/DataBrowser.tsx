@@ -24,7 +24,6 @@ export type BrowserConfig = {
     themeWithBoxes: boolean
 }
 
-
 export enum OpenerMode {
     Toggle,
     Open,
@@ -32,6 +31,13 @@ export enum OpenerMode {
 }
 
 export type Opener = (keys: string | string[], mode: OpenerMode) => void
+
+
+export type BrowserEnv = {
+    config: BrowserConfig,
+    opened: Set<string>,
+    setOpen: Opener,
+}
 
 
 function ListItem(props: { root: Context, selectedCtx: Context | null, selectRoot: (uid: string) => void }) {
@@ -178,6 +184,12 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { refresh() }, []);
 
+    const env: BrowserEnv = {
+        config,
+        opened,
+        setOpen
+    }
+
     return <div>
         <div style={{ width: 360, float: "left" }}>
             <IconButton onClick={refresh}><SyncIcon /></IconButton>
@@ -202,7 +214,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                 />
                 {sortedKinds.map((kind) => <ToggleButton sx={{ paddingTop: 0.2, paddingBottom: 0.2, marginLeft: 0.5 }} value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
             </Box>
-            {selectedCtx && <div style={{ maxHeight: "calc(100vh - 70px)", overflow: 'auto' }}><ContextNode config={config} context={selectedCtx} depth={0} opened={opened} setOpen={setOpen} /></div>}
+            {selectedCtx && <div style={{ maxHeight: "calc(100vh - 70px)", overflow: 'auto' }}><ContextNode env={env} context={selectedCtx} depth={0} /></div>}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
         </div>
     </div >
