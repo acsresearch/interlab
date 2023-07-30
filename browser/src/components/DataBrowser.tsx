@@ -13,6 +13,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import ErrorIcon from '@mui/icons-material/Error';
 import { TagChip } from "./TagChip";
 import { humanReadableDuration } from "../common/utils";
+import { ContextDetailsDialog } from "./ContextDetails";
 
 // type Root = {
 //     name: string,
@@ -37,6 +38,7 @@ export type BrowserEnv = {
     config: BrowserConfig,
     opened: Set<string>,
     setOpen: Opener,
+    showContextDetails: (ctx: Context) => void,
 }
 
 
@@ -76,6 +78,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     const [selectedCtx, setSelectedCtx] = useState<Context | null>(null);
     let [opened, setOpened] = useState<Set<string>>(new Set());
     const [kinds, setKinds] = useState<Set<string>>(new Set());
+    const [ctxDetails, setCtxDetails] = useState<Context | null>(null);
 
 
     function refresh() {
@@ -187,7 +190,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     const env: BrowserEnv = {
         config,
         opened,
-        setOpen
+        setOpen,
+        showContextDetails: setCtxDetails
     }
 
     return <div>
@@ -217,5 +221,6 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
             {selectedCtx && <div style={{ maxHeight: "calc(100vh - 70px)", overflow: 'auto' }}><ContextNode env={env} context={selectedCtx} depth={0} /></div>}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
         </div>
+        {ctxDetails && <ContextDetailsDialog context={ctxDetails} onClose={() => setCtxDetails(null)} />}
     </div >
 }
