@@ -429,6 +429,17 @@ webencodings = "*"
 css = ["tinycss2 (>=1.1.0,<1.2)"]
 
 [[package]]
+name = "cachetools"
+version = "5.3.1"
+description = "Extensible memoizing collections and decorators"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "cachetools-5.3.1-py3-none-any.whl", hash = "sha256:95ef631eeaea14ba2e36f06437f36463aac3a096799e876ee55e5cdccb102590"},
+    {file = "cachetools-5.3.1.tar.gz", hash = "sha256:dce83f2d9b4e1f732a8cd44af8e8fab2dbe46201467fc98b3ef8f269092bf62b"},
+]
+
+[[package]]
 name = "casefy"
 version = "0.1.7"
 description = "Utilities for string case conversion."
@@ -4223,4 +4234,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "c6b3e45b6b1c96dab8e4b2567830065cd6509af910d6cec0cb9505e27f4dfcd1"
+content-hash = "760c6cd17604d46d3efc79a3aba295282e3b8900b48cd20ce17d6df0a0a236c0"

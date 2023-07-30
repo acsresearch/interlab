@@ -2,10 +2,10 @@
 Helpers for determining the token-length of a string.
 """
 
-import functools
 from typing import Any
 
 import anthropic
+import cachetools
 import langchain.chat_models.base
 import langchain.llms.base
 import tiktoken
@@ -13,11 +13,14 @@ import tiktoken
 from .base import LangModelBase
 
 
-@functools.cache
-def _get_tokenizer_for_model(name: str):
+@cachetools.cached(cache=cachetools.LRUCache(maxsize=32))
+def _get_tiktoken_tokenizer_for_model(name: str):
     return tiktoken.encoding_for_model(name)
 
 
+@cachetools.cached(
+    cache=cachetools.LRUCache(maxsize=256), key=lambda t, m: (t, str(m)), info=True
+)
 def count_tokens(text: str, model: str | Any) -> int:
     """
     Returns the number of tokens in a string, given a model name or a known model class.
@@ -29,7 +32,7 @@ def count_tokens(text: str, model: str | Any) -> int:
     """
     if isinstance(model, str):
         try:
-            tokenizer = _get_tokenizer_for_model(model)
+            tokenizer = _get_tiktoken_tokenizer_for_model(model)
             return len(tokenizer.encode(text))
         except KeyError:
             pass

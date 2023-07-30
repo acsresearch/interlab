@@ -21,4 +21,6 @@ def test_count_tokens():
     assert count_tokens(TEXT, langchain.chat_models.ChatOpenAI(model="gpt-4")) == 40
     assert count_tokens(TEXT, langchain.chat_models.ChatOpenAI()) == 40
     assert count_tokens(TEXT, langchain.chat_models.ChatAnthropic()) == 57
-    assert count_tokens(TEXT, langchain.OpenAI()) == 56
+    assert count_tokens(TEXT, langchain.OpenAI(model="babbage")) == 56
+    assert count_tokens(TEXT, langchain.OpenAI(model="babbage")) == 56
+    assert count_tokens.cache_info().hits == 1
