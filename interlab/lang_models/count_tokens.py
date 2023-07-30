@@ -8,7 +8,6 @@ from typing import Any
 import anthropic
 import langchain.chat_models.base
 import langchain.llms.base
-import openai
 import tiktoken
 
 from .base import LangModelBase

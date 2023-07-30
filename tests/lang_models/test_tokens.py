@@ -1,14 +1,13 @@
-"""
-Helpers for determining the token-length of a string.
-"""
-
 import langchain.chat_models
 import pytest
 
 import interlab.lang_models
 from interlab.lang_models.count_tokens import count_tokens
 
-TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices lacus sed leo ornare, sed iaculis mi pharetra. Pellentesque non nisi vitae diam sodales commodo."
+TEXT = (
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ultrices lacus sed leo ornare, "
+    "sed iaculis mi pharetra. Pellentesque non nisi vitae diam sodales commodo."
+)
 
 
 def test_count_tokens():
@@ -22,4 +21,4 @@ def test_count_tokens():
     assert count_tokens(TEXT, langchain.chat_models.ChatOpenAI(model="gpt-4")) == 40
     assert count_tokens(TEXT, langchain.chat_models.ChatOpenAI()) == 40
     assert count_tokens(TEXT, langchain.chat_models.ChatAnthropic()) == 57
-    assert count_tokens(TEXT, langchain.llms.OpenAI()) == 56
+    assert count_tokens(TEXT, langchain.OpenAI()) == 56
