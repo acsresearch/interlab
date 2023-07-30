@@ -33,7 +33,7 @@ import React from "react";
 const DEFAULT_COLORS = [grey[100], grey[300]];
 
 
-function ContextMenu(props: { context: Context, setOpen: Opener }) {
+function ContextMenu(props: { context: Context, env: BrowserEnv }) {
 
     return (
         <PopupState variant="popover" popupId="demo-popup-menu">
@@ -43,19 +43,19 @@ function ContextMenu(props: { context: Context, setOpen: Opener }) {
 
                     <Menu {...bindMenu(popupState)}>
 
-                        <MenuItem onClick={() => { props.setOpen(getAllChildren(props.context), OpenerMode.Open); popupState.close() }}>
+                        <MenuItem onClick={() => { props.env.setOpen(getAllChildren(props.context), OpenerMode.Open); popupState.close() }}>
                             <ListItemIcon>
                                 <ArrowDropDownIcon fontSize="small" />
                             </ListItemIcon>
                             <ListItemText>Expand all children</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={() => { props.setOpen(getAllChildren(props.context), OpenerMode.Close); popupState.close() }}>
+                        <MenuItem onClick={() => { props.env.setOpen(getAllChildren(props.context), OpenerMode.Close); popupState.close() }}>
                             <ListItemIcon>
                                 <ArrowRightIcon fontSize="small" />
                             </ListItemIcon>
                             <ListItemText>Collapse all children</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={() => { props.setOpen(getAllChildren(props.context), OpenerMode.Close); popupState.close() }}>
+                        <MenuItem onClick={() => { props.env.showContextDetails(props.context); popupState.close() }}>
                             <ListItemIcon>
                                 <DataObjectIcon fontSize="small" />
                             </ListItemIcon>
@@ -210,7 +210,7 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
             {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
             {c.tags?.map((t, i) => <span style={{ marginLeft: 5 }} key={i}><TagChip tag={t} /></span>)}
         </div>
-            <ContextMenu context={c} setOpen={props.env.setOpen} />
+            <ContextMenu context={c} env={props.env} />
         </div>
     }
 
