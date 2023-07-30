@@ -14,6 +14,9 @@ class LangModelBase(abc.ABC):
     async def aquery(self, prompt: str, max_tokens: Optional[int]) -> Data:
         raise NotImplementedError()
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}()"
+
 
 @dataclass
 class ModelConf:

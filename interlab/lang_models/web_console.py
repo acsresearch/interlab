@@ -18,4 +18,4 @@ class WebConsoleModel(LangModelBase):
         return self.server.display(width, height)
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} name={self.name} url={self.server.url}"
+        return f"{self.__class__.__name__}(name={self.name!r}, url={self.server.url!r})"

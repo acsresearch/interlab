@@ -132,3 +132,6 @@ class OpenAiChatModel(LangModelBase):
                 )
             c.set_result(result)
             return result
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(model={self.model!r}, temperature={self.temperature!r})"

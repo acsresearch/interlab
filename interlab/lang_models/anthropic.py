@@ -82,3 +82,6 @@ class AnthropicModel(LangModelBase):
                 d = r.completion.strip()
                 c.set_result(d)
                 return d
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(model={self.model!r}, temperature={self.temperature!r})"
