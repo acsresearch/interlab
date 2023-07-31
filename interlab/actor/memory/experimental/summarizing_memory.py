@@ -50,7 +50,8 @@ class SummarizingMemory(ListMemory):
             if item.level == 0 and item.tokens > self.summary_limit:
                 # Found one; summarize it
                 _LOG.debug(
-                    f"summarize: shortening {item.tokens} token message to {self.summary_limit}: {shorten_str(item.text)!r}"
+                    f"summarize: shortening {item.tokens} token message to {self.summary_limit}: "
+                    f"{shorten_str(item.text)!r}"
                 )
                 item.text = summarize_with_limit(
                     item.text,
@@ -72,7 +73,8 @@ class SummarizingMemory(ListMemory):
             if item.level == summary_level:
                 i1, i2 = self.items[i : i + 2]
                 _LOG.debug(
-                    f"summarize: summarizing {i1.tokens} tokens (level {i1.level}) and {i2.tokens} tokens (level {i2.level}) messages to {self.summary_limit} tokens"
+                    f"summarize: summarizing {i1.tokens} tokens (level {i1.level}) and {i2.tokens} tokens "
+                    f"(level {i2.level}) messages to {self.summary_limit} tokens"
                 )
                 text = summarize_with_limit(
                     f"{i1.text}\n\n{i2.text}",
