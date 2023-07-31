@@ -10,6 +10,8 @@ from textwrap import wrap
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from jinja2 import Template
+from streamlit.components.v1 import html
 
 from interlab_zoo.jason.adversarial_prompting import utils
 
@@ -38,9 +40,17 @@ def read_results(experiment_folder: Path | str) -> pd.DataFrame:
 df = read_results(experiment_folder)
 
 with st.expander("Results dataframe"):
-    st.write(df.shape)
-    # experiments per victim model
-    st.write(df.groupby("victim.model").experiment.nunique())
+    st.write(f"Total number of experiments: {df.experiment.nunique()}")
+    num_exp_per_victim = df.groupby("victim.model").experiment.nunique()
+    num_success_per_victim = df.groupby("victim.model").sum()["success"]
+    # join the two series into a dataframe
+    num_exp_per_victim = pd.DataFrame(num_exp_per_victim)
+    num_exp_per_victim["success"] = num_success_per_victim
+    num_exp_per_victim["success ratio"] = (
+        num_success_per_victim / num_exp_per_victim["experiment"]
+    )
+    st.write(num_exp_per_victim)
+
     st.write(df)
 
 with st.expander("Informativeness trajectories"):
@@ -70,35 +80,127 @@ with st.expander("Informativeness trajectories"):
         fig.update_xaxes(range=[-0.2, 9.2])
         st.plotly_chart(fig, use_container_width=True)
 
-# st.write(df)
-# with st.expander("Display successful runs"):
-list_agg_cols = [
-    col
-    for col in df.columns
-    if not any(col.startswith(role) for role in ["attacker", "victim", "judge"])
-]
-for col in ["cache", "rounds", "experiment"]:
-    list_agg_cols.remove(col)
-first_agg_cols = [col for col in df.columns if col not in list_agg_cols]
-df_success = df.groupby("context_id").agg(
-    {
-        **{col: list for col in list_agg_cols},
-        **{col: "first" for col in first_agg_cols},
-    }
-)
-df_success = df_success[
-    df_success.success.apply(lambda success_values: any(success_values))
-]
-# st.write(df_success)
+with st.expander("Display individual runs"):
+    """Allow user to browse and annotate different trajectories."""
 
-for victim_model, df_success_victim in df_success.groupby("victim.model"):
-    with st.expander(f"Display successful attacks on model: {victim_model}"):
-        for _, row in df_success_victim.iterrows():
-            st.write("experiment", row["experiment"])
-            # interleave prompt and response and format them differently
-            for informativeness, prompt, response in zip(
-                row["informativeness"], row["prompt"], row["response"]
-            ):
-                st.write(f":red[{prompt}]")
-                # st.write(f":blue[{response}]")  # breaks because response contains square brackets
-                st.write(f":blue[{informativeness}] {response}")
+    def get_successful_trajectories(df: pd.DataFrame) -> pd.DataFrame:
+        df = df.copy()
+        list_agg_cols = [
+            col
+            for col in df.columns
+            if not any(col.startswith(role) for role in ["attacker", "victim", "judge"])
+        ]
+        for col in ["cache", "rounds", "experiment", "context_id"]:
+            list_agg_cols.remove(col)
+        first_agg_cols = [col for col in df.columns if col not in list_agg_cols]
+        df = df.groupby("context_id").agg(
+            {
+                **{col: list for col in list_agg_cols},
+                **{col: "first" for col in first_agg_cols},
+            }
+        )
+        df_success = df[df.success.apply(lambda success_values: any(success_values))]
+        return df_success
+
+    df_success = get_successful_trajectories(df)
+
+    def render_trajectory(iloc: int, df: pd.DataFrame) -> None:
+        """Render a single trajectory."""
+        dialogue_template = Template(
+            """
+        <html>
+            <head>
+                <style>
+                    .dialogue {
+                        width: 100%;
+                    }
+                    .attacker {
+                        background-color: #f1f1f1;
+                        align: left;
+                        padding: 5px;
+                        border: 1px solid #ddd;
+                        margin-bottom: 10px;
+                    }
+                    .victim {
+                        background-color: #87CEFA;
+                        padding: 5px;
+                        align: right;
+                        border: 1px solid #ddd;
+                        margin-bottom: 10px;
+                    }
+                    .informativeness {
+                        align: center;
+                        font-size: huge;
+                        font-style: bold;
+                        font-weight: 900;
+                    }
+                </style>
+            </head>
+            <body>
+                <table class="dialogue">
+                {% for turn in dialogue %}
+                    {% if turn.author == "attacker" %}
+                    <tr class="attacker">
+                        <td>{{turn.message|replace('\n', '<br>')|safe}}</td>
+                        <td class="informativeness">{{turn.informativeness}}</td>
+                    </tr>
+                    {% else %}
+                    <tr class="victim">
+                        <td class="informativeness">{{turn.informativeness}}</td>
+                        <td>{{turn.message|replace('\n', '<br>')|safe}}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </table>
+            </body>
+        </html>
+        """
+        )
+
+        # format df row as dialogue
+        row = df.iloc[iloc]
+        dialogue = []
+        for informativeness, prompt, response in zip(
+            row["informativeness"], row["prompt"], row["response"]
+        ):
+            dialogue.append(
+                {
+                    "author": "attacker",
+                    "message": prompt,
+                }
+            )
+            dialogue.append(
+                {
+                    "author": "victim",
+                    "message": response,
+                    "informativeness": informativeness,
+                }
+            )
+
+        rendered_template = dialogue_template.render(dialogue=dialogue)
+        # write metadata
+        meta_data = row[
+            [
+                c
+                for c in row.index
+                if any(c.startswith(role) for role in ["attacker", "victim", "judge"])
+            ]
+        ]
+        meta_data["max_informativenes"] = max(row.informativeness)
+        meta_data["max_round"] = len(row.prompt)
+        st.code(meta_data)
+        html(rendered_template, height=1000, scrolling=True)
+
+    # select run
+    # assert df_success.experiment.is_unique
+    # assert df_success.context_id.is_unique
+    # experiment_to_context_id = df_success.set_index("experiment").context_id.to_dict()
+    # experiment = st.selectbox("Select run", df_success.experiment.unique(), index=0)
+    # context_id = experiment_to_context_id[experiment]
+    # render_trajectory(context_id, df_success)
+    iloc = st.number_input(
+        f"Select run (out of {len(df_success)})",
+        min_value=0,
+        max_value=len(df_success) - 1,
+    )
+    render_trajectory(iloc, df_success)

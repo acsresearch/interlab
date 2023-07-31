@@ -56,6 +56,7 @@ hydra-joblib-launcher = "^1.2.0"
 [tool.poetry.group.streamlit.dependencies]
 streamlit = "^1.25.0"
 plotly = "^5.15.0"
+jinja2 = "^3.1.2"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
