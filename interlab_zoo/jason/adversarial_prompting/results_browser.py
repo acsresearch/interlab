@@ -57,6 +57,8 @@ results = {
 
 df = pd.concat(results).reset_index(drop=True)
 st.write(df.shape)
+# experiments per victim model
+st.write(df.groupby("victim.model").experiment.nunique())
 st.write(df)
 
 # plot informativeness_history for each successful experiment using plotly
@@ -64,7 +66,7 @@ for col in ["response", "experiment"]:
     df[col] = df[col].apply(lambda s: "<br>".join(wrap(s, 100)))
 
 for model, model_df in df.groupby("victim.model"):
-    fig = px.scatter(
+    fig = px.strip(  # allows to use jitter to avoid overlapping points
         model_df,
         x="round",
         y="informativeness",
@@ -75,9 +77,19 @@ for model, model_df in df.groupby("victim.model"):
         ],
         hover_name="response",
         color="context_id",
-        color_discrete_sequence=px.colors.qualitative.Plotly,
+        color_discrete_sequence=px.colors.qualitative.Dark24,  # default looks better
+        # symbol_sequence=[  # if using scatter plot instead
+        #     "square",
+        #     "diamond",
+        #     "circle",
+        #     "x",
+        #     "triangle-up",
+        #     "star",
+        # ],  # does not work for some reason
+        # opacity=0.5,
         title=f"Informativeness history (victim: {model})",
     )
+    fig.update_traces(jitter=0.1)
     fig.add_hline(
         y=6,
         line_dash="dash",
@@ -85,8 +97,8 @@ for model, model_df in df.groupby("victim.model"):
         annotation_text="informativeness threshold",
     )
     fig.update_layout(showlegend=False)
-    fig.update_xaxes(range=[0, 10])
-    st.plotly_chart(fig)
+    fig.update_xaxes(range=[-0.2, 9.2])
+    st.plotly_chart(fig, use_container_width=True)
 
 # # check logs for those experiments that did not produce a result.json file
 # for subfolder, context_id in context_ids.items():
