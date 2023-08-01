@@ -1,7 +1,7 @@
-import { Box, CircularProgress, IconButton, ListItemButton, ListItemText, Paper, Switch } from "@mui/material";
+import { Box, ButtonGroup, CircularProgress, Divider, IconButton, ListItem, ListItemButton, ListItemText, Paper, Switch, Tooltip } from "@mui/material";
 import { Context, gatherKindsAndTags, getContextAge } from "../model/Context";
 import { ContextNode } from "./ContextNode";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVICE_PREFIX } from "../config";
 import { callGuard } from "../common/guard";
@@ -12,13 +12,20 @@ import SyncIcon from '@mui/icons-material/Sync';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorIcon from '@mui/icons-material/Error';
 import { TagChip } from "./TagChip";
+import MenuIcon from '@mui/icons-material/Menu';
 import { humanReadableDuration } from "../common/utils";
 import { ContextDetailsDialog } from "./ContextDetails";
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 
 // type Root = {
 //     name: string,
 //     uuid: string,
 // }
+
+type RootsVisibility = {
+    showFinished: boolean,
+    showFailed: boolean,
+}
 
 
 export type BrowserConfig = {
@@ -42,14 +49,10 @@ export type BrowserEnv = {
 }
 
 
-function ListItem(props: { root: Context, selectedCtx: Context | null, selectRoot: (uid: string) => void }) {
-    const { root, selectedCtx, selectRoot } = props;
-    let primary = <>{root.uid.slice(0, 40)}</>;
 
-    const age = getContextAge(root);
-    if (age) {
-        primary = <>{primary} <span style={{ color: "gray" }}>{humanReadableDuration(age)} old</span></>;
-    }
+function RootItem(props: { root: Context, selectedCtx: Context | null, selectRoot: (uid: string) => void }) {
+    const { root, selectedCtx, selectRoot } = props;
+    let primary = root.uid.slice(0, 40);
 
     let icon;
     let color;
@@ -58,18 +61,87 @@ function ListItem(props: { root: Context, selectedCtx: Context | null, selectRoo
         icon = <span style={{ paddingRight: 5 }}><CircularProgress size="1em" /></span>;
         color = "green";
     } else if (root.state === "error") {
-        icon = <ErrorIcon sx={{ fontSize: "90%", paddingRight: 0.5, color: "red" }} />
+        icon = <ErrorIcon sx={{ fontSize: "110%", marginRight: 0.5, color: "red" }} />
         color = "red";
     } else {
-        icon = <DoneIcon sx={{ fontSize: "90%", paddingRight: 0.5 }} />
+        icon = <DoneIcon sx={{ fontSize: "110%", paddingRight: 0.5 }} />
     }
+
+    const age = getContextAge(root);
 
     return (
         <ListItemButton selected={selectedCtx !== null && root.uid === selectedCtx.uid} key={root.uid} component="a" onClick={() => selectRoot(root.uid)}>
-            {icon} <ListItemText primary={<span>{primary} {root.tags?.map((t, i) => <TagChip key={i} tag={t} />)}</span>} primaryTypographyProps={{ fontSize: '80%', color: color }} />
+            {icon}
+            <ListItemText primaryTypographyProps={{ fontSize: '80%', color: color }}>
+                <div>{primary}</div>
+                <div>{age && <span style={{ color: "gray" }}>{humanReadableDuration(age)} ago</span>} {root.tags?.map((t, i) => <TagChip key={i} tag={t} />)}</div>
+            </ListItemText>
         </ListItemButton>
     )
 }
+
+function RootPanel(props: { roots: Context[], selectedCtx: Context | null, selectRoot: (ctx: string) => void, showRoots: RootsVisibility, setShowRoots: (v: RootsVisibility) => void, refresh: () => void, addInfo: AddInfo }) {
+    const showRoots = props.showRoots;
+
+    function filterStates(ctx: Context) {
+        if (!showRoots.showFinished && ctx.state === undefined) {
+            return false;
+        }
+        if (!showRoots.showFailed && ctx.state === "error") {
+            return false;
+        }
+        return true;
+    }
+
+    function copyIntoClipboard() {
+        if (props.selectedCtx) {
+            navigator.clipboard.writeText(props.selectedCtx.uid);
+            props.addInfo("success", `Context uid '${props.selectedCtx.uid} copied into clipboard`)
+        }
+    }
+
+    return <div style={{ width: 360, float: "left" }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>
+                <Tooltip title="Show/Hide finished contexts">
+                    <ToggleButton
+                        size="small"
+                        value="check"
+                        selected={showRoots.showFinished}
+                        onChange={(e) => {
+                            props.setShowRoots({ ...showRoots, showFinished: !showRoots.showFinished })
+                        }}
+                    >
+                        <DoneIcon />
+                    </ToggleButton>
+                </Tooltip>
+                <Tooltip title="Show/Hide failed contexts">
+                    <ToggleButton
+                        size="small"
+                        value="check"
+                        selected={showRoots.showFailed}
+                        onChange={() => {
+                            props.setShowRoots({ ...showRoots, showFailed: !showRoots.showFailed })
+                        }}
+                    >
+                        <ErrorIcon />
+                    </ToggleButton>
+                </Tooltip>
+            </span>
+            <span>
+                <IconButton onClick={copyIntoClipboard}><ContentPasteIcon /></IconButton>
+                <IconButton onClick={props.refresh}><SyncIcon /></IconButton>
+            </span>
+        </div>
+        <Divider style={{ marginBottom: 5, marginTop: 5 }} />
+        <Paper style={{ maxHeight: "calc(100vh - 40px)", overflow: 'auto' }}>
+            {props.roots.filter(filterStates).map((root) => <RootItem key={root.uid} root={root} selectedCtx={props.selectedCtx} selectRoot={props.selectRoot} />
+            )}
+        </Paper>
+    </div>
+
+}
+
 
 
 export function DataBrowser(props: { addInfo: AddInfo }) {
@@ -79,6 +151,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     let [opened, setOpened] = useState<Set<string>>(new Set());
     const [kinds, setKinds] = useState<Set<string>>(new Set());
     const [ctxDetails, setCtxDetails] = useState<Context | null>(null);
+    const [showRoots, setShowRoots] = useState<RootsVisibility>({ showFinished: true, showFailed: true });
 
 
     function refresh() {
@@ -195,16 +268,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     }
 
     return <div>
-        <div style={{ width: 360, float: "left" }}>
-            <IconButton onClick={refresh}><SyncIcon /></IconButton>
-            <Paper style={{ maxHeight: "calc(100vh - 40px)", overflow: 'auto' }}>
-                {roots.map((root) => <ListItem key={root.uid} root={root} selectedCtx={selectedCtx} selectRoot={selectRoot} />
-                    // <ListItemButton selected={selectedCtx !== null && root.uid === selectedCtx.uid} key={root.uid} component="a" onClick={() => selectRoot(root.uid)}>
-                    //     <ListItemText primary={root.uid.slice(0, 40)} primaryTypographyProps={{ fontSize: '80%' }} />
-                    // </ListItemButton>
-                )}
-            </Paper>
-        </div>
+        <RootPanel showRoots={showRoots} setShowRoots={setShowRoots} roots={roots} selectedCtx={selectedCtx} refresh={refresh} selectRoot={selectRoot} addInfo={props.addInfo} />
         <div style={{ float: "left", width: "calc(100% - 365px)", overflow: 'auto' }}>
             <Box
                 m={1} //margin

@@ -61,8 +61,8 @@ export function duration(ctx: Context): number | null {
 
 
 export function getContextAge(ctx: Context): number | null {
-    if (ctx.end_time) {
-        const start = new Date(ctx.end_time);
+    if (ctx.start_time) {
+        const start = new Date(ctx.start_time);
         return Date.now() - start.getTime();
     } else {
         return null;
