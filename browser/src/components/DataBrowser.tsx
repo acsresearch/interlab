@@ -1,7 +1,7 @@
-import { Box, ButtonGroup, CircularProgress, Divider, IconButton, ListItem, ListItemButton, ListItemText, Paper, Switch, Tooltip } from "@mui/material";
+import { Box, CircularProgress, Divider, IconButton, ListItemButton, ListItemText, Paper, Switch, Tooltip } from "@mui/material";
 import { Context, gatherKindsAndTags, getContextAge } from "../model/Context";
 import { ContextNode } from "./ContextNode";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVICE_PREFIX } from "../config";
 import { callGuard } from "../common/guard";
@@ -12,15 +12,12 @@ import SyncIcon from '@mui/icons-material/Sync';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorIcon from '@mui/icons-material/Error';
 import { TagChip } from "./TagChip";
-import MenuIcon from '@mui/icons-material/Menu';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { humanReadableDuration } from "../common/utils";
 import { ContextDetailsDialog } from "./ContextDetails";
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import { ConfirmDialog } from "./ConfirmDialog";
 
-// type Root = {
-//     name: string,
-//     uuid: string,
-// }
 
 type RootsVisibility = {
     showFinished: boolean,
@@ -81,7 +78,10 @@ function RootItem(props: { root: Context, selectedCtx: Context | null, selectRoo
 }
 
 function RootPanel(props: { roots: Context[], selectedCtx: Context | null, selectRoot: (ctx: string) => void, showRoots: RootsVisibility, setShowRoots: (v: RootsVisibility) => void, refresh: () => void, addInfo: AddInfo }) {
+    const [confirmDialog, setConfirmDialog] = useState<boolean>(false);
+
     const showRoots = props.showRoots;
+
 
     function filterStates(ctx: Context) {
         if (!showRoots.showFinished && ctx.state === undefined) {
@@ -97,6 +97,19 @@ function RootPanel(props: { roots: Context[], selectedCtx: Context | null, selec
         if (props.selectedCtx) {
             navigator.clipboard.writeText(props.selectedCtx.uid);
             props.addInfo("success", `Context uid '${props.selectedCtx.uid} copied into clipboard`)
+        }
+    }
+
+    function onDelete(confirmed: boolean) {
+        setConfirmDialog(false);
+        if (confirmed) {
+            callGuard(async () => {
+                if (props.selectedCtx) {
+                    await axios.delete(SERVICE_PREFIX + "/contexts/uid/" + props.selectedCtx.uid);
+                    props.refresh();
+                }
+            }, props.addInfo)
+
         }
     }
 
@@ -129,6 +142,7 @@ function RootPanel(props: { roots: Context[], selectedCtx: Context | null, selec
                 </Tooltip>
             </span>
             <span>
+                <IconButton onClick={() => setConfirmDialog(true)}><DeleteIcon /></IconButton>
                 <IconButton onClick={copyIntoClipboard}><ContentPasteIcon /></IconButton>
                 <IconButton onClick={props.refresh}><SyncIcon /></IconButton>
             </span>
@@ -138,7 +152,11 @@ function RootPanel(props: { roots: Context[], selectedCtx: Context | null, selec
             {props.roots.filter(filterStates).map((root) => <RootItem key={root.uid} root={root} selectedCtx={props.selectedCtx} selectRoot={props.selectRoot} />
             )}
         </Paper>
-    </div>
+
+        {props.selectedCtx && <ConfirmDialog open={confirmDialog} confirmText={"Remove context"} onConfirm={onDelete}>
+            Remove context <strong>{props.selectedCtx.uid}</strong>?
+        </ConfirmDialog>}
+    </div >
 
 }
 

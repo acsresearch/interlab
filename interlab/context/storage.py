@@ -6,70 +6,68 @@ import shutil
 import threading
 from os import PathLike
 from typing import Callable, Iterator, List, Optional, Sequence
-import abc
 
+from ..utils.text import validate_uid
 from .context import Context
 from .serialization import Data
-from ..utils.text import validate_uid
 
 
 class StorageBase(abc.ABC):
-
     def __init__(self):
         self._lock = threading.Lock()
         self._ephemeral_contexts = {}
         self._server = None
 
     def register_context(self, context: Context):
-        """ Register running context (without writing into the persistent storage) """
+        """Register running context (without writing into the persistent storage)"""
         with self._lock:
             self._ephemeral_contexts[context.uid] = context
 
     def get_ephemeral_context(self, uid: str) -> Optional[Context]:
-        """ Get running context (not from persistent storage) """
+        """Get running context (not from persistent storage)"""
         with self._lock:
             return self._ephemeral_contexts.get(uid)
 
     @abc.abstractmethod
     def write_context(self, context: Context):
-        """ Write context into persistent storage """
+        """Write context into persistent storage"""
         raise NotImplementedError
 
     @abc.abstractmethod
     def read(self, uid: str) -> Data:
-        """ Read unserialized context from the storage """
+        """Read unserialized context from the storage"""
         raise NotImplementedError
 
     @abc.abstractmethod
     def read_root(self, uid: str) -> Data:
-        """ Read context without children """
+        """Read context without children"""
         raise NotImplementedError
 
     @abc.abstractmethod
     def remove_context(self, uid: str):
-        """ Remove context from storage """
+        """Remove context from storage"""
         raise NotImplementedError
 
     @abc.abstractmethod
     def list(self) -> List[str]:
-        """ List all context uids in storage """
+        """List all context uids in storage"""
         raise NotImplementedError
 
     def read_roots(self, uids: Sequence[str]) -> List[Data]:
-        """ Read all root contexts without children """
+        """Read given root contexts without children"""
         return [self.read_root(uid) for uid in uids]
 
     def read_context(self, uid: str) -> Context:
-        """ Read and serialize context from storage """
+        """Read and serialize context from storage"""
         return Context.deserialize(self.read(uid))
 
     def read_all_contexts(self) -> Iterator[Context]:
-        """ Read all contexts from storage """
+        """Read all contexts from storage"""
         for uid in self.list():
             yield self.read_context(uid)
 
     def display(self, width="95%", height=700):
-        """ Show context in Jupyter notebook """
+        """Show context in Jupyter notebook"""
         if self._server is None:
             self.start_server()
 

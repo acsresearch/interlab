@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Context } from "../model/Context";
-import { JsonView, allExpanded, darkStyles, defaultStyles } from 'react-json-view-lite';
+import { JsonView, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 
 

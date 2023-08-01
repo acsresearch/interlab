@@ -27,5 +27,12 @@ def test_server(storage):
         assert r.status_code == 200
         assert r.json() == [c1.to_dict(with_children=False)]
 
+        r = requests.delete(url + f"/contexts/uid/{c1.uid}")
+        assert r.status_code == 200
+
+        r = requests.get(url + "/contexts/list")
+        assert r.status_code == 200
+        assert set(r.json()) == {c2.uid}
+
     finally:
         server.stop()

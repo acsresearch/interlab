@@ -47,6 +47,10 @@ def _storage_app(storage) -> FastAPI:
             raise HTTPException(status_code=404)
         return data
 
+    @app.delete("/contexts/uid/{uid}")
+    async def delete_uid(uid: str):
+        storage.remove_context(uid)
+
     return app
 
 
