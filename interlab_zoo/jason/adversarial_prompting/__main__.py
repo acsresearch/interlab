@@ -97,7 +97,7 @@ def adversarial_prompting(
     return game_states
 
 
-@hydra.main(version_base=None, config_path="conf", config_name="main")
+@hydra.main(version_base="1.2", config_path="conf", config_name="main")
 @log_exceptions(LOGGER)
 def main(cfg: DictConfig):
     hydra_cfg = HydraConfig.get()

@@ -11,6 +11,13 @@ judge:
   model: gpt-3.5-turbo
 
 hydra:
+  mode: MULTIRUN
+  sweeper:
+    params:
+      attacker.model: text-davinci-003,gpt-3.5-turbo
+      attacker.temperature: 0.5,0.75,1.
+      +victim.temperature: 0.5,0.75,1.
+      victim.model: claude-1,gpt-3.5-turbo,claude-2,gpt-4
   job:
     chdir: true  # <-- if true Hydra creates a unique time-stamped output dir per run
   run:
