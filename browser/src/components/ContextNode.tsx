@@ -25,7 +25,7 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 
 import { humanReadableDuration } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
-import { BrowserEnv, Opener, OpenerMode } from "./DataBrowser";
+import { BrowserEnv, OpenerMode } from "./DataBrowser";
 import { TagChip } from "./TagChip";
 import React from "react";
 

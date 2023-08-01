@@ -5,7 +5,7 @@ from datetime import datetime
 
 UID_CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
 ESCAPE_NAME_RE = re.compile("[^0-9a-zA-Z]+")
-UID_CHECK_REGEXP = re.compile('^[a-z0-9A-Z:\-\._]+$')
+UID_CHECK_REGEXP = re.compile(r"^[a-z0-9A-Z:\-\._]+$")
 
 
 def shorten_str(s: str | None, max_len=32) -> str:
