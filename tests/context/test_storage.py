@@ -27,6 +27,9 @@ def test_file_storage(storage):
     contexts = list(storage.read_all_contexts())
     assert len(contexts) == 2
 
+    storage.remove_context(c2.uid)
+    assert {c1.uid} == set(storage.list())
+
 
 def test_file_storage_dirs(storage):
     with Context("test1", directory=True) as c1:
@@ -50,3 +53,6 @@ def test_file_storage_dirs(storage):
 
     roots = storage.read_roots([c1.uid])
     assert roots[0] == c1.to_dict(with_children=False)
+
+    storage.remove_context(c1.uid)
+    assert storage.list() == []
