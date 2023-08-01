@@ -5,6 +5,7 @@ from datetime import datetime
 
 UID_CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
 ESCAPE_NAME_RE = re.compile("[^0-9a-zA-Z]+")
+UID_CHECK_REGEXP = re.compile('^[a-z0-9A-Z:\-\._]+$')
 
 
 def shorten_str(s: str | None, max_len=32) -> str:
@@ -30,6 +31,10 @@ def generate_uid(name: str) -> str:
     uid = f"{datetime.now().isoformat(timespec='seconds')}-{name}-{random_part}"
     # Replace ':' to appease windows, and also both slashes just in case
     return uid.replace(":/\\", "-")
+
+
+def validate_uid(uid: str) -> bool:
+    return bool(UID_CHECK_REGEXP.match(uid))
 
 
 def replace(text, replaces):

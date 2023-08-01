@@ -10,6 +10,7 @@ import abc
 
 from .context import Context
 from .serialization import Data
+from ..utils.text import validate_uid
 
 
 class StorageBase(abc.ABC):
@@ -114,11 +115,15 @@ class FileStorage(StorageBase):
         return os.path.join(directory, f"{name}.ctx")
 
     def write_context(self, context: Context):
+        if not validate_uid(context.uid):
+            raise Exception("Invalid uid")
         self._write_context_into(self.directory, context)
         with self._lock:
             self._ephemeral_contexts.pop(context.uid, None)
 
     def _write_context_into(self, directory: str, context: Context):
+        if not validate_uid(context.uid):
+            raise Exception("Invalid uid")
         if context.directory:
             self._write_context_dir(directory, context)
         else:
@@ -154,12 +159,16 @@ class FileStorage(StorageBase):
                 os.unlink(tmp_path)
 
     def read(self, uid: str) -> Data:
+        if not validate_uid(uid):
+            raise Exception("Invalid uid")
         context = self.get_ephemeral_context(uid)
         if context:
             return context.to_dict()
         return self._read_from(self.directory, uid)
 
     def read_root(self, uid) -> Data:
+        if not validate_uid(uid):
+            raise Exception("Invalid uid")
         context = self.get_ephemeral_context(uid)
         if context:
             return context.to_dict(with_children=False)
@@ -208,6 +217,8 @@ class FileStorage(StorageBase):
         )
 
     def remove_context(self, uid: str):
+        if not validate_uid(uid):
+            raise Exception("Invalid uid")
         # First try to remove .root so it immediately disappear from listing
         path = self._file_path(self.directory, uid + ".root")
         if os.path.isfile(path):
