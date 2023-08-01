@@ -1,3 +1,4 @@
+import abc
 import gzip
 import json
 import os
@@ -5,48 +6,69 @@ import shutil
 import threading
 from os import PathLike
 from typing import Callable, Iterator, List, Optional, Sequence
+import abc
 
 from .context import Context
 from .serialization import Data
 
 
-class StorageBase:
+class StorageBase(abc.ABC):
+
     def __init__(self):
         self._lock = threading.Lock()
         self._ephemeral_contexts = {}
         self._server = None
 
     def register_context(self, context: Context):
+        """ Register running context (without writing into the persistent storage) """
         with self._lock:
             self._ephemeral_contexts[context.uid] = context
 
     def get_ephemeral_context(self, uid: str) -> Optional[Context]:
+        """ Get running context (not from persistent storage) """
         with self._lock:
             return self._ephemeral_contexts.get(uid)
 
+    @abc.abstractmethod
     def write_context(self, context: Context):
+        """ Write context into persistent storage """
         raise NotImplementedError
 
+    @abc.abstractmethod
     def read(self, uid: str) -> Data:
+        """ Read unserialized context from the storage """
         raise NotImplementedError
 
+    @abc.abstractmethod
     def read_root(self, uid: str) -> Data:
+        """ Read context without children """
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def remove_context(self, uid: str):
+        """ Remove context from storage """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def list(self) -> List[str]:
+        """ List all context uids in storage """
+        raise NotImplementedError
+
+    def read_roots(self, uids: Sequence[str]) -> List[Data]:
+        """ Read all root contexts without children """
+        return [self.read_root(uid) for uid in uids]
 
     def read_context(self, uid: str) -> Context:
+        """ Read and serialize context from storage """
         return Context.deserialize(self.read(uid))
 
     def read_all_contexts(self) -> Iterator[Context]:
+        """ Read all contexts from storage """
         for uid in self.list():
             yield self.read_context(uid)
 
-    def read_roots(self, uids: List[str]) -> List[Data]:
-        raise NotImplementedError
-
-    def list(self) -> List[str]:
-        raise NotImplementedError
-
     def display(self, width="95%", height=700):
+        """ Show context in Jupyter notebook """
         if self._server is None:
             self.start_server()
 
@@ -102,6 +124,7 @@ class FileStorage(StorageBase):
         else:
             data = json.dumps(context.to_dict()).encode()
             data_root = json.dumps(context.to_dict(False)).encode()
+            # Write full first, so when root exists, then full is definitely there
             self._write_context_file(directory, context.uid + ".full", data)
             self._write_context_file(directory, context.uid + ".root", data_root)
 
@@ -184,8 +207,19 @@ class FileStorage(StorageBase):
             + [name[: -len(dir_suffix)] for name in lst if name.endswith(dir_suffix)]
         )
 
-    def read_roots(self, uids: Sequence[str]) -> List[Data]:
-        return [self.read_root(uid) for uid in uids]
+    def remove_context(self, uid: str):
+        # First try to remove .root so it immediately disappear from listing
+        path = self._file_path(self.directory, uid + ".root")
+        if os.path.isfile(path):
+            os.unlink(path)
+            path = self._file_path(self.directory, uid + ".full")
+            os.unlink(path)
+        else:
+            path = self._dir_path(self.directory, uid)
+            if os.path.isdir(path):
+                shutil.rmtree(path)
+        with self._lock:
+            self._ephemeral_contexts.pop(uid, None)
 
     def __repr__(self):
         return f"<FileStorage directory={repr(self.directory)}>"
