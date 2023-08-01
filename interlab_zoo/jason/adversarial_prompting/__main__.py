@@ -12,17 +12,26 @@ from omegaconf import DictConfig, OmegaConf
 from interlab.actor import ActorBase, OneShotLLMActor
 from interlab.context import Context, FileStorage
 from interlab.utils.hydra_logs import log_exceptions
-from interlab_zoo.jason.adversarial_prompting.utils import ATTACKER, VICTIM, JUDGE, AttackerAction, JudgeAction, \
-    ATTACKER_PROMPT, JUDGE_PROMPT, GameState
+from interlab_zoo.actors.simple_cot_actor import SimpleCoTLLMActor
+from interlab_zoo.jason.adversarial_prompting.utils import (
+    ATTACKER,
+    VICTIM,
+    JUDGE,
+    AttackerAction,
+    JudgeAction,
+    ATTACKER_PROMPT,
+    JUDGE_PROMPT,
+    GameState,
+)
 
 LOGGER = logging.getLogger(__name__)
 
 
 def adversarial_prompting(
-        attacker: ActorBase,
-        victim: ActorBase,
-        judge: ActorBase,
-        rounds: int = 10,
+    attacker: ActorBase,
+    victim: ActorBase,
+    judge: ActorBase,
+    rounds: int = 10,
 ) -> list[GameState]:
     game_states = []
     for i in range(rounds):
@@ -80,7 +89,9 @@ def adversarial_prompting(
         # update judge memory with some observations
         judge.observe(f"The response I was asked to judge: {victim_action}")
         judge.observe(f"My reasoning: {judge_action.reasoning}")
-        judge.observe(f"The informativeness of the answer: {judge_action.informativeness}")
+        judge.observe(
+            f"The informativeness of the answer: {judge_action.informativeness}"
+        )
 
     # no success within allowed number of rounds
     return game_states
@@ -92,7 +103,7 @@ def main(cfg: DictConfig):
     hydra_cfg = HydraConfig.get()
     if job_num := hydra_cfg.job.num:
         LOGGER.info(f"Job number: {job_num}")
-        sleep_time = 1. * (job_num - 1)  # job numbers start at 1
+        sleep_time = 1.0 * (job_num - 1)  # job numbers start at 1
         LOGGER.info(f"Sleeping for {sleep_time} seconds.")
         sleep(sleep_time)
 
@@ -102,6 +113,7 @@ def main(cfg: DictConfig):
 
     if cfg.cache:
         from langchain.cache import SQLiteCache
+
         langchain.llm_cache = SQLiteCache(to_absolute_path(".langchain.db"))
         LOGGER.warning(f"Using cache: {langchain.llm_cache}.")
         LOGGER.info(f"Cache URL: {langchain.llm_cache.engine.url}")
@@ -119,7 +131,7 @@ def main(cfg: DictConfig):
             return OpenAI(model_name=model, **cfg)
         raise ValueError(f"Unknown model name: {model}")
 
-    attacker = OneShotLLMActor(
+    attacker = SimpleCoTLLMActor(
         name=ATTACKER,
         model=get_engine(cfg.attacker),
         initial_prompt=ATTACKER_PROMPT,
@@ -136,10 +148,14 @@ def main(cfg: DictConfig):
         model=get_engine(cfg.judge),
         initial_prompt=JUDGE_PROMPT,
     )
-    storage = FileStorage(Path.cwd())  # Directory for storing contexts (structured logs)
+    storage = FileStorage(
+        Path.cwd()
+    )  # Directory for storing contexts (structured logs)
     logging.info(storage.directory)
     with Context(f"adversarial-prompting", storage=storage) as c:
-        game_states = adversarial_prompting(attacker=attacker, victim=victim, judge=judge, rounds=cfg.rounds)
+        game_states = adversarial_prompting(
+            attacker=attacker, victim=victim, judge=judge, rounds=cfg.rounds
+        )
         c.set_result(game_states)
         logging.info(f"Result: {game_states[-1].success}")
 
@@ -154,5 +170,5 @@ def main(cfg: DictConfig):
             json.dump(result_dict, f, indent=4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
