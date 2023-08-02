@@ -48,6 +48,7 @@ def test_context_basic():
     serialization_check(c)
     print(root_ctx.to_dict())
     output = strip_tree(root_ctx.to_dict())
+
     print(json.dumps(output, indent=2))
     assert output == {
         "_type": "Context",
@@ -59,7 +60,20 @@ def test_context_basic():
                 "_type": "Context",
                 "name": "c2",
                 "state": "error",
-                "error": {"_type": "error", "name": "Ah well"},
+                "error": {
+                    "_type": "TestException",
+                    "message": "Ah well",
+                    "traceback": {
+                        "_type": "$traceback",
+                        "frames": [
+                            {
+                                "name": "test_context_basic",
+                                "filename": __file__,
+                                "line": 'raise TestException("Ah well")',
+                            }
+                        ],
+                    },
+                },
             },
             {
                 "_type": "Context",
@@ -85,6 +99,67 @@ def test_context_basic():
                 ],
             },
         ],
+    }
+
+
+def test_context_inner_exception():
+    def f1():
+        raise Exception("Exception 1")
+
+    def f2():
+        try:
+            f1()
+        except Exception:
+            raise Exception("Exception 2")
+
+    with pytest.raises(Exception):
+        with Context("root") as c:
+            f2()
+
+    output = strip_tree(c.to_dict())
+    print(json.dumps(output, indent=2))
+    assert output == {
+        "_type": "Context",
+        "name": "root",
+        "state": "error",
+        "error": {
+            "_type": "Exception",
+            "message": "Exception 2",
+            "traceback": {
+                "_type": "$traceback",
+                "frames": [
+                    {
+                        "name": "test_context_inner_exception",
+                        "filename": __file__,
+                        "line": "f2()",
+                    },
+                    {
+                        "name": "f2",
+                        "filename": __file__,
+                        "line": 'raise Exception("Exception 2")',
+                    },
+                ],
+            },
+            "context": {
+                "_type": "Exception",
+                "message": "Exception 1",
+                "traceback": {
+                    "_type": "$traceback",
+                    "frames": [
+                        {
+                            "name": "f2",
+                            "filename": __file__,
+                            "line": "f1()",
+                        },
+                        {
+                            "name": "f1",
+                            "filename": __file__,
+                            "line": 'raise Exception("Exception 1")',
+                        },
+                    ],
+                },
+            },
+        },
     }
 
 

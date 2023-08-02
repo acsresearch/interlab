@@ -34,18 +34,26 @@ def test_repeat_fail():
         with Context("root") as root:
             repeat_on_failure(fail)
 
-    assert strip_tree(root.to_dict()) == {
+    assert strip_tree(root.to_dict(), erase_error_details=True) == {
         "_type": "Context",
         "children": [
             {
                 "_type": "Context",
-                "error": {"_type": "error", "name": "MyException"},
+                "error": {
+                    "_type": "MyException",
+                    "message": "MyException",
+                    "traceback": {"_type": "$traceback"},
+                },
                 "kind": "repeat_on_failure",
                 "name": "fail: 1/3",
                 "state": "error",
             }
         ],
-        "error": {"_type": "error", "name": "MyException"},
+        "error": {
+            "_type": "MyException",
+            "message": "MyException",
+            "traceback": {"_type": "$traceback"},
+        },
         "name": "root",
         "state": "error",
     }
@@ -59,32 +67,48 @@ def test_repeat_query_fail():
         with Context("root") as root:
             repeat_on_failure(query_fail)
 
-    assert strip_tree(root.to_dict()) == {
+    assert strip_tree(root.to_dict(), erase_error_details=True) == {
         "_type": "Context",
         "children": [
             {
                 "_type": "Context",
-                "error": {"_type": "error", "name": "MyFail"},
+                "error": {
+                    "_type": "QueryFailure",
+                    "message": "MyFail",
+                    "traceback": {"_type": "$traceback"},
+                },
                 "kind": "repeat_on_failure",
                 "name": "query_fail: 1/3",
                 "state": "error",
             },
             {
                 "_type": "Context",
-                "error": {"_type": "error", "name": "MyFail"},
+                "error": {
+                    "_type": "QueryFailure",
+                    "message": "MyFail",
+                    "traceback": {"_type": "$traceback"},
+                },
                 "kind": "repeat_on_failure",
                 "name": "query_fail: 2/3",
                 "state": "error",
             },
             {
                 "_type": "Context",
-                "error": {"_type": "error", "name": "MyFail"},
+                "error": {
+                    "_type": "QueryFailure",
+                    "message": "MyFail",
+                    "traceback": {"_type": "$traceback"},
+                },
                 "kind": "repeat_on_failure",
                 "name": "query_fail: 3/3",
                 "state": "error",
             },
         ],
-        "error": {"_type": "error", "name": "Subqueries failed on all 3 repetitions"},
+        "error": {
+            "_type": "QueryFailure",
+            "message": "Subqueries failed on all 3 repetitions",
+            "traceback": {"_type": "$traceback"},
+        },
         "name": "root",
         "state": "error",
     }
