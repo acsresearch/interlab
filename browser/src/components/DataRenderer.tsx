@@ -1,8 +1,46 @@
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { BrowserEnv, OpenerMode } from "./DataBrowser";
 import parse from 'html-react-parser';
 
 const IMAGE_MIME_TYPES = ["image/jpeg", "image/png"];
+
+
+type TracebackFrame = {
+    line: string,
+    name: string,
+    filename: string,
+    lineno: number,
+}
+
+function Frame(props: { frame: TracebackFrame }) {
+    return <Box sx={{ mb: 0.2 }}>
+        <Box>
+            File <strong>{props.frame.filename}</strong>, line <strong>{props.frame.lineno}</strong>, in <strong>{props.frame.name}</strong>
+        </Box>
+        <Box sx={{ ml: 3, color: "#dd5555" }}>
+            <strong>{props.frame.line}</strong>
+        </Box>
+    </Box >
+}
+
+function Traceback(props: { env: BrowserEnv, frames: TracebackFrame[], uid: string }) {
+    let frames = props.frames;
+    if (!frames || !(frames.length >= 1)) {
+        return <span>Invalid traceback</span>
+    }
+    const isOpened = props.env.opened.has(props.uid);
+    if (!isOpened) {
+        frames = frames.slice(-2);
+    }
+
+    return <><Box sx={{ fontFamily: 'Monospace' }}>
+        {frames.map((frame, i) => <Frame frame={frame} key={i} />)}
+    </Box>
+        {props.frames.length > 2 && isOpened && <Button onClick={() => props.env.setOpen(props.uid, OpenerMode.Close)}>Hide full traceback</Button>}
+        {props.frames.length > 2 && !isOpened && <Button onClick={() => props.env.setOpen(props.uid, OpenerMode.Open)}> Show all {props.frames.length} frames</Button>}
+    </>
+
+}
 
 export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, hideType?: string }) {
     const { opened, setOpen } = props.env;
@@ -49,6 +87,10 @@ export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, h
         const data = `data:${d.mime_type};base64, ${d.data}`;
         // eslint-disable-next-line jsx-a11y/alt-text
         return <div><img src={data} /></div>
+    }
+
+    if ((d._type === "$traceback")) {
+        return <Traceback env={props.env} frames={d.frames} uid={props.uid} />
     }
 
     const children = [];
