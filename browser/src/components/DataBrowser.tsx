@@ -70,8 +70,8 @@ function RootItem(props: { root: Context, selectedCtx: Context | null, selectRoo
         <ListItemButton selected={selectedCtx !== null && root.uid === selectedCtx.uid} key={root.uid} component="a" onClick={() => selectRoot(root.uid)}>
             {icon}
             <ListItemText primaryTypographyProps={{ fontSize: '80%', color: color }}>
-                <div>{primary}</div>
-                <div>{age && <span style={{ color: "gray" }}>{humanReadableDuration(age)} ago</span>} {root.tags?.map((t, i) => <TagChip key={i} tag={t} />)}</div>
+                <Box>{primary}</Box>
+                <Box>{age && <span style={{ color: "gray" }}>{humanReadableDuration(age)} ago</span>} {root.tags?.map((t, i) => <TagChip key={i} tag={t} />)}</Box>
             </ListItemText>
         </ListItemButton>
     )

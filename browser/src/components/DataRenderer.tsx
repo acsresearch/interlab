@@ -26,7 +26,7 @@ function Frame(props: { frame: TracebackFrame }) {
 function Traceback(props: { env: BrowserEnv, frames: TracebackFrame[], uid: string }) {
     let frames = props.frames;
     if (!frames || !(frames.length >= 1)) {
-        return <span>Invalid traceback</span>
+        return <Box component="span">Invalid traceback</Box >
     }
     const isOpened = props.env.opened.has(props.uid);
     if (!isOpened) {
@@ -46,30 +46,30 @@ export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, h
     const { opened, setOpen } = props.env;
     let d = props.data;
     if (d === null) {
-        return <span>None</span>
+        return <>None</>
     }
     if (typeof d === 'boolean') {
-        return <span>{d ? "true" : "false"}</span>
+        return <>{d ? "true" : "false"}</>
     }
     if (typeof d === 'number') {
-        return <span>{d}</span>
+        return <>d</>
     }
     if (typeof d === 'string') {
         if (d.length < 64 && !/\r|\n/.exec(d)) {
-            return <span>{d}</span>
+            return <>{d}</>
         } else {
             const lines = d.split(/\r\n|\r|\n/);
             if (lines.length <= 5) {
-                return <div style={{ whiteSpace: "pre-wrap" }}>{d}</div>
+                return <Box sx={{ whiteSpace: "pre-wrap" }}>{d}</Box>
             } else {
                 if (opened.has(props.uid)) {
                     return <>
-                        <div style={{ whiteSpace: "pre-wrap" }}>{d}</div>
+                        <Box sx={{ whiteSpace: "pre-wrap" }}>{d}</Box>
                         <Button onClick={() => setOpen(props.uid, OpenerMode.Close)}>Hide lines</Button>
                     </>
                 } else {
                     return <>
-                        <div style={{ whiteSpace: "pre-wrap" }}>{lines.slice(0, 3).join("\n")} ...</div>
+                        <Box sx={{ whiteSpace: "pre-wrap" }}>{lines.slice(0, 3).join("\n")} ...</Box>
                         <Button onClick={() => setOpen(props.uid, OpenerMode.Open)}>Show {lines.length} lines</Button>
                     </>
                 }
@@ -79,14 +79,14 @@ export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, h
 
     // TODO: Remove "Html" in future version
     if ((d._type === "Html" || d._type === "$html") && d.html) {
-        return <div>{parse(d.html)}</div>;
+        return <Box>{parse(d.html)}</Box>;
     }
 
     // TODO: Remove "Blob" in future version
     if ((d._type === "Blob" || d._type === "$blob") && IMAGE_MIME_TYPES.includes(d.mime_type)) {
         const data = `data:${d.mime_type};base64, ${d.data}`;
         // eslint-disable-next-line jsx-a11y/alt-text
-        return <div><img src={data} /></div>
+        return <Box><img src={data} /></Box>
     }
 
     if ((d._type === "$traceback")) {
@@ -108,13 +108,13 @@ export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, h
 
     if (isLong && !opened.has(props.uid)) {
         return <>
-            {(props.hideType !== type && type) && <span>{type}</span>}
+            {(props.hideType !== type && type) && <>{type}</>}
             <Button onClick={() => setOpen(props.uid, OpenerMode.Open)}>Show {children.length} items</Button>
         </>
     }
 
     return (<>
-        {(props.hideType !== type && type) && <span>{type}</span>}
+        {(props.hideType !== type && type) && <>{type}</>}
         {isLong && <Button onClick={() => setOpen(props.uid, OpenerMode.Close)}>Hide items</Button>}
         <ul style={{ paddingTop: 0, paddingBottom: 0, margin: 0, paddingLeft: 25 }}>
             {children.map(({ property, value }) => <li style={{ padding: 0, margin: 0 }} key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} data={value} env={props.env} /></li>)}
