@@ -1,0 +1,35 @@
+#cache: false # set to true for quick debugging/development
+n: 10
+subject:
+  model: text-curie-001
+  temperature: 1.
+judge:
+  model: gpt-3.5-turbo
+  temperature: 0.7
+
+hydra:
+  mode: MULTIRUN
+  sweeper:
+    params:
+      subject.model: text-curie-001,text-davinci-003
+      subject.temperature: 0.5,0.75,1.
+  job:
+    chdir: true  # <-- if true Hydra creates a unique time-stamped output dir per run
+  run:
+    dir: results/hallucination_detection/${now:%Y-%m-%d-%H-%M-%S}/${hydra.job.override_dirname}  # <-- naming scheme for unique output dir
+  sweep:
+    dir: results/hallucination_detection/${now:%Y-%m-%d-%H-%M-%S}
+    subdir: ${hydra.job.override_dirname}
+
+  callbacks:
+    git_logging:
+      _target_: interlab.utils.hydra_logs.LogGitHashCallback
+    symlink:
+      _target_: interlab.utils.hydra_logs.SymbolicLinkCallback
+
+  launcher:
+    n_jobs: 4  # set to -1 to use all available cores
+
+defaults:
+  - _self_
+  - override hydra/launcher: joblib  # joblib launches runs in parallel; comment out if undesired
