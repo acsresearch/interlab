@@ -23,7 +23,7 @@ export type Context = {
     error?: any,
     start_time?: string,
     end_time?: string,
-    tags?: Tag[],
+    tags?: (Tag | string)[],
 }
 
 export function gatherKindsAndTags(ctx: Context, result: Set<string>) {
@@ -44,6 +44,39 @@ export function gatherKindsAndTags(ctx: Context, result: Set<string>) {
             gatherKindsAndTags(child, result)
         }
     }
+}
+
+
+export function collectTags(contexts: Context[]): Tag[] {
+    const result: Tag[] = [];
+    for (const ctx of contexts) {
+        if (ctx.tags) {
+            for (const tagOrString of ctx.tags) {
+                let tag = typeof tagOrString === 'string' ? { "name": tagOrString } : tagOrString;
+                if (!result.find((t) => t.name === tag.name)) {
+                    result.push(tag);
+                }
+            }
+        }
+    }
+    return result;
+}
+
+export function hasTag(context: Context, tagName: string) {
+    if (context.tags) {
+        for (const tag of context.tags) {
+            if (typeof tag === 'string') {
+                if (tag === tagName) {
+                    return true;
+                }
+            } else {
+                if (tag.name === tagName) {
+                    return true
+                }
+            }
+        }
+    }
+    return false
 }
 
 export function duration(ctx: Context): number | null {
