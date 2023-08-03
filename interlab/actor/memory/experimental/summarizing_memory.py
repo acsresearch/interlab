@@ -4,6 +4,7 @@ from typing import Any
 import numpy as np
 
 from interlab.actor.event import Event
+from interlab.context import Context, current_context
 from interlab.lang_models.count_tokens import count_tokens
 from interlab.queries.summarize import summarize_with_limit
 from interlab.utils.text import shorten_str
@@ -23,7 +24,7 @@ class _SummarizingMemoryItem:
 class SummarizingMemory(ListMemory):
     def __init__(
         self,
-        model: str | Any = "gpt-4",
+        model: Any,
         token_limit=2000,
         one_message_limit=500,
         summary_limit=250,
@@ -49,10 +50,12 @@ class SummarizingMemory(ListMemory):
         for i, item in enumerate(self.items[:-1]):
             if item.level == 0 and item.tokens > self.summary_limit:
                 # Found one; summarize it
-                _LOG.debug(
+                msg = (
                     f"summarize: shortening {item.tokens} token message to {self.summary_limit}: "
                     f"{shorten_str(item.text)!r}"
                 )
+                _LOG.debug(msg)
+                current_context().add_event(msg)
                 item.text = summarize_with_limit(
                     item.text,
                     model=self.model,
@@ -72,16 +75,18 @@ class SummarizingMemory(ListMemory):
         for i, item in enumerate(self.items[:-1]):
             if item.level == summary_level:
                 i1, i2 = self.items[i : i + 2]
-                _LOG.debug(
+                msg = (
                     f"summarize: summarizing {i1.tokens} tokens (level {i1.level}) and {i2.tokens} tokens "
                     f"(level {i2.level}) messages to {self.summary_limit} tokens"
                 )
+                _LOG.debug(msg)
+                current_context().add_event(msg)
                 text = summarize_with_limit(
                     f"{i1.text}\n\n{i2.text}",
                     model=self.model,
                     token_limit=self.summary_limit - 5,
                 )
-                tokens = count_tokens(item.text, self.model)
+                tokens = count_tokens(text, self.model)
                 self.items[i : i + 2] = [
                     _SummarizingMemoryItem(
                         text, tokens + 5, level=max(i1.level, i2.level) + 1
@@ -91,24 +96,25 @@ class SummarizingMemory(ListMemory):
                 return
         raise Exception("Bug: summarization failed")
 
-    def add_event(self, event: Event):
-        text = str(event)
-        tokens = count_tokens(text, self.model)  # Estimate for newlines etc.
-        if tokens > self.one_message_limit:
-            _LOG.debug(
-                f"add_event: shortening {tokens} token message to {self.one_message_limit}: {shorten_str(text)!r}"
-            )
-            text = summarize_with_limit(
-                text,
-                model=self.model,
-                token_limit=self.one_message_limit - 5,
-            )
+    def add_event(self, event: Event | str):
+        with Context("SummarizingMemory.add_event", inputs=dict(event=event)) as c:
+            text = str(event)
             tokens = count_tokens(text, self.model)  # Estimate for newlines etc.
+            if tokens > self.one_message_limit:
+                msg = f"add_event: shortening {tokens} token message to {self.one_message_limit}: {shorten_str(text)!r}"
+                c.add_event(msg)
+                _LOG.debug(msg)
+                text = summarize_with_limit(
+                    text,
+                    model=self.model,
+                    token_limit=self.one_message_limit - 5,
+                )
+                tokens = count_tokens(text, self.model)  # Estimate for newlines etc.
 
-        self.items.append(_SummarizingMemoryItem(text, tokens + 5))
-        while self.total_tokens() > self.token_limit:
-            self.summarize()
+            self.items.append(_SummarizingMemoryItem(text, tokens + 5))
+            while self.total_tokens() > self.token_limit:
+                self.summarize()
 
     def get_events(self, query: Any = None) -> tuple[Event]:
-        assert query is None
-        return tuple(Event(i.text for i in self.items))
+        assert query is None, "Query not supported by this memory"
+        return tuple(Event(i.text) for i in self.items)
