@@ -36,7 +36,7 @@ const DEFAULT_COLORS = [grey[100], grey[300]];
 function ContextMenu(props: { context: Context, env: BrowserEnv }) {
 
     return (
-        <PopupState variant="popover" popupId="demo-popup-menu">
+        <PopupState variant="popover">
             {(popupState) => (
                 <>
                     <IconButton {...bindTrigger(popupState)}><MenuIcon /></IconButton>
