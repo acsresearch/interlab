@@ -127,7 +127,7 @@ def main(cfg: DictConfig):
             return ChatOpenAI(model_name=model, **cfg)
         if model in ["claude-1", "claude-2"]:
             return ChatAnthropic(model=model, **cfg)
-        if model == "text-davinci-003":
+        if model in ["text-curie-001", "text-davinci-003"]:
             return OpenAI(model_name=model, **cfg)
         raise ValueError(f"Unknown model name: {model}")
 
@@ -151,13 +151,13 @@ def main(cfg: DictConfig):
     storage = FileStorage(
         Path.cwd()
     )  # Directory for storing contexts (structured logs)
-    logging.info(storage.directory)
+    LOGGER.info(storage.directory)
     with Context(f"adversarial-prompting", storage=storage) as c:
         game_states = adversarial_prompting(
             attacker=attacker, victim=victim, judge=judge, rounds=cfg.rounds
         )
         c.set_result(game_states)
-        logging.info(f"Result: {game_states[-1].success}")
+        LOGGER.info(f"Result: {game_states[-1].success}")
 
         # convert result to dict
         result_dict = {
