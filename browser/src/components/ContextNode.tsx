@@ -1,7 +1,7 @@
 
 
 import { Context, duration, getAllChildren } from "../model/Context";
-import { CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
 import { Item } from "./Item";
@@ -68,10 +68,10 @@ function ContextMenu(props: { context: Context, env: BrowserEnv }) {
     );
 }
 
-function ContextNodeItem(props: { icon?: React.ReactNode, title?: string, children?: React.ReactNode }) {
-    return <Stack direction="row" style={{ marginLeft: 20, marginTop: 5, marginBottom: 5, }}>
+function ContextNodeItem(props: { icon: React.ReactNode, children?: React.ReactNode }) {
+    return <Stack direction="row" sx={{ ml: 2, mt: 1, mb: 1, }}>
         {props.icon}
-        <div style={{ marginLeft: 10 }}>{props.children}</div>
+        <Box sx={{ ml: 1 }}>{props.children}</Box>
     </Stack>
 }
 
@@ -102,25 +102,25 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
     let icon: React.ReactNode;
     let small = false;
 
-    let iconStyle = { paddingRight: 10, color: mainColor };
+    let iconStyle = { pr: 0.5, color: mainColor };
 
     if (c.state === "open") {
-        icon = <span style={{ paddingRight: 10 }}><CircularProgress size="1em" /></span>
+        icon = <Box component="span" sx={{ pr: 0.5 }}><CircularProgress size="1em" /></Box>
     } else if (c.state === "event") {
-        icon = <CircleIcon style={iconStyle} />
+        icon = <CircleIcon sx={iconStyle} />
     } else if (c.state === "error") {
-        icon = <ErrorIcon style={iconStyle} />
+        icon = <ErrorIcon sx={iconStyle} />
     } else if (c.kind === "repeat_on_failure") {
-        icon = <ReplayIcon style={iconStyle} />
+        icon = <ReplayIcon sx={iconStyle} />
     } else if (c.kind === "query") {
-        icon = <QuestionMarkIcon style={iconStyle} />
+        icon = <QuestionMarkIcon sx={iconStyle} />
     } else if (c.kind === "action") {
-        icon = <GamepadIcon style={iconStyle} />
+        icon = <GamepadIcon sx={iconStyle} />
     } else if (c.kind === "observation") {
-        icon = <VisibilityIcon style={iconStyle} fontSize="small" />
+        icon = <VisibilityIcon sx={iconStyle} fontSize="small" />
         small = true;
     } else {
-        icon = <AccountTreeIcon style={iconStyle} />
+        icon = <AccountTreeIcon sx={iconStyle} />
     }
 
     const borderColor = c.meta?.color_border;
@@ -159,13 +159,13 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
             borderLeft = "1.5px " + (mainColor || "#666") + " solid"
         }
 
-        return <div style={{ borderLeft, textAlign: "left", marginLeft: "45px" }}>
+        return <Box sx={{ borderLeft, textAlign: "left", ml: 5.7 }}>
             {inputs &&
                 (
                     inputs.map(({ property, value }, i) =>
 
                         <ContextNodeItem key={i} icon={<ArrowForwardIcon />}>
-                            <div><strong>{property}</strong></div>
+                            <Box><strong>{property}</strong></Box>
                             <DataRenderer uid={c.uid + "/inputs/" + property} data={value} env={props.env} />
                         </ContextNodeItem>
                     )
@@ -174,8 +174,10 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
             }
             {
                 c.children && (
-                    c.children?.filter(isVisible).map((ctx) => <div key={ctx.uid} style={{ paddingLeft: 5 }}>
-                        <ContextNode env={props.env} context={ctx} depth={props.depth + 1} /></div>)
+                    <Box sx={{ ml: 1, mt: 1, mb: 1, }}>
+                        {c.children?.filter(isVisible).map((ctx) =>
+                            <ContextNode key={ctx.uid} env={props.env} context={ctx} depth={props.depth + 1} />)}
+                    </Box>
                 )
             }
             {
@@ -190,43 +192,41 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
                     <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" env={props.env} />
                 </ContextNodeItem>
             }
-        </div >
+        </Box>
     }
 
     const header = () => {
         let short_result = undefined; // c.result ? short_repr(c.result) : null;
         const dur = duration(props.context);
-        if (dur && dur > 0) {
-            <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span>
-        }
-        return <div style={{ display: "flex", alignContent: "space-between" }}><div style={{
-            display: 'flex',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            width: "100%",
-        }}>
-            <IconButton size="small" onClick={() => props.env.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
-            <span style={{ color: mainColor, fontSize: small ? "75%" : undefined }}>{c.name}</span> {short_result && <><ArrowRightAltIcon /> {short_result}</>} {/*c.kind ? " [" + c.kind + "]" : ""*/}
-            {dur && dur > 0 ? <span style={{ color: "gray", marginLeft: 10 }}>{humanReadableDuration(dur)}</span> : ""}
-            {c.tags?.map((t, i) => <span style={{ marginLeft: 5 }} key={i}><TagChip tag={t} /></span>)}
-        </div>
+        return <Box sx={{ display: "flex", alignContent: "space-between" }}>
+            <Box style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                width: "100%",
+            }}>
+                <IconButton size="small" onClick={() => props.env.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
+                <Box component="span" sx={{ color: mainColor, fontSize: small ? "75%" : undefined }}>{c.name}</Box> {short_result && <><ArrowRightAltIcon /> {short_result}</>} {/*c.kind ? " [" + c.kind + "]" : ""*/}
+                {dur && dur > 0 ? <Box component="span" sx={{ color: "#999", marginLeft: 1 }}>{humanReadableDuration(dur)}</Box> : ""}
+                {c.tags?.map((t, i) => <Box component="span" sx={{ marginLeft: 0.5 }} key={i}><TagChip tag={t} /></Box>)}
+            </Box>
             <ContextMenu context={c} env={props.env} />
-        </div>
+        </Box>
     }
 
     if (themeWithBoxes) {
-        return <Item style={{ backgroundColor, paddingTop: small ? 0 : undefined, paddingBottom: small ? 0 : undefined, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
+        return <Item sx={{ backgroundColor, paddingTop: small ? 0 : undefined, paddingBottom: small ? 0 : undefined, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
             <>
                 {header()}
                 {open && body()}
             </>
         </Item >
     } else {
-        return <div style={{ backgroundColor, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
+        return <Box sx={{ backgroundColor, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
             <Typography color="text.secondary">
                 {header()}
                 {open && body()}
             </Typography>
-        </div>
+        </Box>
     }
 }
