@@ -4,19 +4,21 @@
 
 Welcome to InterLab, a research-focused toolkit created to facilitate study and experimentation in the realm of agent interactions, particularly those based on Language Learning Models (LLMs). Our primary objective is to simplify the process of crafting, deploying, and inspecting complex and structured queries within the context of agent interactions, while also providing robust support for interaction logging, UI and visualization. While we maintain a broad scope and plan to include game theoretic agents and a variety of scenarios, our main emphasis lies in the sphere of LLM interactions.
 
-InterLab is developed at the [Alignment of Complex Systems Research Group](https://acsresearch.org/).
+InterLab is developed at the [Alignment of Complex Systems Research Group](https://acsresearch.org/) and distributed under MIT license (see `LICENSE`).
 
 ## Overview
 
 InterLab is composed of several core modules, each providing distinct functionalities:
 
-- `context` offers comprehensive structured logging of nested `Context`s, storage for contexts, and custom visualization of content such as Images, generic HTML, and f-string field substitutions.
-- `actor` provides `ActorBase` and a few basic agents, including a generic LLM agent and a web console for playing as an actor, along with an actor memory system.
-- `lang_models` includes several LLM APIs, a web-console "LLM" for debugging, and a generic `query_model` wrapper to unify the APIs of our models, LangChain models (both chat and non-chat), and general callable functions while maintaining context logging.
-- `queries` presents powerful helpers for advanced queries to the models: querying the model for structured data for any dataclass or Pydantic model, generating schemas optionally, generating examples, and providing robust and comprehensive response parsing for JSON (with repeat and validation options).
+- `context` offers comprehensive structured logging of nested `Context`s, storage for contexts, and custom visualization of content such as Images, generic HTML, and tracking f-string-like field substitutions in larger text (with `FormatStr`).
+- `actor` provides framework for actor interactions, including a generic LLM single-shot agent and a web console for playing as an actor, along with actor memory systems. The agents may be queried for any JSON-like action type.
+- `lang_models` includes helpers for querying various language models (in particular both LangChain chat and base models), tokenization, summarization etc., all with structured `Context` logging. It also includes a web-console "LLM" for debugging and user interaction, and several internal API wrappers (though those are mostly obsoleted by using langchain).
+- `queries` presents powerful helpers for advanced queries to the models: querying the model for structured data for any dataclass or Pydantic model (incl. auto-generating example instances of a schema), and providing robust and comprehensive response parsing for JSON (with repeat and validation options). It also includes simple yet robust summarization.
 - `ui` contains a server for context browser and web consoles (actor and model), along with pre-compiled web apps.
 - `utils` encompasses several text utilities, color handling, and other helpers.
 - `ext` includes extensions and integrations with other systems, currently Matplotlib and Google Colab.
+
+Beyond that, you can find more less-tested and experimental code in `experimental` submodules accross the package.
 
 ### InterLab Zoo
 
@@ -118,3 +120,7 @@ Listing a few directly related to the framework:
 
 - Active actor interactions - actors decide _when_ to act instead of being prompted for action, either in simulated or in real time.
 - Network protocol for remote agents, connection to other actor frameworks, games, or UIs.
+
+## Contributions and development
+
+To contribute, please subbmit a pull request with your proposed changes based on the latest `main` branch. By submitting a pull request for this project, you agree to license your contribution under the MIT license to this project as written in the `LICENSE` file.
