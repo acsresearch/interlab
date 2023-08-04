@@ -1,0 +1,22 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: InterLab
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Tomáš
+    family-names: Gavenčiak
+    email: gavento@acsresearch.org
+    affiliation: Charles University, ACS research
+    orcid: 'https://orcid.org/0000-0003-1119-2426'
+  - given-names: Ada
+    family-names: Böhm
+    email: ada@acsresearch.org
+    affiliation: ACS research
+    orcid: 'https://orcid.org/0000-0001-8044-7694'
+repository-code: 'https://github.com/acsresearch/interlab'
+license: MIT

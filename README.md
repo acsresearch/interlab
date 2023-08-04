@@ -6,6 +6,10 @@ Welcome to InterLab, a research-focused toolkit created to facilitate study and 
 
 InterLab is developed at the [Alignment of Complex Systems Research Group](https://acsresearch.org/) and distributed under MIT license (see `LICENSE`).
 
+**Current status: InterLab is in open beta.** While we use InterLab internally for our research, it is also under active development and although we aim to limit any breaking changes to 0.x version changes, the API may change without notice. We plan to announce InterLab with a complete API, use-cases and documentation in Aug 2023, and while we encourage you to use it for your alignment research already, we also ask you not to propagate it widely in the next few weeks.
+
+If you use InterLab, want to share ideas, feedback or have any questions, please email us at `gavento@acsresearch.org`.
+
 ## Overview
 
 InterLab is composed of several core modules, each providing distinct functionalities:
@@ -123,4 +127,12 @@ Listing a few directly related to the framework:
 
 ## Contributions and development
 
-To contribute, please subbmit a pull request with your proposed changes based on the latest `main` branch. By submitting a pull request for this project, you agree to license your contribution under the MIT license to this project as written in the `LICENSE` file.
+To contribute, please submit a pull request with your proposed changes based on the latest `main` branch. 
+
+By submitting a pull request for this project, you agree to license your contribution under the MIT license to this project as written in the `LICENSE` file.
+
+## Citing InterLab
+
+If you use InterLab in your researh, please cite it in your work using the "Cite this repository" github gadget or with:
+
+Tomáš Gavenčiak, Ada Böhm: *InterLab [Computer software].* 2023. https://github.com/acsresearch/interlab
