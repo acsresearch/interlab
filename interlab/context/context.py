@@ -42,6 +42,8 @@ class Context:
         result=None,
     ):
         if inputs:
+            assert isinstance(inputs, dict)
+            assert all(isinstance(key, str) for key in inputs)
             inputs = serialize_with_type(inputs)
         if meta:
             meta = serialize_with_type(meta)
@@ -221,6 +223,16 @@ class Context:
             if name in self.inputs:
                 raise Exception(f"Input {name} already exists")
             self.inputs[name] = serialize_with_type(value)
+
+    def add_inputs(self, inputs: dict[str, any]):
+        with self._lock:
+            if self.inputs is None:
+                self.inputs = {}
+            for name in inputs:
+                if name in self.inputs:
+                    raise Exception(f"Input {name} already exists")
+            for name, value in inputs.items():
+                self.inputs[name] = serialize_with_type(value)
 
     def set_result(self, value: any):
         with self._lock:
