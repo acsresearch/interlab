@@ -54,7 +54,7 @@ def summarize_with_limit(
         # Cut off parts separated by whitespace, punctuation, etc.
         while count_tokens(summary, model) > token_limit - 6:
             idx = re.search(
-                r"(?s:.*)[\s.,-_;/!?()]", summary, re.DOTALL | re.MULTILINE
+                r"(?s:.*)[\s.,;_=<>'\"&/!?()-]", summary, re.DOTALL | re.MULTILINE
             ).end()
             summary = summary[: idx - 1]
         summary = summary + " ..."
