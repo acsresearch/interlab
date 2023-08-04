@@ -67,7 +67,7 @@ class ConsoleState:
     async def broadcast(self, data):
         if not self.sockets:
             return
-        results = [s.send_json(data) for s in self.sockets]
+        results = [asyncio.create_task(s.send_json(data)) for s in self.sockets]
         await asyncio.wait(results)
 
     async def clear(self):
