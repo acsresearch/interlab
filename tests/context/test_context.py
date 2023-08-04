@@ -183,6 +183,41 @@ def test_context_dataclass():
     }
 
 
+def test_context_add_inputs():
+    class A:
+        pass
+
+    a = A()
+
+    with Context("root") as c:
+        with Context("child1") as c2:
+            c2.add_inputs({"x": 10, "y": a})
+        with Context("child1", inputs={"z": 20}) as c2:
+            c2.add_inputs({"x": 10, "y": a})
+    output = strip_tree(c.to_dict())
+    print(output)
+    assert output == {
+        "_type": "Context",
+        "name": "root",
+        "children": [
+            {
+                "_type": "Context",
+                "name": "child1",
+                "inputs": {"x": 10, "y": {"_type": "A", "id": id(a)}},
+            },
+            {
+                "_type": "Context",
+                "name": "child1",
+                "inputs": {
+                    "z": 20,
+                    "x": 10,
+                    "y": {"_type": "A", "id": id(a)},
+                },
+            },
+        ],
+    }
+
+
 def test_context_lists():
     with Context("root", inputs={"a": [1, 2, 3]}) as c:
         c.set_result(["A", ["B", "C"]])
