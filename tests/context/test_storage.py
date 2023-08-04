@@ -1,4 +1,5 @@
 from interlab.context import Context
+from interlab.context.storage import current_storage
 
 
 def test_file_storage(storage):
@@ -56,3 +57,18 @@ def test_file_storage_dirs(storage):
 
     storage.remove_context(c1.uid)
     assert storage.list() == []
+
+
+def test_storage_with_block(storage):
+    assert current_storage() is None
+    with storage:
+        assert current_storage() is storage
+        with Context("c") as c:
+            with Context("c2"):
+                pass
+    assert current_storage() is None
+    assert storage.list() == [c.uid]
+
+    with storage:
+        assert current_storage() is storage
+    assert current_storage() is None

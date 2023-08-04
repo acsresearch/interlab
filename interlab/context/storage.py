@@ -1,4 +1,5 @@
 import abc
+import contextvars
 import gzip
 import json
 import os
@@ -11,12 +12,15 @@ from ..utils.text import validate_uid
 from .context import Context
 from .serialization import Data
 
+_STORAGE_STACK = contextvars.ContextVar("_STORAGE_STACK", default=())
+
 
 class StorageBase(abc.ABC):
     def __init__(self):
         self._lock = threading.Lock()
         self._ephemeral_contexts = {}
         self._server = None
+        self._token = None
 
     def register_context(self, context: Context):
         """Register running context (without writing into the persistent storage)"""
@@ -97,6 +101,24 @@ class StorageBase(abc.ABC):
     def find_contexts(self, predicate: Callable) -> Iterator[Context]:
         for context in self.read_all_contexts():
             yield from context.find_contexts(predicate)
+
+    def __enter__(self):
+        if self._token:
+            raise Exception("Storage is already active")
+        old = _STORAGE_STACK.get()
+        self._token = _STORAGE_STACK.set(old + (self,))
+        return self
+
+    def __exit__(self, _exc_type, exc_val, _exc_tb):
+        _STORAGE_STACK.reset(self._token)
+        self._token = False
+
+
+def current_storage() -> Optional[StorageBase]:
+    stack = _STORAGE_STACK.get()
+    if not stack:
+        return None
+    return stack[-1]
 
 
 class FileStorage(StorageBase):
