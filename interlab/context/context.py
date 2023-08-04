@@ -41,6 +41,8 @@ class Context:
         directory=False,
         result=None,
     ):
+        if storage is None and current_context(False) is None:
+            storage = current_storage()
         if inputs:
             assert isinstance(inputs, dict)
             assert all(isinstance(key, str) for key in inputs)
@@ -315,4 +317,4 @@ def current_context(check: bool = True) -> Optional[Context]:
 
 
 # Solving circular dependencies
-from .storage import StorageBase  # noqa
+from .storage import StorageBase, current_storage  # noqa
