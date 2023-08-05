@@ -9,7 +9,7 @@ import openai
 
 from ..context import Context
 from ..utils.text import group_newlines, remove_leading_spaces, shorten_str
-from .base import LangModelBase, ModelConf
+from .base import LangModelBase
 
 _LOG = logging.getLogger(__name__)
 
@@ -30,16 +30,16 @@ BACKOFF_EXCEPTIONS = (
     BACKOFF_EXCEPTIONS,
     max_time=MAX_QUERY_TIME,
 )
-def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: ModelConf):
+def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: dict[str, any]):
     # openai.api_key = api_key
     # openai.organization = api_org
     r = openai.ChatCompletion.create(
         api_key=api_key,
         organization=api_org,
-        model=conf.model,
+        model=conf["model_name"],
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=conf.max_tokens,
-        temperature=conf.temperature,
+        max_tokens=conf["max_tokens"],
+        temperature=conf["temperature"],
     )
     m = r.choices[0].message
     assert m.role == "assistant"
@@ -52,15 +52,15 @@ def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: ModelConf)
     max_time=MAX_QUERY_TIME,
 )
 async def _make_openai_chat_async_query(
-    api_key: str, api_org: str, prompt, conf: ModelConf
+    api_key: str, api_org: str, prompt, conf: dict[str, any]
 ):
     r = await openai.ChatCompletion.acreate(
         api_key=api_key,
         organization=api_org,
-        model=conf.model,
+        model=conf["model_name"],
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=conf.max_tokens,
-        temperature=conf.temperature,
+        max_tokens=conf["max_tokens"],
+        temperature=conf["temperature"],
     )
     m = r.choices[0].message
     assert m.role == "assistant"
@@ -96,39 +96,36 @@ class OpenAiChatModel(LangModelBase):
     def test(self):
         openai.Model.list(api_key=self.api_key, organization=self.api_org)
 
-    def _prepare_inputs(self, prompt, max_tokens):
-        conf = ModelConf(
-            api="OpenAiChat",
-            model=self.model,
-            temperature=self.temperature,
-            max_tokens=max_tokens,
-        )
-        inputs = {
-            "prompt": prompt,
-            "conf": conf,
+    def prepare_conf(
+        self, max_tokens: Optional[int], strip=True
+    ) -> (str, dict[str, any]):
+        if max_tokens is None:
+            max_tokens = 1024
+        typename = __class__.__qualname__
+        name = f"query interlab {typename} ({self.model})"
+        conf = {
+            "model_name": self.model,
+            "temperature": self.temperature,
+            "max_tokens": max_tokens,
+            "strip": strip,
         }
-        return inputs
+        return name, conf
 
-    def query(self, prompt: str, max_tokens=1024, strip=None) -> str:
+    def _query(self, prompt: str, conf: dict[str, any]) -> str:
+        strip = conf["strip"]
         if strip is True:
             prompt = remove_leading_spaces(group_newlines(prompt.strip()))
-        inputs = self._prepare_inputs(prompt, max_tokens)
-        with Context(f"OpenAiChat {self.model}", kind="query", inputs=inputs) as c:
-            result = _make_openai_chat_query(
-                self.api_key, self.api_org, prompt, inputs["conf"]
-            )
-
-            if strip is True:
-                result = group_newlines(result.strip())
-            c.set_result(result)
-            return result
+        result = _make_openai_chat_query(self.api_key, self.api_org, prompt, conf)
+        if strip is True:
+            result = group_newlines(result.strip())
+        return result
 
     async def aquery(self, prompt: str, max_tokens=1024) -> str:
-        inputs = self._prepare_inputs(prompt, max_tokens)
-        with Context(f"OpenAiChat {self.model}", kind="query", inputs=inputs) as c:
+        name, conf = self.prepare_conf(max_tokens, True)
+        with Context(name, kind="query", inputs={"prompt": prompt, "conf": conf}) as c:
             async with _openai_semaphore:  # !!!  acquire semaphore outside of @backoff function is intensional
                 result = await _make_openai_chat_async_query(
-                    self.api_key, self.api_org, prompt, inputs["conf"]
+                    self.api_key, self.api_org, prompt, conf
                 )
             c.set_result(result)
             return result

@@ -14,7 +14,7 @@ def _prepare_model(model: any, model_kwargs: dict = None, call_async: bool = Fal
         model_kwargs = {}
 
     typename = model.__class__.__qualname__
-    conf = dict(_class=f"{model.__class__.__module__}.{typename}")
+    conf = {"class": f"{model.__class__.__module__}.{typename}"}
     if isinstance(model, langchain.llms.base.BaseLLM):
         conf.update(model.dict())
         # For Anthropic (and maube other) langchain models:
@@ -31,12 +31,9 @@ def _prepare_model(model: any, model_kwargs: dict = None, call_async: bool = Fal
             [langchain.schema.HumanMessage(content=c)], **model_kwargs
         ).content
     elif isinstance(model, LangModelBase):
-        conf.update(
-            model_name=getattr(model, "model", None),
-            temperature=getattr(model, "temperature", None),
-        )
-        name = f"query interlab model {typename} ({conf['model_name']})"
-        call = lambda c: model.query(c, **model_kwargs)  # noqa: E731
+        name, cfg = model.prepare_conf(**model_kwargs)
+        conf.update(cfg)
+        call = lambda c: model._query(c, conf)  # noqa: E731
     elif callable(model):
         if hasattr(model, "__qualname__"):
             name = f"query function {getattr(model, '__module__', '<unknown>')}.{model.__qualname__}"
