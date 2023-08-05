@@ -8,9 +8,9 @@ ROOT_DIR = os.path.dirname(TESTS_DIR)
 
 sys.path.insert(0, ROOT_DIR)
 
-from interlab.context import FileStorage  # noqa E402
-
 
 @pytest.fixture
 def storage(tmpdir):
+    from interlab.context import FileStorage
+
     return FileStorage(os.path.join(tmpdir, "storage"))
