@@ -1,5 +1,6 @@
 import contextvars
 import datetime
+import functools
 import inspect
 import logging
 from dataclasses import dataclass
@@ -16,20 +17,54 @@ _CONTEXT_STACK = contextvars.ContextVar("_CONTEXT_STACK", default=())
 
 
 class ContextState(Enum):
+    """
+    An enumeration representing the state of a context.
+    """
+
     NEW = "new"
+    """The context has been created but has not started yet."""
     OPEN = "open"
+    """The context is currently running."""
     FINISHED = "finished"
+    """The context has successfully finished execution."""
     ERROR = "error"
+    """The context finished with an exception."""
     EVENT = "event"
+    """This context represents a single logged event. It has no duration,
+    children etc, but it may have associated data and metadata."""
 
 
 @dataclass
 class Tag:
+    """
+    A simple class representing a tag that can be applied to a context. Optionally with style information.
+    """
+
     name: str
+    """The name of the tag; any short string."""
     color: Optional[str] = None
+    """HTML hex color code, e.g. `#ff0000`."""
 
 
 class Context:
+    """
+    A context object that represents a single request or (sub)task in a nested hierarchy.
+
+    The class has several attributes that are intended as read-only; use setters to modify them.
+
+    The `Context` can be used as context manager, e.g.:
+
+    ```python
+    with Context("my context", inputs={"z": 42}) as c:
+        c.add_input("x", 1)
+        y = do_some_computation(x=1)
+        # The context would also note any exceptions raised here
+        # (letting it propagate upwards), but a result needs to be set manually:
+        c.set_result(y)
+    # <- Here the context is already closed.
+    ```
+    """
+
     def __init__(
         self,
         name: str,
@@ -41,8 +76,21 @@ class Context:
         directory=False,
         result=None,
     ):
+        """
+        - `name` - A description or name for the context.
+        - `kind` - Indicates category of the context, may e.g. influence display of the context.
+        - `inputs` - A dictionary of inputs for the context.
+        - `meta` - A dictionary of any metadata for the context, e.g. UI style data.
+        - `tags` - A list of tags for the context. TODO: convert strs to Tag objects.
+        - `storage` - A storage object for the context. Set on the root context to log all contexts below it.
+        - `directory` - Whether to create a sub-directory for the context while storing.
+          This allows you to split the stored data across multiple files.
+        - `result` - The result value of the context, if it has already been computed.
+        """
+
         if storage is None and current_context(False) is None:
             storage = current_storage()
+
         if inputs:
             assert isinstance(inputs, dict)
             assert all(isinstance(key, str) for key in inputs)
@@ -77,6 +125,11 @@ class Context:
 
     @classmethod
     def deserialize(cls, data: Data, depth=0):
+        """
+        Deserialize a `Context` object from given JSON data.
+
+        - `data` - A dictionary containing the serialized context data.
+        """
         assert isinstance(data, dict)
         assert data["_type"] == "Context"
         self = cls.__new__(cls)
@@ -199,6 +252,9 @@ class Context:
         return False  # Propagate any exception
 
     def add_tag(self, tag: str | Tag):
+        """
+        Add a tag to the context.
+        """
         with self._lock:
             if self.tags is None:
                 self.tags = [tag]
@@ -219,6 +275,11 @@ class Context:
         return event
 
     def add_input(self, name: str, value: any):
+        """
+        Add a named input value to the context.
+
+        If an input of the same name already exists, an exception is raised.
+        """
         with self._lock:
             if self.inputs is None:
                 self.inputs = {}
@@ -237,15 +298,24 @@ class Context:
                 self.inputs[name] = serialize_with_type(value)
 
     def set_result(self, value: any):
+        """
+        Set the result value of the context.
+        """
         with self._lock:
             self.result = serialize_with_type(value)
 
     def set_error(self, exc: any):
+        """
+        Set the error value of the context (usually an `Exception` instance).
+        """
         with self._lock:
             self.state = ContextState.ERROR
             self.error = serialize_with_type(exc)
 
     def has_tag_name(self, tag_name: str):
+        """
+        Returns `True` if the context has a tag with the given name.
+        """
         if not self.tags:
             return False
         for tag in self.tags:
@@ -254,6 +324,12 @@ class Context:
         return False
 
     def find_contexts(self, predicate: Callable) -> List["Context"]:
+        """
+        Find all contexts matching the given callable `predicate`.
+
+        The predicate is called with a single argument, the `Context` to check, and should return `bool`.
+        """
+
         def _helper(context: Context):
             with context._lock:
                 if predicate(context):
@@ -270,6 +346,24 @@ class Context:
 def with_context(
     fn: Callable = None, *, name=None, kind=None, tags: Optional[List[str | Tag]] = None
 ):
+    """
+    A decorator wrapping every execution of the function in a new `Context`.
+
+    The `inputs`, `result`, and `error` (if any) are set automatically.
+    Note that you can access the created context in your function using `current_context`.
+
+    *Usage:*
+
+    ```python
+    @with_context
+    def func():
+        pass
+
+    @with_context(name="custom_name", kind="custom_kind", tags=['tag1', 'tag2'])
+    def func():
+        pass
+    ```
+    """
     if isinstance(fn, str):
         raise TypeError("use `with_context()` with explicit `name=...` parameter")
     name = name or fn.__name__
@@ -277,6 +371,7 @@ def with_context(
     def helper(func):
         signature = inspect.signature(func)
 
+        @functools.wraps(func)
         def wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
             with Context(
@@ -308,6 +403,12 @@ def with_context(
 
 
 def current_context(check: bool = True) -> Optional[Context]:
+    """
+    Returns the inner-most open context, if any.
+
+    Throws an error if `check` is `True` and there is no current context. If `check` is `False` and there is
+    no current context, it returns `None`.
+    """
     stack = _CONTEXT_STACK.get()
     if not stack:
         if check:
