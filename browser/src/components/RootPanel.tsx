@@ -72,7 +72,7 @@ export function FilterByTagButton(props: { roots: Context[], tagFilters: Tag[], 
 
 export function RootPanel(props: { roots: Context[], selectedCtx: Context | null, selectRoot: (ctx: string) => void, showRoots: RootsVisibility, setShowRoots: (v: RootsVisibility) => void, refresh: () => void, addInfo: AddInfo }) {
     const [confirmDialog, setConfirmDialog] = useState<boolean>(false);
-    const [tagFilters, setTagFilters] = useState<Tag[]>([{ name: "abc", color: "red" }, { name: "zzz" }]);
+    const [tagFilters, setTagFilters] = useState<Tag[]>([]);
 
     const showRoots = props.showRoots;
 
