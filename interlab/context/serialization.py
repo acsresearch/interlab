@@ -1,10 +1,12 @@
 import dataclasses
 import traceback
-from typing import Dict, List
+from typing import Callable, Dict, List, TypeVar
 
 Data = Dict[str, "Data"] | List["Data"] | int | float | str | bool | None
 
 PRIMITIVES = (int, str, float, bool)
+
+CUSTOM_SERIALIZERS = {}
 
 
 def _dataclass_serialize_helper(pairs):
@@ -51,6 +53,12 @@ def serialize_with_type(obj: any) -> Data:
         return [serialize_with_type(value) for value in obj]
     if isinstance(obj, dict):
         return {key: serialize_with_type(value) for key, value in obj.items()}
+    serializer = CUSTOM_SERIALIZERS.get(obj.__class__)
+    if serializer is not None:
+        serialized = serializer(obj)
+        if "_type" not in serialized:
+            serialized["_type"] = type(obj).__name__
+        return serialized
     if hasattr(obj, "__log_to_context__"):
         serialized = obj.__log_to_context__()
         if isinstance(serialized, dict) and "_type" not in serialized:
@@ -66,3 +74,14 @@ def serialize_with_type(obj: any) -> Data:
 
 def serializer_with_type(cls, obj) -> Data:
     return serialize_with_type(obj)
+
+
+T = TypeVar("T")
+
+
+def register_custom_serializer(cls: type[T], serialize_fn: Callable[[T], Data]):
+    CUSTOM_SERIALIZERS[cls] = serialize_fn
+
+
+def unregister_custom_serializer(cls):
+    CUSTOM_SERIALIZERS.pop(cls, None)

@@ -1,10 +1,14 @@
 from dataclasses import dataclass
 from typing import Any
 
-from interlab.context.serialization import serialize_with_type
+from interlab.context.serialization import (
+    register_custom_serializer,
+    serialize_with_type,
+    unregister_custom_serializer,
+)
 
 
-def test_custom_serialize():
+def test_log_to_context():
     class MyClass:
         def __init__(self):
             self.x = "hi!"
@@ -32,3 +36,21 @@ def test_custom_serialize():
         "my_other_class": {"_type": "MyOtherClass"},
         "other": {"_type": "function"},
     }
+
+
+def test_custom_serializer():
+    class MyClass:
+        def __init__(self, x):
+            self.x = x
+
+    def serializer(m: MyClass):
+        return {"abc": "MySerializer", "x": m.x}
+
+    register_custom_serializer(MyClass, serializer)
+    try:
+        mm = MyClass(123)
+        output = serialize_with_type(mm)
+        print(output)
+        assert output == {"abc": "MySerializer", "x": 123, "_type": "MyClass"}
+    finally:
+        unregister_custom_serializer(MyClass)

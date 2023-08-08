@@ -46,7 +46,6 @@ def test_context_basic():
     assert c.state == ContextState.FINISHED
     # with_new_context("ch3", lambda d: f"Hello {d.name}", Data(name="LLM"))
     serialization_check(c)
-    print(root_ctx.to_dict())
     output = strip_tree(root_ctx.to_dict())
 
     print(json.dumps(output, indent=2))
