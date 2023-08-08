@@ -2,6 +2,7 @@ from interlab.context.data.format_str import FormatStr
 
 from ..context import Context
 from .base import LangModelBase
+from .replay import Replay
 
 
 def _prepare_model(model: any, model_kwargs: dict = None, call_async: bool = False):
@@ -48,11 +49,21 @@ def _prepare_model(model: any, model_kwargs: dict = None, call_async: bool = Fal
 
 
 def query_model(
-    model: any, prompt: str | FormatStr, kwargs: dict = None, with_context=True
+    model: any,
+    prompt: str | FormatStr,
+    kwargs: dict = None,
+    with_context=True,
+    replay: Replay = None,
 ) -> str:
     if not isinstance(prompt, (str, FormatStr)):
         raise TypeError("query_model accepts only str and FormatStr as prompt")
     name, conf, call = _prepare_model(model, model_kwargs=kwargs, call_async=False)
+
+    if replay is not None:
+        cached_result = replay.get_cached_response(conf, prompt)
+        if cached_result:
+            name = "(Cached) " + name
+            call = lambda _prompt: cached_result  # noqa: E731
     if with_context:
         with Context(name, kind="query", inputs=dict(prompt=prompt, conf=conf)) as c:
             if isinstance(prompt, FormatStr):
