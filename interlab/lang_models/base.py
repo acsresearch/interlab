@@ -12,6 +12,8 @@ class LangModelBase(abc.ABC):
         raise NotImplementedError()
 
     def query(self, prompt: str, max_tokens: Optional[int] = None, strip=True) -> str:
+        from .query_model import query_model
+
         return query_model(
             self, prompt, {"max_tokens": max_tokens, "strip": bool(strip)}
         )
@@ -22,6 +24,3 @@ class LangModelBase(abc.ABC):
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
-
-
-from .query_model import query_model  # noqa: E402

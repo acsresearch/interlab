@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 from starlette.websockets import WebSocketDisconnect
 
+from ..utils.display import display_iframe
 from .server_handle import PATH_TO_STATIC_FILES, ServerHandle
 
 _LOG = logging.getLogger(__name__)
@@ -153,7 +154,5 @@ class ConsoleServer:
         event.wait()
         return event.my_result  # noqa
 
-    def display(self, width=1000, height=700):
-        from IPython.display import IFrame, display
-
-        display(IFrame(self.url, width=width, height=height))
+    def display(self, width="95%", height=700):
+        display_iframe(self.url, self.handle.port, width, height)
