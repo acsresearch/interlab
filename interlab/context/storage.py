@@ -8,6 +8,7 @@ import threading
 from os import PathLike
 from typing import Callable, Iterator, List, Optional, Sequence
 
+from ..utils.display import display_iframe
 from ..utils.text import validate_uid
 from .context import Context
 from .serialization import Data
@@ -74,15 +75,7 @@ class StorageBase(abc.ABC):
         """Show context in Jupyter notebook"""
         if self._server is None:
             self.start_server()
-
-        from IPython.display import IFrame, display
-
-        from interlab.ext.google_colab import detect_colab, iframe_for_port
-
-        if detect_colab():
-            display(iframe_for_port(self._server.port, width=width, height=height))
-        else:
-            display(IFrame(self._server.url, width=width, height=height))
+        display_iframe(self._server.url, self._server.port, width, height)
 
     @property
     def server(self):
