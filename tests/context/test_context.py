@@ -295,12 +295,19 @@ def test_context_tags():
     assert root == {
         "_type": "Context",
         "name": "root",
-        "tags": ["abc", "xyz", "123"],
+        "tags": [
+            {"name": "abc", "color": None, "_type": "Tag"},
+            {"name": "xyz", "color": None, "_type": "Tag"},
+            {"name": "123", "color": None, "_type": "Tag"},
+        ],
         "children": [
             {
                 "_type": "Context",
                 "name": "child",
-                "tags": ["mmm", {"name": "nnn", "color": "green", "_type": "Tag"}],
+                "tags": [
+                    {"name": "mmm", "color": None, "_type": "Tag"},
+                    {"name": "nnn", "color": "green", "_type": "Tag"},
+                ],
             }
         ],
     }
