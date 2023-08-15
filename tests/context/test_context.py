@@ -242,7 +242,6 @@ def test_context_events():
             {
                 "_type": "Context",
                 "name": "Message to Alice",
-                "state": "event",
                 "kind": "message",
                 "result": {"x": 10, "y": 20},
             }
