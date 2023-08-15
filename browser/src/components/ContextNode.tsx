@@ -106,7 +106,7 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
 
     if (c.state === "open") {
         icon = <Box component="span" sx={{ pr: 0.5 }}><CircularProgress size="1em" /></Box>
-    } else if (c.state === "event") {
+    } else if (!c.start_time && c.end_time) {
         icon = <CircleIcon sx={iconStyle} />
     } else if (c.state === "error") {
         icon = <ErrorIcon sx={iconStyle} />

@@ -29,9 +29,6 @@ class ContextState(Enum):
     """The context has successfully finished execution."""
     ERROR = "error"
     """The context finished with an exception."""
-    EVENT = "event"
-    """This context represents a single logged event. It has no duration,
-    children etc, but it may have associated data and metadata."""
 
 
 @dataclass
@@ -106,7 +103,7 @@ class Context:
         self.result = result
         self.error = None
         self.state: ContextState = (
-            ContextState.NEW if result is None else ContextState.EVENT
+            ContextState.NEW if result is None else ContextState.FINISHED
         )
         self.uid = generate_uid(name)
         self.children: List[Context] = []
