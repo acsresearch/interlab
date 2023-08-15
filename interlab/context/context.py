@@ -6,7 +6,7 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from threading import Lock
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from ..utils.text import generate_uid, shorten_str
 from .serialization import Data, serialize_with_type
@@ -42,6 +42,14 @@ class Tag:
     color: Optional[str] = None
     """HTML hex color code, e.g. `#ff0000`."""
 
+    @staticmethod
+    def into_tag(obj: Union[str, "Tag"]) -> "Tag":
+        if isinstance(obj, Tag):
+            return obj
+        if isinstance(obj, str):
+            return Tag(obj)
+        raise Exception(f"Object {obj!r} cannot be converted into Tag")
+
 
 class Context:
     """
@@ -68,7 +76,7 @@ class Context:
         kind: Optional[str] = None,
         inputs: Optional[Dict[str, Any]] = None,
         meta: Optional[Dict[str, Data]] = None,
-        tags: Optional[List[str | Tag]] = None,
+        tags: Optional[Sequence[str | Tag]] = None,
         storage: Optional["StorageBase"] = None,
         directory=False,
         result=None,
@@ -78,7 +86,7 @@ class Context:
         - `kind` - Indicates category of the context, may e.g. influence display of the context.
         - `inputs` - A dictionary of inputs for the context.
         - `meta` - A dictionary of any metadata for the context, e.g. UI style data.
-        - `tags` - A list of tags for the context. TODO: convert strs to Tag objects.
+        - `tags` - A list of tags for the context
         - `storage` - A storage object for the context. Set on the root context to log all contexts below it.
         - `directory` - Whether to create a sub-directory for the context while storing.
           This allows you to split the stored data across multiple files.
@@ -92,10 +100,15 @@ class Context:
             assert isinstance(inputs, dict)
             assert all(isinstance(key, str) for key in inputs)
             inputs = serialize_with_type(inputs)
+
         if meta:
             meta = serialize_with_type(meta)
+
         if result:
             result = serialize_with_type(result)
+
+        if tags is not None:
+            tags = [Tag.into_tag(tag) for tag in tags]
 
         self.name = name
         self.kind = kind
@@ -107,7 +120,7 @@ class Context:
         )
         self.uid = generate_uid(name)
         self.children: List[Context] = []
-        self.tags = tags
+        self.tags: List[Tag] = tags
         self.start_time = None
         self.end_time = None if result is None else datetime.datetime.now()
         self.meta = meta
@@ -254,9 +267,9 @@ class Context:
         """
         with self._lock:
             if self.tags is None:
-                self.tags = [tag]
+                self.tags = [Tag.into_tag(tag)]
             else:
-                self.tags.append(tag)
+                self.tags.append(Tag.into_tag(tag))
 
     def add_event(
         self,
