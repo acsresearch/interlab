@@ -1,0 +1,53 @@
+site_name: InterLab
+site_description: Documentation of InterLab
+repo_url: https://github.com/acsresearch/interlab
+
+nav:
+  - Home: index.md
+  - Getting started: installation.md
+  - Contexts:
+      - Basics: todo.md
+      - Storage: todo.md
+      - Data Browser: todo.md
+      - Filtering: todo.md
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - toc:
+      permalink: "#"
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - footnotes
+  - admonition
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+  - git-revision-date-localized:
+      type: date
+      fallback_to_build_date: true
+      enable_creation_date: true
+  - mike:
+      canonical_version: stable
+
+extra:
+  analytics:
+    provider: google
+    property: G-TM8J8R5GJ9
+  version:
+    provider: mike
+    default: stable
+
+extra_css:
+  - stylesheets/extra.css
