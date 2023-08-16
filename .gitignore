@@ -7,4 +7,3 @@ package-lock.json
 /.pytest_cache/
 /notebooks/logs/
 /dist
-/docs

@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/logo3-cut.webp" width="350" height="350"/></p>
+<p align="center"><img src="docs/assets/logo3-cut.webp" width="350" height="350"/></p>
 
 # InterLab: A research framework for artificial agent interactions
 

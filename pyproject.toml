@@ -1,9 +1,9 @@
 [tool.poetry]
-authors = ["Tomas Gavenciak <gavento@acsresearch.org>"]
+authors = ["Tomas Gavenciak <gavento@acsresearch.org>", "Ada Böhm <ada@acsresearch.org"]
 description = "A research framework for artificial agent interactions"
 name = "interlab"
 packages = [{include = "interlab"}, {include = "interlab_zoo"}]
-include = ["requirements*.txt", "assets/logo3-cut.webp"]
+include = ["requirements*.txt", "docs/assets/logo3-cut.webp"]
 readme = "README.md"
 version = "0.3.2"
 
@@ -46,6 +46,11 @@ pytest = "^7.3.1"
 pytest-asyncio = "^0.21"
 toml = "^0.10.2"
 pdoc = "^14.0.0"
+mkdocs = "^1.5.2"
+mkdocs-material = "^9.1.21"
+mkdocs-minify-plugin = "^0.7.1"
+mkdocs-git-revision-date-localized-plugin = "^1.2.0"
+mike = "^1.1.2"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
