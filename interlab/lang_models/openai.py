@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any
 
 import backoff
 import openai
@@ -30,7 +30,7 @@ BACKOFF_EXCEPTIONS = (
     BACKOFF_EXCEPTIONS,
     max_time=MAX_QUERY_TIME,
 )
-def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: dict[str, any]):
+def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: dict[str, Any]):
     # openai.api_key = api_key
     # openai.organization = api_org
     r = openai.ChatCompletion.create(
@@ -52,7 +52,7 @@ def _make_openai_chat_query(api_key: str, api_org: str, prompt, conf: dict[str, 
     max_time=MAX_QUERY_TIME,
 )
 async def _make_openai_chat_async_query(
-    api_key: str, api_org: str, prompt, conf: dict[str, any]
+    api_key: str, api_org: str, prompt, conf: dict[str, Any]
 ):
     r = await openai.ChatCompletion.acreate(
         api_key=api_key,
@@ -98,7 +98,7 @@ class OpenAiChatModel(LangModelBase):
 
     def prepare_conf(
         self, max_tokens: Optional[int], strip=True
-    ) -> (str, dict[str, any]):
+    ) -> (str, dict[str, Any]):
         if max_tokens is None:
             max_tokens = 1024
         typename = __class__.__qualname__
@@ -111,7 +111,7 @@ class OpenAiChatModel(LangModelBase):
         }
         return name, conf
 
-    def _query(self, prompt: str, conf: dict[str, any]) -> str:
+    def _query(self, prompt: str, conf: dict[str, Any]) -> str:
         strip = conf["strip"]
         if strip is True:
             prompt = remove_leading_spaces(group_newlines(prompt.strip()))

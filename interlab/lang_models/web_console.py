@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from ..ui.console_server import ConsoleServer
 from ..utils.text import group_newlines, remove_leading_spaces
@@ -10,10 +10,10 @@ class WebConsoleModel(LangModelBase):
         self.name = name
         self.server = ConsoleServer(name, port=port)
 
-    def prepare_conf(self, **kwargs) -> (str, dict[str, any]):
+    def prepare_conf(self, **kwargs) -> (str, dict[str, Any]):
         return "query web console", {"name": self.name, "url": self.server.url}
 
-    def _query(self, prompt: str, conf: dict[str, any]) -> str:
+    def _query(self, prompt: str, conf: dict[str, Any]) -> str:
         strip = conf.get("strip")
         if strip:
             prompt = remove_leading_spaces(group_newlines(prompt.strip()))

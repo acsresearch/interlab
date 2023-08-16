@@ -1,10 +1,12 @@
+from typing import Any
+
 from interlab.context.data.format_str import FormatStr
 
 from ..context import Context
 from .base import LangModelBase
 
 
-def _prepare_model(model: any, model_kwargs: dict = None, call_async: bool = False):
+def _prepare_model(model: Any, model_kwargs: dict = None, call_async: bool = False):
     import langchain
     import langchain.schema
 
@@ -48,7 +50,7 @@ def _prepare_model(model: any, model_kwargs: dict = None, call_async: bool = Fal
 
 
 def query_model(
-    model: any, prompt: str | FormatStr, kwargs: dict = None, with_context=True
+    model: Any, prompt: str | FormatStr, kwargs: dict = None, with_context=True
 ) -> str:
     if not isinstance(prompt, (str, FormatStr)):
         raise TypeError("query_model accepts only str and FormatStr as prompt")

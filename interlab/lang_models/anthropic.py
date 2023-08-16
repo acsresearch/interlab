@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any
 
 import anthropic
 
@@ -51,7 +51,7 @@ class AnthropicModel(LangModelBase):
         }
         return name, conf
 
-    def _query(self, prompt: str, conf: dict[str, any]) -> str:
+    def _query(self, prompt: str, conf: dict[str, Any]) -> str:
         strip = conf["strip"]
         if strip is True:
             prompt = remove_leading_spaces(group_newlines(prompt.strip()))
