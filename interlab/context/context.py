@@ -185,6 +185,13 @@ class Context:
         return self
 
     def to_dict(self, with_children=True):
+        """
+        Serialize `Context` object into JSON structure.
+
+        - `with_children` - If True then children are recursively serialized.
+                            If False then serialization of children is skipped and only
+                            children UIDs are put into key `children_uids`
+        """
         with self._lock:
             result = {"_type": "Context", "name": self.name, "uid": self.uid}
             if self.state != ContextState.FINISHED:
@@ -298,6 +305,11 @@ class Context:
             self.inputs[name] = serialize_with_type(value)
 
     def add_inputs(self, inputs: dict[str, object]):
+        """
+        Add a new input values to the context.
+
+        If an input of the same name already exists, an exception is raised.
+        """
         with self._lock:
             if self.inputs is None:
                 self.inputs = {}

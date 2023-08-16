@@ -7,6 +7,11 @@ MIME_OCTET_STREAM = "application/octet-stream"
 
 class DataWithMime:
     def __init__(self, data: bytes, mime_type: str = MIME_OCTET_STREAM):
+        """
+        Wrapper around bytes that are serialized by base64.
+        Data Browser renders some MIME types in a specific way
+        (e.g. images are rendered directly into browser).
+        """
         self.data = data
         self.mime_type = mime_type
 

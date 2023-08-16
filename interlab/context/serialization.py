@@ -1,6 +1,6 @@
 import dataclasses
 import traceback
-from typing import Callable, Dict, List, TypeVar, Any
+from typing import Any, Callable, Dict, List, TypeVar
 
 import numpy as np
 

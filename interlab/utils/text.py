@@ -3,7 +3,6 @@ import re
 import string
 from datetime import datetime
 
-
 UID_CHARS = string.ascii_lowercase + string.ascii_uppercase + string.digits
 ESCAPE_NAME_RE = re.compile("[^0-9a-zA-Z]+")
 UID_CHECK_REGEXP = re.compile(r"^[a-z0-9A-Z:\-\._]+$")
