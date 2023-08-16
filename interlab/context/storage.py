@@ -232,7 +232,7 @@ class FileStorage(StorageBase):
     def remove_context(self, uid: str):
         if not validate_uid(uid):
             raise Exception("Invalid uid")
-        # First try to remove .root so it immediately disappear from listing
+        # First try to remove .root, so it immediately disappear from listing
         path = self._file_path(self.directory, uid + ".root")
         if os.path.isfile(path):
             os.unlink(path)

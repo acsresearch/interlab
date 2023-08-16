@@ -1,4 +1,4 @@
-from typing import Optional, Any
+from typing import Any, Optional
 
 from ..ui.console_server import ConsoleServer
 from ..utils.text import group_newlines, remove_leading_spaces
