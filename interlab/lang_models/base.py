@@ -1,14 +1,14 @@
 import abc
-from typing import Optional
+from typing import Optional, Any
 
 
 class LangModelBase(abc.ABC):
     @abc.abstractmethod
-    def prepare_conf(self, **kwargs) -> (str, dict[str, any]):
+    def prepare_conf(self, **kwargs) -> (str, dict[str, Any]):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def _query(self, prompt: str, conf: dict[str, any]) -> str:
+    def _query(self, prompt: str, conf: dict[str, Any]) -> str:
         raise NotImplementedError()
 
     def query(self, prompt: str, max_tokens: Optional[int] = None, strip=True) -> str:

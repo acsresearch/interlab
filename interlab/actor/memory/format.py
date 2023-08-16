@@ -31,7 +31,7 @@ class TextFormat(FormatBase):
     "Abstract base for plaintext-based formatters"
     JOIN_STR = "\n\n"
 
-    def format_events(self, events: Iterable[Event]) -> any:
+    def format_events(self, events: Iterable[Event]) -> Any:
         "Format events and join them with `JOIN_STR` (\\n\\n by default)."
         return self.JOIN_STR.join(self.format_event(e) for e in events)
 

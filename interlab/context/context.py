@@ -284,7 +284,7 @@ class Context:
             self.children.append(event)
         return event
 
-    def add_input(self, name: str, value: any):
+    def add_input(self, name: str, value: object):
         """
         Add a named input value to the context.
 
@@ -297,7 +297,7 @@ class Context:
                 raise Exception(f"Input {name} already exists")
             self.inputs[name] = serialize_with_type(value)
 
-    def add_inputs(self, inputs: dict[str, any]):
+    def add_inputs(self, inputs: dict[str, object]):
         with self._lock:
             if self.inputs is None:
                 self.inputs = {}
@@ -307,14 +307,14 @@ class Context:
             for name, value in inputs.items():
                 self.inputs[name] = serialize_with_type(value)
 
-    def set_result(self, value: any):
+    def set_result(self, value: Any):
         """
         Set the result value of the context.
         """
         with self._lock:
             self.result = serialize_with_type(value)
 
-    def set_error(self, exc: any):
+    def set_error(self, exc: Any):
         """
         Set the error value of the context (usually an `Exception` instance).
         """

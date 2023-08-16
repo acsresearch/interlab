@@ -1,6 +1,6 @@
 import dataclasses
 import traceback
-from typing import Callable, Dict, List, TypeVar
+from typing import Callable, Dict, List, TypeVar, Any
 
 import numpy as np
 
@@ -52,7 +52,7 @@ def _serialize_exception(exc: BaseException) -> Data:
     return result
 
 
-def serialize_with_type(obj: any) -> Data:
+def serialize_with_type(obj: Any) -> Data:
     if obj is None:
         return None
     if isinstance(obj, PRIMITIVES):
