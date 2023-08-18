@@ -49,8 +49,11 @@ pdoc = "^14.0.0"
 mkdocs = "^1.5.2"
 mkdocs-material = "^9.1.21"
 mkdocs-minify-plugin = "^0.7.1"
+mkdocs-pdoc-plugin = { git = "https://github.com/spirali/mkdocs-pdoc-plugin.git", branch = "main" }
+#mkdocs-pdoc-plugin = { path="/home/ada/projects/mkdocs-pdoc-plugin", develop = true }
 mkdocs-git-revision-date-localized-plugin = "^1.2.0"
 mike = "^1.1.2"
+
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

@@ -3,8 +3,10 @@
 set -e
 
 DIRS="interlab interlab_zoo"
-DEST=docs
+API_DEST=docs/api
 
 cd `dirname $0`/..
 
-poetry run pdoc $DIRS -o $DEST --no-include-undocumented
+poetry run pdoc $DIRS -o $API_DEST --no-include-undocumented
+poetry run mkdocs build
+
