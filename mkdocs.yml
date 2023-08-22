@@ -1,15 +1,17 @@
 site_name: InterLab
 site_description: Documentation of InterLab
 repo_url: https://github.com/acsresearch/interlab
+site_url: https://acsresearch.org/interlab/
 
 nav:
   - Home: index.md
   - Getting started: installation.md
   - Contexts:
       - Basics: contexts/basics.md
-      - Storage: todo.md
-      - Data Browser: todo.md
-      - Filtering: todo.md
+      - Serialization: contexts/serialization.md
+      - Storage:  contexts/storage.md
+      - Data Browser:  contexts/databrowser.md
+
 
 theme:
   name: material
