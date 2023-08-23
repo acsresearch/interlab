@@ -6,50 +6,19 @@ export enum TokenType {
     LiteralNum,
 }
 
-export type TokenIdent = {
-    type: TokenType.Ident,
-    value: string[],
-}
-
-export type TokenOperator = {
-    type: TokenType.Operator,
+export type Token = {
+    type: TokenType,
+    index: number,
     value: string,
 }
 
-export type TokenLiteral = {
-    type: TokenType.Literal,
-    value: string | number,
-}
+//export type Token = TokenIdent | TokenOperator | TokenLiteral;
 
-export type Token = TokenIdent | TokenOperator | TokenLiteral;
+const TOKEN_REGEXP = /([\w.]+)|(\d+)|([=<>]+)|\"(?:\\\"|[^\"])*\"|./g
 
-
-class TokenStream {
-
-    private str: string;
-    private index: number;
-
-    constructor(str: string) {
-        this.str = str;
-        this.index = 0;
+function parse_tokens(input: string): Token[] {
+    for (const match of input.matchAll(TOKEN_REGEXP)) {
+        const value = match[0]
+        const index = match.index;
     }
-
-    public consumeChar(fn: (c: string) => boolean): string | null {
-        const index = this.index;
-        if (index >= this.str.length) {
-            return null;
-        }
-        const c = this.str[index];
-        if (fn(c)) {
-            return c;
-        } else {
-            return null;
-        }
-    }
-
-    public nextToken(): Token | null {
-        while (this.consumeChar((c) => c === " " || c === "\t" || c === "\n")) { }
-        return null;
-    }
-
 }
