@@ -91,13 +91,23 @@ def my_computation(x):
     ...
 ```
 
+## Events
+
+An events is an instant context with immediate result and no children contexts.
+
+```python
+with Context("root") as c:
+    c.add_event("Message to Alice", kind="message", data="Hi, Alice!")
+```
+
+
 ## Tags
 
 Tags are user-defined labels that can be attached to any Context. Later, contexts may be filtered by tags.
 A tag is instance of class [`Tag`](pdoc:interlab.context.Tag). You may also provide just a string and it will be
 automatically converted into a tag.
 
-Tag may have attach a string with HTML color, that defines how the tag is shown in Data Browser.
+Tag may have attached a string with HTML color, that defines how the tag is shown in Data Browser.
 
 ```python
 from interlab.context import Context, Tag
@@ -123,3 +133,4 @@ Interlab recognizes the following keys:
 * "color": [HTML color] - The main color of the Context. In the current version, it is used for title of context and a line when context is expanded. 
 * "color_bg": [HTML color] - The color of background of the Context.
 * "color_border": [HTML color] - Enables a border around Context with the given color
+
