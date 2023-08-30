@@ -166,7 +166,7 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
 
                         <ContextNodeItem key={i} icon={<ArrowForwardIcon />}>
                             <Box><strong>{property}</strong></Box>
-                            <DataRenderer uid={c.uid + "/inputs/" + property} data={value} env={props.env} />
+                            <DataRenderer uid={c.uid + "/inputs/" + property} contextDepth={props.depth} data={value} env={props.env} structDepth={0} />
                         </ContextNodeItem>
                     )
 
@@ -183,13 +183,13 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
             {
                 c.result &&
                 <ContextNodeItem icon={<ArrowBackIcon />}>
-                    <DataRenderer uid={c.uid + "/result"} data={c.result} env={props.env} />
+                    <DataRenderer uid={c.uid + "/result"} contextDepth={props.depth} data={c.result} env={props.env} structDepth={0} />
                 </ContextNodeItem>
             }
             {
                 c.error &&
                 <ContextNodeItem icon={<ReportProblemIcon />}>
-                    <DataRenderer uid={c.uid + "/error"} data={c.error} hideType="error" env={props.env} />
+                    <DataRenderer uid={c.uid + "/error"} contextDepth={props.depth} data={c.error} hideType="error" env={props.env} structDepth={0} />
                 </ContextNodeItem>
             }
         </Box>

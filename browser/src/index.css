@@ -11,3 +11,49 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.overflow-gradient-v,
+.overflow-gradient-vh,
+.overflow-gradient-h {
+  position: relative;
+}
+
+.overflow-gradient-v::before {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  content: "";
+  background: linear-gradient(to top,
+      rgba(255, 255, 255, 1) 5%,
+      rgba(255, 255, 255, 0) 50%);
+  pointer-events: none;
+}
+
+.overflow-gradient-h::before {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  content: "";
+  background: linear-gradient(to left,
+      rgba(255, 255, 255, 1) 10%,
+      rgba(255, 255, 255, 0) 20%);
+  pointer-events: none;
+}
+
+.overflow-gradient-vh::before {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  content: "";
+  background: linear-gradient(to left,
+      rgba(255, 255, 255, 1) 10%,
+      rgba(255, 255, 255, 0) 20%),
+    linear-gradient(to top,
+      rgba(255, 255, 255, 1) 5%,
+      rgba(255, 255, 255, 0) 50%);
+  pointer-events: none;
+}
