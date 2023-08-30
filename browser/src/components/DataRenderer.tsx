@@ -1,6 +1,7 @@
 import { Box, Button } from "@mui/material";
 import { BrowserEnv, OpenerMode } from "./DataBrowser";
 import parse from 'html-react-parser';
+import { OverflowWrapper } from "./OverflowWrapper";
 
 const IMAGE_MIME_TYPES = ["image/jpeg", "image/png"];
 
@@ -42,9 +43,10 @@ function Traceback(props: { env: BrowserEnv, frames: TracebackFrame[], uid: stri
 
 }
 
-export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, hideType?: string }) {
+export function DataRenderer(props: { env: BrowserEnv, contextDepth: number, structDepth: number, data: any, uid: string, hideType?: string }) {
     const { opened, setOpen } = props.env;
     let d = props.data;
+    const reducedWidth = props.contextDepth * 60 + props.structDepth * 30;
     if (d === null) {
         return <>None</>
     }
@@ -52,41 +54,22 @@ export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, h
         return <>{d ? "true" : "false"}</>
     }
     if (typeof d === 'number') {
-        return <>d</>
+        return <>{d}</>
     }
     if (typeof d === 'string') {
-        if (d.length < 64 && !/\r|\n/.exec(d)) {
-            return <>{d}</>
-        } else {
-            const lines = d.split(/\r\n|\r|\n/);
-            if (lines.length <= 5) {
-                return <Box sx={{ whiteSpace: "pre-wrap" }}>{d}</Box>
-            } else {
-                if (opened.has(props.uid)) {
-                    return <>
-                        <Box sx={{ whiteSpace: "pre-wrap" }}>{d}</Box>
-                        <Button onClick={() => setOpen(props.uid, OpenerMode.Close)}>Hide lines</Button>
-                    </>
-                } else {
-                    return <>
-                        <Box sx={{ whiteSpace: "pre-wrap" }}>{lines.slice(0, 3).join("\n")} ...</Box>
-                        <Button onClick={() => setOpen(props.uid, OpenerMode.Open)}>Show {lines.length} lines</Button>
-                    </>
-                }
-            }
-        }
+        return <OverflowWrapper uid={props.uid} env={props.env} reducedWidth={reducedWidth}>{d}</OverflowWrapper>
     }
 
     // TODO: Remove "Html" in future version
     if ((d._type === "Html" || d._type === "$html") && d.html) {
-        return <Box>{parse(d.html)}</Box>;
+        return <OverflowWrapper uid={props.uid} env={props.env} reducedWidth={reducedWidth}>{parse(d.html)}</OverflowWrapper>;
     }
 
     // TODO: Remove "Blob" in future version
     if ((d._type === "Blob" || d._type === "$blob") && IMAGE_MIME_TYPES.includes(d.mime_type)) {
         const data = `data:${d.mime_type};base64, ${d.data}`;
         // eslint-disable-next-line jsx-a11y/alt-text
-        return <Box><img src={data} /></Box>
+        return <OverflowWrapper uid={props.uid} env={props.env} reducedWidth={reducedWidth}><img src={data} /></OverflowWrapper>
     }
 
     if ((d._type === "$traceback")) {
@@ -117,6 +100,6 @@ export function DataRenderer(props: { env: BrowserEnv, data: any, uid: string, h
         {(props.hideType !== type && type) && <>{type}</>}
         {isLong && <Button onClick={() => setOpen(props.uid, OpenerMode.Close)}>Hide items</Button>}
         <ul style={{ paddingTop: 0, paddingBottom: 0, margin: 0, paddingLeft: 25 }}>
-            {children.map(({ property, value }) => <li style={{ padding: 0, margin: 0 }} key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} data={value} env={props.env} /></li>)}
+            {children.map(({ property, value }) => <li style={{ padding: 0, margin: 0 }} key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} contextDepth={props.contextDepth} structDepth={props.structDepth + 1} data={value} env={props.env} /></li>)}
         </ul></>);
 }
