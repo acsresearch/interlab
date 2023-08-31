@@ -68,8 +68,10 @@ export function DataRenderer(props: { env: BrowserEnv, contextDepth: number, str
     // TODO: Remove "Blob" in future version
     if ((d._type === "Blob" || d._type === "$blob") && IMAGE_MIME_TYPES.includes(d.mime_type)) {
         const data = `data:${d.mime_type};base64, ${d.data}`;
+        const isOpen = props.env.opened.has(props.uid);
+        const height = !isOpen ? 120 : undefined;
         // eslint-disable-next-line jsx-a11y/alt-text
-        return <OverflowWrapper uid={props.uid} env={props.env} reducedWidth={reducedWidth}><img src={data} /></OverflowWrapper>
+        return <><Box><img src={data} height={height} /></Box><Button onClick={() => setOpen(props.uid, OpenerMode.Toggle)}>{isOpen ? "Show thumbnail" : "Full resolution"}</Button></>
     }
 
     if ((d._type === "$traceback")) {
