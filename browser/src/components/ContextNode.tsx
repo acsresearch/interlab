@@ -222,11 +222,9 @@ export function ContextNode(props: { env: BrowserEnv, context: Context, depth: n
             </>
         </Item >
     } else {
-        return <Box sx={{ backgroundColor, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
-            <Typography color="text.secondary">
-                {header()}
-                {open && body()}
-            </Typography>
+        return <Box sx={{ backgroundColor, border: borderColor ? `2px ${borderColor} solid` : undefined, color: "text.secondary" }}>
+            {header()}
+            {open && body()}
         </Box>
     }
 }
