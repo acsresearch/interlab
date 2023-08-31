@@ -2,11 +2,21 @@ import dataclasses
 import traceback
 from typing import Callable, Dict, List, TypeVar
 
+import numpy as np
+
 Data = Dict[str, "Data"] | List["Data"] | int | float | str | bool | None
 
 PRIMITIVES = (int, str, float, bool)
 
-CUSTOM_SERIALIZERS = {}
+
+def _serialize_ndarray(obj):
+    return {
+        "shape": obj.shape,
+        "values": obj.tolist(),
+    }
+
+
+CUSTOM_SERIALIZERS = {np.ndarray: _serialize_ndarray}
 
 
 def _dataclass_serialize_helper(pairs):

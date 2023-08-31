@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Any
 
+import numpy as np
+
 from interlab.context.serialization import (
     register_custom_serializer,
     serialize_with_type,
@@ -54,3 +56,12 @@ def test_custom_serializer():
         assert output == {"abc": "MySerializer", "x": 123, "_type": "MyClass"}
     finally:
         unregister_custom_serializer(MyClass)
+
+
+def test_serialize_ndarray():
+    array = np.array([[1.2, 2.3, 4.5], [0.0, 0.0, 1.0]])
+    assert serialize_with_type(array) == {
+        "_type": "ndarray",
+        "shape": (2, 3),
+        "values": [[1.2, 2.3, 4.5], [0.0, 0.0, 1.0]],
+    }
