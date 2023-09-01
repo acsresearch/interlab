@@ -340,8 +340,8 @@ def test_to_dict(result):
 
     c_dict = c.to_dict()
     for key, c_dict_val in c_dict.items():
-        if key.startswith("_"):
-            # ignore private attributes
+        if key.startswith("_") or key == "version" or key == "interlab":
+            # ignore private attributes or version attributes
             continue
         c_val = getattr(c, key)
         if type(c_val) not in (int, float, str, bool, list, dict, type(None)):

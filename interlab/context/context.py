@@ -9,7 +9,10 @@ from threading import Lock
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from ..utils.text import generate_uid, shorten_str
+from ..version import VERSION
 from .serialization import Data, serialize_with_type
+
+CONTEXT_FORMAT_VERSION = "1.0"
 
 _LOG = logging.getLogger(__name__)
 
@@ -184,7 +187,7 @@ class Context:
         self._lock = Lock()
         return self
 
-    def to_dict(self, with_children=True):
+    def to_dict(self, with_children=True, root=True):
         """
         Serialize `Context` object into JSON structure.
 
@@ -194,6 +197,9 @@ class Context:
         """
         with self._lock:
             result = {"_type": "Context", "name": self.name, "uid": self.uid}
+            if root:
+                result["version"] = CONTEXT_FORMAT_VERSION
+                result["interlab"] = VERSION
             if self.state != ContextState.FINISHED:
                 result["state"] = self.state.value
             for name in ["kind", "result", "error", "tags"]:
@@ -203,7 +209,7 @@ class Context:
             if self.inputs:
                 result["inputs"] = self.inputs
             if with_children and self.children:
-                result["children"] = [c.to_dict() for c in self.children]
+                result["children"] = [c.to_dict(root=False) for c in self.children]
             if not with_children and self.children:
                 result["children_uids"] = [c.uid for c in self.children]
             if self.start_time:
