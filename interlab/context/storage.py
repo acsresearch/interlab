@@ -130,31 +130,31 @@ class FileStorage(StorageBase):
     def write_context(self, context: Context):
         if not validate_uid(context.uid):
             raise Exception("Invalid uid")
-        self._write_context_into(self.directory, context)
+        self._write_context_into(self.directory, context, True)
         with self._lock:
             self._ephemeral_contexts.pop(context.uid, None)
 
-    def _write_context_into(self, directory: str, context: Context):
+    def _write_context_into(self, directory: str, context: Context, root_context: bool):
         if not validate_uid(context.uid):
             raise Exception("Invalid uid")
         if context.directory:
-            self._write_context_dir(directory, context)
+            self._write_context_dir(directory, context, root_context)
         else:
-            data = json.dumps(context.to_dict()).encode()
-            data_root = json.dumps(context.to_dict(False)).encode()
+            data = json.dumps(context.to_dict(root=root_context)).encode()
+            data_root = json.dumps(context.to_dict(False, root=root_context)).encode()
             # Write full first, so when root exists, then full is definitely there
             self._write_context_file(directory, context.uid + ".full", data)
             self._write_context_file(directory, context.uid + ".root", data_root)
 
-    def _write_context_dir(self, directory: str, context: Context):
+    def _write_context_dir(self, directory: str, context: Context, root_context: bool):
         path = self._dir_path(directory, context.uid)
         tmp_path = path + "._tmp"
         try:
             os.mkdir(tmp_path)
-            data_root = json.dumps(context.to_dict(False)).encode()
+            data_root = json.dumps(context.to_dict(False, root=root_context)).encode()
             self._write_context_file(tmp_path, "_self", data_root)
             for child in context.children:
-                self._write_context_into(tmp_path, child)
+                self._write_context_into(tmp_path, child, False)
             os.rename(tmp_path, path)
         finally:
             if os.path.exists(tmp_path):
