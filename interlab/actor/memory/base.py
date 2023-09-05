@@ -19,6 +19,10 @@ class MemoryBase(abc.ABC):
     def get_events(self, query: Any = None) -> tuple[Event]:
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    def copy(self):
+        raise NotImplementedError()
+
     def get_formatted(self, *args, **kwargs) -> Any:
         """Convenience wrapper for get_event with formatting"""
         assert self.format is not None

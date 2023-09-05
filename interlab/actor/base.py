@@ -7,6 +7,7 @@ from ..utils import html_color, text
 from . import memory as memory_module
 from .event import Event
 from .memory import format
+import copy
 
 
 class ActorBase(abc.ABC):
@@ -75,6 +76,9 @@ class ActorBase(abc.ABC):
     def _observe(self, event: Event):
         raise NotImplementedError("Implement _observe in a derived actor class")
 
+    def copy(self):
+        return copy.copy(self)
+
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.name}>"
 
@@ -97,3 +101,8 @@ class ActorWithMemory(ActorBase):
 
     def _observe(self, event: Event):
         self.memory.add_event(event)
+
+    def copy(self):
+        c = super().copy()
+        c.memory = c.memory.copy()
+        return c

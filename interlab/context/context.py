@@ -289,10 +289,13 @@ class Context:
         name: str,
         kind: Optional[str] = None,
         data: Optional[Any] = None,
+        inputs: Optional[Dict[str, Any]] = None,
         meta: Optional[Dict[str, Data]] = None,
         tags: Optional[List[str | Tag]] = None,
     ) -> "Context":
-        event = Context(name=name, kind=kind, result=data, meta=meta, tags=tags)
+        event = Context(
+            name=name, kind=kind, result=data, meta=meta, tags=tags, inputs=inputs
+        )
         with self._lock:
             self.children.append(event)
         return event
