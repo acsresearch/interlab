@@ -24,6 +24,19 @@ InterLab is composed of several core modules, each providing distinct functional
 
 Beyond that, you can find more less-tested and experimental code in `experimental` submodules accross the package.
 
+### Structured interaction log browser
+
+In-notebook or independent browser for the structured logs, with live updates, support for JSON-like structured data and inline visualizations. Captures both high-level interaction structure and the low-level API calls for easy inspection and debugging.
+Example screenshots (click to zoom in):
+
+<p align="center"><img src="docs/assets/imgs/context-browser-2.png" alt= "Context browser screenshot" width="100%" ></p>
+
+<p align="center"><img src="docs/assets/imgs/context-browser-1.png" alt= "Context browser screenshot" width="90%" ></p>
+
+### Example notebooks
+
+You can find Jupyter notebooks with a few worked-out examples [here](https://github.com/acsresearch/interlab/tree/main/notebooks). The notebook [car_negotiation.ipynb](https://github.com/acsresearch/interlab/blob/main/notebooks/car_negotiation.ipynb) is a good starting point for a simple bargaining simulation.
+
 ### InterLab Zoo
 
 The `interlab_zoo` package serves as a repository for specific and opinionated implementations of actors, scenarios, actor memory systems, context post-processing, and other tools that enhance the InterLab project. Its mission is to gather code that is both widely applicable and useful, while maintaining a compact and focused core package.
@@ -80,34 +93,30 @@ dotenv.load_dotenv()
 
 A rough overview where the project is heading in our minds, incomplete and subject to prioritization based on experimentor's needs. Contact us if you want to get involved in developing interlab with us.
 
-### Documentation
-
-- A more detailed overview of what is already in interlab (although we already have demo notebooks that demonstrate most of it)
-- Generated API docs, add improved documentation of functions and classes.
-
 ### Games, scenarios, game theory
 
-- More agent implementations
+- Additional general agent implementations
   - Deliberative agent, internal debate agent, constitutional agent, ...
-- Memory systems
+  - Subagent minds implementation
+- Additional memory systems
   - Recall-based memory system
-- A stateful scenario (game) system, storing state of games in progress (likely as a pickle)
-  - Support for counterfactual development of situation from a checkpoint
+- Support for counterfactual development and situation checkpointing
+  - A stateful scenario (game) system, storing state of games in progress (likely as a pickle)
+  - Markov-Chain Monte-Carlo agent strategy (later generalized to regret minimization)
 - Integration with Gymnasium environments (former OpenAI Gym), interactive OpenAI evals, and others (may need mostly wrappers)
 
 ### Language models
 
-- Better support for token counting and limiting tokens of LLMs
 - Support for retrieving activation vectors from LLMs (e.g. HuggingFace ones), then support for influence vectors
+- Technical: Better support for token counting and limiting tokens of LLMs
 
 ### More integrations
 
 - Experiment tracking and management (e.g. Hydra)
 - Visualizations, e.g. Plotly charts
+- Showcase and improve interactive (human player) interfaces
 
-### Public release
 
-ACS is likely to release the core of InterLab publicly as open-source (though note this is not a given yet). This mostly needs a few use-cases, some of the docs, and some internal capacity for presenting this in the AI alignment researcher community (writing a blog-post etc). The goal is primarily alignnment community and related academia, and not general open-source/ML publicity.
 
 ### Research LLM sensitivity to framings and formulations in the framework
 
