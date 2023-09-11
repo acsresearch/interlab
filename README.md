@@ -43,15 +43,21 @@ The `interlab_zoo` package serves as a repository for specific and opinionated i
 
 ## Install
 
-**Poetry (recommended).** This repository utilizes [poetry](https://python-poetry.org/) for package management, which is recommended for dependency installation and is mandatory for InterLab development. Poetry automatically generates and manages a virtual environment for you, and also installs `interlab` module itself. If you have poetry installed, running the following command will install InterLab:
+Install the package `interlab` from PyPI using `pip` or any other package manager.
+
+```commandline
+pip install interlab
+```
+
+### Install with development tools
+
+**Poetry.** This repository utilizes [poetry](https://python-poetry.org/) for package management, which is recommended for dependency installation and is required for InterLab development. Poetry automatically generates and manages a virtual environment for you, and also installs `interlab` module itself. If you have poetry installed, running the following command inside this repository will install InterLab:
 
 ```commandline
 poetry install
 ```
 
-**pip and `requirements.txt`.** Alternatively, `pip` can be used to install dependencies with `pip install -r requirements.txt` (core requirements) or `pip install -r requirements-full.txt` (including development tools, Jupyter Lab, etc.; equivalent to `poetry install`).
-
-Please note, when using `pip`, you're responsible for managing any virtual environments and deciding where packages should be installed.
+**pip and `requirements.txt`.** Alternatively, `pip` can be used to install dependencies with `pip install -r requirements.txt` (core requirements) or `pip install -r requirements-full.txt` (including development tools, Jupyter Lab, etc.; equivalent to `poetry install`). This is also required to use InterLab in Google Colab (use `requirements-colab.txt` to get aroung some Colab versioning conflicts).
 
 ## Run
 
@@ -67,7 +73,7 @@ After running the command, open the provided link in your browser. `notebooks/ca
 
 ### Google Colab
 
-Google Colab often offers a lightweight alternative to setting up InterLab locally on your computer. Interlab comes with built-in colab compatibility and we have prepared a [Template InterLab Colab notebook](https://colab.research.google.com/drive/1ncy02sdPse5KSxi5olbWb51dpW5IuVFq) with common setup and a simple example experiment with two LLMs interacting on behalf of their users.
+Google Colab often offers a lightweight alternative to setting up InterLab locally on your computer. Interlab comes with built-in colab compatibility and we have prepared a [Template InterLab Colab notebook](https://colab.research.google.com/drive/1B4To_6W4qzlyiDQzwH4nWbzrc2ngn0Io) with common setup and a simple example experiment with two LLMs interacting on behalf of their users.
 
 ### Note: API Keys
 
