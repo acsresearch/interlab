@@ -7,7 +7,7 @@ import pytest
 from interlab.context import Context
 from interlab.context.serialization import serialize_with_type
 from interlab.lang_models import AnthropicModel, LangModelBase, OpenAiChatModel
-from tests.testutils import strip_tree
+from tests.testutils import has_openai_keys, strip_tree
 
 
 def test_serialize_models():
@@ -34,7 +34,7 @@ def test_serialize_models():
 
 
 @pytest.mark.skipif(
-    not all(os.getenv(key) for key in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY"]),
+    not has_openai_keys(),
     reason="Requires API keys",
 )
 @pytest.mark.parametrize("model_cls", [AnthropicModel, OpenAiChatModel])
@@ -73,7 +73,7 @@ def test_query(model_cls: Type[LangModelBase]):
 
 
 @pytest.mark.skipif(
-    not all(os.getenv(key) for key in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY"]),
+    not has_openai_keys(),
     reason="Requires API keys",
 )
 @pytest.mark.parametrize("model", [AnthropicModel, OpenAiChatModel])

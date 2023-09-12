@@ -9,12 +9,13 @@ class ListMemory(MemoryBase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.events = []
+        self.events: list[Event] = []
 
-    def add_event(self, event: Event):
+    def add_event(self, event: Event, time: float | None = None):
         self.events.append(event)
 
-    def get_events(self, query: Any = None, limit_events: int = None) -> tuple[Event]:
-        return tuple(
-            self.events[(-limit_events if limit_events is not None else None) :]
-        )
+    def get_events(self, query: Any = None, max_events: int = None) -> tuple[Event]:
+        if max_events is None:
+            return tuple(self.events)
+        else:
+            return tuple(self.events[-max_events:])

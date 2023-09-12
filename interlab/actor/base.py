@@ -56,23 +56,27 @@ class ActorBase(abc.ABC):
     def _act(self, prompt: Any = None, **kwargs) -> Any:
         raise NotImplementedError("Implement _act in a derived actor class")
 
-    def observe(self, event: Event | Any, origin: str | None = None):
+    def observe(
+        self, event: Event | Any, origin: str | None = None, time: float | None = None
+    ):
         """Observe the given Event.
 
         Instead of given Event object, you can also pass in observation and origin directly.
         """
         if not isinstance(event, Event):
             event = Event(data=event, origin=origin)
+        else:
+            assert origin is None
         with Context(
             f"{self.name} observes {text.shorten_str(str(event))!r}",
             kind="observation",
             meta=self.style,
             inputs={"origin": event.origin, "observation": event.data},
         ):
-            self._observe(event)
+            self._observe(event, time)
 
     @abc.abstractmethod
-    def _observe(self, event: Event):
+    def _observe(self, event: Event, time: float | None = None):
         raise NotImplementedError("Implement _observe in a derived actor class")
 
     def __repr__(self):
@@ -95,5 +99,5 @@ class ActorWithMemory(ActorBase):
         if self.memory is None:
             self.memory = self.DEFAULT_MEMORY(format=self.DEFAULT_FORMAT())
 
-    def _observe(self, event: Event):
-        self.memory.add_event(event)
+    def _observe(self, event: Event, time: float | None = None):
+        self.memory.add_event(event, time)

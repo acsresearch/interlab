@@ -1,3 +1,5 @@
+import os
+
 from interlab.context.context import CONTEXT_FORMAT_VERSION
 from interlab.version import VERSION
 
@@ -28,3 +30,7 @@ def strip_tree(obj, erase_error_details=False, root=True):
     if isinstance(obj, list):
         return [strip_tree(o, erase_error_details, root=False) for o in obj]
     return obj
+
+
+def has_openai_keys():
+    return all(os.getenv(key) for key in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY"])

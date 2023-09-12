@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Optional
 
 import backoff
+import numpy as np
 import openai
 
 from ..context import Context
@@ -67,6 +68,15 @@ async def _make_openai_chat_async_query(
     return m.content.strip()
 
 
+def _get_keys(api_key, api_org):
+    if not api_key:
+        api_key = os.getenv("OPENAI_API_KEY")
+        assert api_key, "need to provide either key param or OPENAI_API_KEY env var"
+    if not api_org:
+        api_org = os.getenv("OPENAI_API_ORG")
+    return api_key, api_org
+
+
 @dataclass
 class OpenAiChatModel(LangModelBase):
     model: str
@@ -79,12 +89,8 @@ class OpenAiChatModel(LangModelBase):
         model="gpt-3.5-turbo",
         temperature: float = 0.7,
     ):
-        if not api_key:
-            api_key = os.getenv("OPENAI_API_KEY")
-            assert api_key, "need to provide either key param or OPENAI_API_KEY env var"
+        api_key, api_org = _get_keys(api_key, api_org)
         self.api_key = api_key
-        if not api_org:
-            api_org = os.getenv("OPENAI_API_ORG")
         self.api_org = api_org
         self.model = model
         _LOG.info(
@@ -132,3 +138,32 @@ class OpenAiChatModel(LangModelBase):
 
     def __repr__(self):
         return f"{self.__class__.__name__}(model={self.model!r}, temperature={self.temperature!r})"
+
+
+@backoff.on_exception(
+    backoff.expo,
+    BACKOFF_EXCEPTIONS,
+    max_time=MAX_QUERY_TIME,
+)
+def _make_openai_embedding(api_key: str, api_org: str, text: str, model: str):
+    r = openai.Embedding.create(
+        api_key=api_key,
+        organization=api_org,
+        input=text,
+        model=model,
+    )
+    return np.array(r["data"][0]["embedding"])
+
+
+def make_openai_embedding(
+    text: str, model="text-embedding-ada-002", context=True, api_key=None, api_org=None
+):
+    api_key, api_org = _get_keys(api_key, api_org)
+    target_text = text.replace("\n", " ")
+    if context:
+        with Context("query embedding", inputs={"text": text, "model": model}) as c:
+            result = _make_openai_embedding(api_key, api_org, target_text, model)
+            c.set_result(result)
+            return result
+    else:
+        return _make_openai_embedding(api_key, api_org, target_text, model)

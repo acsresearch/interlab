@@ -12,11 +12,11 @@ class MemoryBase(abc.ABC):
         self.format = format
 
     @abc.abstractmethod
-    def add_event(self, event: Event):
+    def add_event(self, event: Event, time: float | None = None):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_events(self, query: Any = None) -> tuple[Event]:
+    def get_events(self, query: Any = None, max_events: int = None) -> tuple[Event]:
         raise NotImplementedError()
 
     def get_formatted(self, *args, **kwargs) -> Any:
