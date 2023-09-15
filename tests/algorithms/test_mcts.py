@@ -1,8 +1,8 @@
-from typing import Optional, Tuple, Sequence
+from typing import Optional, Sequence, Tuple
 
 import numpy as np
 
-from interlab_zoo.algorithms.mcts import Situation, Mcts
+from interlab_zoo.algorithms.mcts import Mcts, Situation
 
 
 class SimpleGameSituation(Situation):
@@ -26,7 +26,9 @@ class SimpleGameSituation(Situation):
         return SimpleGameSituation(self.n_players, self.n_actions, values)
 
 
-def simple_game_estimator(situation: SimpleGameSituation) -> tuple[Optional[Sequence[float]], Sequence[float]]:
+def simple_game_estimator(
+    situation: SimpleGameSituation,
+) -> tuple[Optional[Sequence[float]], Sequence[float]]:
     if situation.current_player is None:
         values = np.zeros(situation.n_players)
         values[np.argmax(situation.values)] = 1.0
@@ -39,6 +41,4 @@ def test_simple_game_mcts():
     s = SimpleGameSituation(2, 4, [])
     mcts = Mcts(s, simple_game_estimator)
     mcts.search(2000)
-
-    with open("/home/spirali/tmp/test2.dot", "w") as f:
-        f.write(mcts.create_dot())
+    assert mcts.get_best_action() == 3

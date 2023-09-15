@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-from typing import Any, Optional, TypeVar, Generic, Type, Callable, Tuple
+from typing import Any, Callable, Generic, Optional, Tuple, Type, TypeVar
 
 import numpy as np
 
 from interlab.actor import ActorBase, ActorWithMemory
-from ..algorithms.mcts import Situation, Mcts
+
+from ..algorithms.mcts import Mcts, Situation
 
 
 @dataclass

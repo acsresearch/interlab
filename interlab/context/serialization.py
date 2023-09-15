@@ -74,7 +74,7 @@ def serialize_with_type(obj: Any) -> Data:
         if isinstance(serialized, dict) and "_type" not in serialized:
             serialized["_type"] = type(obj).__name__
         return serialized
-    if dataclasses.is_dataclass(obj):
+    if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
         serialized = dataclasses.asdict(obj, dict_factory=_dataclass_serialize_helper)
         if "_type" not in serialized:
             serialized["_type"] = type(obj).__name__

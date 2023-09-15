@@ -1,7 +1,8 @@
 import abc
 import math
 from dataclasses import dataclass, field
-from typing import List, Optional, TypeVar, Callable, Sequence, Tuple
+from typing import Callable, List, Optional, Sequence, Tuple, TypeVar
+
 import numpy as np
 
 from interlab.context import Context
@@ -63,6 +64,12 @@ class Mcts:
         for _ in range(n_iterations):
             self._run_search()
         self.n_iterations += n_iterations
+
+    def get_best_action_index(self):
+        return max(enumerate(self.root.children), key=lambda p: p[1].visit_count if p[1] else 0)[0]
+
+    def get_best_action(self):
+        return self.root.situation.actions[self.get_best_action_index()]
 
     def _run_search(self):
         node = self.root

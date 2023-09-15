@@ -1,4 +1,5 @@
 import abc
+import copy
 import random
 from typing import Any
 
@@ -7,7 +8,6 @@ from ..utils import html_color, text
 from . import memory as memory_module
 from .event import Event
 from .memory import format
-import copy
 
 
 class ActorBase(abc.ABC):
