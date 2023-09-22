@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import './App.css';
 import { DataBrowser } from './components/DataBrowser';
 import { InfoMessage, Severity } from './common/info';
 import { Alert, Snackbar } from '@mui/material';
