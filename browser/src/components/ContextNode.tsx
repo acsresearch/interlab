@@ -25,7 +25,8 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 
 import { humanReadableDuration } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
-import { BrowserEnv, OpenerMode } from "./DataBrowser";
+import { OpenerMode } from "./DataBrowser";
+import { ContextEnv } from "./ContextView";
 import { TagChip } from "./TagChip";
 import React from "react";
 
@@ -33,7 +34,7 @@ import React from "react";
 const DEFAULT_COLORS = [grey[100], grey[300]];
 
 
-function ContextMenu(props: { context: Context, env: BrowserEnv }) {
+function ContextMenu(props: { context: Context, env: ContextEnv }) {
 
     return (
         <PopupState variant="popover">
@@ -76,7 +77,7 @@ function ContextNodeItem(props: { icon: React.ReactNode, children?: React.ReactN
 }
 
 
-export function ContextNode(props: { env: BrowserEnv, context: Context, depth: number }) {
+export function ContextNode(props: { env: ContextEnv, context: Context, depth: number }) {
     const themeWithBoxes = props.env.config.themeWithBoxes;
 
     let c = props.context;

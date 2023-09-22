@@ -10,6 +10,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 
 import { ContextDetailsDialog } from "./ContextDetails";
 import { RootPanel, RootsVisibility } from "./RootPanel";
+import { ContextView } from "./ContextView";
 
 
 export type BrowserConfig = {
@@ -25,21 +26,12 @@ export enum OpenerMode {
 export type Opener = (keys: string | string[], mode: OpenerMode) => void
 
 
-export type BrowserEnv = {
-    config: BrowserConfig,
-    opened: Set<string>,
-    setOpen: Opener,
-    showContextDetails: (ctx: Context) => void,
-}
-
-
 export function DataBrowser(props: { addInfo: AddInfo }) {
     const [config, setConfig] = useState<BrowserConfig>({ themeWithBoxes: false });
-    const [roots, setRoots] = useState<Context[]>([]);
     const [selectedCtx, setSelectedCtx] = useState<Context | null>(null);
+    const [roots, setRoots] = useState<Context[]>([]);
     let [opened, setOpened] = useState<Set<string>>(new Set());
     const [kinds, setKinds] = useState<Set<string>>(new Set());
-    const [ctxDetails, setCtxDetails] = useState<Context | null>(null);
     const [showRoots, setShowRoots] = useState<RootsVisibility>({ showFinished: true, showFailed: true });
 
 
@@ -149,13 +141,6 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { refresh() }, []);
 
-    const env: BrowserEnv = {
-        config,
-        opened,
-        setOpen,
-        showContextDetails: setCtxDetails
-    }
-
     return <div>
         <RootPanel showRoots={showRoots} setShowRoots={setShowRoots} roots={roots} selectedCtx={selectedCtx} refresh={refresh} selectRoot={selectRoot} addInfo={props.addInfo} />
         <div style={{ float: "left", width: "calc(100% - 365px)", overflow: 'auto' }}>
@@ -171,9 +156,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                 />
                 {sortedKinds.map((kind) => <ToggleButton sx={{ paddingTop: 0.2, paddingBottom: 0.2, marginLeft: 0.5 }} value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
             </Box>
-            {selectedCtx && <div style={{ maxHeight: "calc(100vh - 70px)", overflow: 'auto' }}><ContextNode env={env} context={selectedCtx} depth={0} /></div>}
+            {selectedCtx && <ContextView context={selectedCtx} opened={opened} setOpen={setOpen} config={config}></ContextView>}
             {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
         </div>
-        {ctxDetails && <ContextDetailsDialog context={ctxDetails} onClose={() => setCtxDetails(null)} />}
     </div >
 }

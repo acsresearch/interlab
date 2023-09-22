@@ -1,7 +1,8 @@
 import { Box, Button } from "@mui/material";
-import { BrowserEnv, OpenerMode } from "./DataBrowser";
+import { OpenerMode } from "./DataBrowser";
 import parse from 'html-react-parser';
 import { OverflowWrapper } from "./OverflowWrapper";
+import { ContextEnv } from "./ContextView";
 
 const IMAGE_MIME_TYPES = ["image/jpeg", "image/png"];
 
@@ -24,7 +25,7 @@ function Frame(props: { frame: TracebackFrame }) {
     </Box >
 }
 
-function Traceback(props: { env: BrowserEnv, frames: TracebackFrame[], uid: string }) {
+function Traceback(props: { env: ContextEnv, frames: TracebackFrame[], uid: string }) {
     let frames = props.frames;
     if (!frames || !(frames.length >= 1)) {
         return <Box component="span">Invalid traceback</Box >
@@ -43,7 +44,7 @@ function Traceback(props: { env: BrowserEnv, frames: TracebackFrame[], uid: stri
 
 }
 
-export function DataRenderer(props: { env: BrowserEnv, contextDepth: number, structDepth: number, data: any, uid: string, hideType?: string }) {
+export function DataRenderer(props: { env: ContextEnv, contextDepth: number, structDepth: number, data: any, uid: string, hideType?: string }) {
     const { opened, setOpen } = props.env;
     let d = props.data;
     const reducedWidth = props.contextDepth * 60 + props.structDepth * 30;
