@@ -4,6 +4,15 @@ import { InfoMessage, Severity } from './common/info';
 import { Alert, Snackbar } from '@mui/material';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Console } from './components/Console';
+import { SingleContextScreen } from './components/SingleContextScreen';
+import { Context } from './model/Context';
+
+declare global {
+  interface Window {
+    INTERLAB_CONTEXT: Context | undefined;
+  }
+}
+
 
 function App() {
   const [info, setInfo] = useState<InfoMessage[]>([]);
@@ -27,6 +36,10 @@ function App() {
       element: <Console addInfo={addInfo} />,
     },
   ]);
+
+  if (window.INTERLAB_CONTEXT) {
+    return <SingleContextScreen context={window.INTERLAB_CONTEXT} />
+  }
 
   return (
     <div className="App">

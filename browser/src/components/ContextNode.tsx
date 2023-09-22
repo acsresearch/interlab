@@ -1,7 +1,7 @@
 
 
 import { Context, duration, getAllChildren } from "../model/Context";
-import { Box, CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
 import { Item } from "./Item";

@@ -28,7 +28,7 @@ export type RootsVisibility = {
 
 function RootItem(props: { root: Context, selectedCtx: Context | null, selectRoot: (uid: string) => void }) {
     const { root, selectedCtx, selectRoot } = props;
-    let primary = root.uid.slice(0, 40);
+    const primary = root.uid.slice(0, 40);
 
     let icon;
     let color;
@@ -118,7 +118,7 @@ export function RootPanel(props: { roots: Context[], selectedCtx: Context | null
                         size="small"
                         value="check"
                         selected={showRoots.showFinished}
-                        onChange={(e) => {
+                        onChange={() => {
                             props.setShowRoots({ ...showRoots, showFinished: !showRoots.showFinished })
                         }}
                     >

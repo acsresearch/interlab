@@ -52,7 +52,7 @@ function MessageView(props: { messages: Message[], msgList: MutableRefObject<HTM
             maxHeight: "calc(100vh - 210px)",
         }}>
             <Stack ref={props.msgList}>
-                {props.messages.map((m, i) => <MessageBody key={m.id} message={m} setSchema={props.setSchema} />)}
+                {props.messages.map((m) => <MessageBody key={m.id} message={m} setSchema={props.setSchema} />)}
             </Stack>
         </Paper>
     )

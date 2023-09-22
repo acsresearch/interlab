@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Context, gatherKindsAndTags } from "./model/Context";
-import { BrowserConfig, OpenerMode } from "./components/DataBrowser";
-import { ContextView } from "./components/ContextView";
+import { Context, gatherKindsAndTags } from "../model/Context";
+import { BrowserConfig, OpenerMode } from "./DataBrowser";
+import { ContextView } from "./ContextView";
 
 
-export function SingleContextView(props: { context: Context }) {
-    let [opened, setOpened] = useState<Set<string>>(() => { const s = new Set<string>(); gatherKindsAndTags(props.context, s); return s });
-    const [config, setConfig] = useState<BrowserConfig>({ themeWithBoxes: false });
+export function SingleContextScreen(props: { context: Context }) {
+    const [opened, setOpened] = useState<Set<string>>(() => { const s = new Set<string>(); gatherKindsAndTags(props.context, s); return s });
+    const [config, _setConfig] = useState<BrowserConfig>({ themeWithBoxes: false });
 
     /* Copy pasted from DataBrowser, need some refactoring */
     function setOpen(keys: string | string[], mode: OpenerMode) {

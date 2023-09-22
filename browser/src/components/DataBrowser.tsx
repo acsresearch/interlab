@@ -1,6 +1,5 @@
 import { Box, Switch } from "@mui/material";
 import { Context, gatherKindsAndTags } from "../model/Context";
-import { ContextNode } from "./ContextNode";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVICE_PREFIX } from "../config";
@@ -8,7 +7,6 @@ import { callGuard } from "../common/guard";
 import { AddInfo } from "../common/info";
 import ToggleButton from '@mui/material/ToggleButton';
 
-import { ContextDetailsDialog } from "./ContextDetails";
 import { RootPanel, RootsVisibility } from "./RootPanel";
 import { ContextView } from "./ContextView";
 
@@ -30,7 +28,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     const [config, setConfig] = useState<BrowserConfig>({ themeWithBoxes: false });
     const [selectedCtx, setSelectedCtx] = useState<Context | null>(null);
     const [roots, setRoots] = useState<Context[]>([]);
-    let [opened, setOpened] = useState<Set<string>>(new Set());
+    const [opened, setOpened] = useState<Set<string>>(new Set());
     const [kinds, setKinds] = useState<Set<string>>(new Set());
     const [showRoots, setShowRoots] = useState<RootsVisibility>({ showFinished: true, showFailed: true });
 
@@ -112,7 +110,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
 
     function setOpen(keys: string | string[], mode: OpenerMode) {
         setOpened((op) => {
-            let o = new Set(op);
+            const o = new Set(op);
             if (!Array.isArray(keys)) {
                 keys = [keys]
             }
@@ -136,7 +134,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
 
     }
 
-    let sortedKinds = Array.from(kinds);
+    const sortedKinds = Array.from(kinds);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { refresh() }, []);
