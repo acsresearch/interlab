@@ -8,6 +8,7 @@ from enum import Enum
 from threading import Lock
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
+from ..utils.display import display_iframe_html
 from ..utils.text import generate_uid, shorten_str
 from ..version import VERSION
 from .serialization import Data, serialize_with_type
@@ -369,6 +370,20 @@ class Context:
         result = []
         _helper(self)
         return result
+
+    def write_static_html(self, filename: str):
+        from ..ui.staticview import create_context_static_page
+        html = create_context_static_page(self)
+        with open(filename, "w") as f:
+            f.write(html)
+
+    def static_display(self):
+        """Show context in Jupyter notebook"""
+        from ..ui.staticview import create_context_static_html
+        from IPython.core.display import HTML
+        from IPython.display import display
+        html = create_context_static_html(self)
+        display(HTML(html))
 
 
 def with_context(

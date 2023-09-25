@@ -59,7 +59,7 @@ function RootItem(props: { root: Context, selectedCtx: Context | null, selectRoo
 export function FilterByTagButton(props: { roots: Context[], tagFilters: Tag[], onClick: (tag: Tag) => void }) {
     return <PopupState variant="popover">
         {(popupState) => {
-            let tags = popupState.isOpen ? collectTags(props.roots).filter(tag => !props.tagFilters.find(t => t.name === tag.name)) : [];
+            const tags = popupState.isOpen ? collectTags(props.roots).filter(tag => !props.tagFilters.find(t => t.name === tag.name)) : [];
             return (<>
                 <IconButton {...bindTrigger(popupState)}><SellIcon /></IconButton>
                 <Menu {...bindMenu(popupState)}>

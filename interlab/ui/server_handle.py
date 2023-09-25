@@ -1,15 +1,11 @@
 import asyncio
-import importlib.resources as resources
 from threading import Condition
 
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from . import browser
-
-with resources.path(browser, ".") as static_path:
-    PATH_TO_STATIC_FILES = static_path
+from interlab.ui.staticfiles import PATH_TO_STATIC_FILES
 
 
 class ServerHandle:
