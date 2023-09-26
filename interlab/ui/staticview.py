@@ -34,7 +34,12 @@ STATIC_CONTEXT_TEMPLATE_PAGE = """<!doctype html>
 def create_context_static_html(context: Context) -> str:
     context_json = json.dumps(context.to_dict())
     return STATIC_CONTEXT_TEMPLATE_HTML.format(
-        context=context_json, id=uuid.uuid4(), cdn_url=CDN_URL, js_file=JS_FILE, css_file=CSS_FILE)
+        context=context_json,
+        id=uuid.uuid4(),
+        cdn_url=CDN_URL,
+        js_file=JS_FILE,
+        css_file=CSS_FILE,
+    )
 
 
 def create_context_static_page(context: Context) -> str:
