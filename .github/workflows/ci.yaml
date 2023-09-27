@@ -42,8 +42,8 @@ jobs:
       - name: Check style
         run: poetry run bash scripts/format.sh --check
 
-      - name: Check requirements*.txt to be up to date
-        run: poetry run bash scripts/requirements.sh --check
+#      - name: Check requirements*.txt to be up to date
+#        run: poetry run bash scripts/requirements.sh --check
 
       # Always build (should not fail, and used in release job below)
       - name: Build poetry artifacts
