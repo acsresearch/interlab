@@ -11,7 +11,7 @@ casefy==0.1.7 ; python_version >= "3.10" and python_version < "4.0"
 certifi==2023.7.22 ; python_version >= "3.10" and python_version < "4.0"
 charset-normalizer==3.2.0 ; python_version >= "3.10" and python_version < "4.0"
 click==8.1.7 ; python_version >= "3.10" and python_version < "4.0"
-colorama==0.4.6 ; python_version >= "3.10" and python_version < "4.0" and platform_system == "Windows"
+colorama==0.4.6 ; python_version >= "3.10" and python_version < "4.0" and (platform_system == "Windows" or sys_platform == "win32")
 contourpy==1.1.0 ; python_version >= "3.10" and python_version < "4.0"
 cycler==0.11.0 ; python_version >= "3.10" and python_version < "4.0"
 dataclasses-json==0.5.9 ; python_version >= "3.10" and python_version < "4.0"
