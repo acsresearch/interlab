@@ -33,6 +33,8 @@ import React from "react";
 //const DEFAULT_COLORS = [grey[100], grey[200], grey[300], grey[400], grey[500]];
 const DEFAULT_COLORS = [grey[100], grey[300]];
 
+// This is needed for Jypyter because Jupyter gives a style for svg that broke the layout
+const NODE_ICON_STYLE = { height: "min-content" }
 
 function ContextMenu(props: { context: Context, env: ContextEnv }) {
 
@@ -80,14 +82,14 @@ function ContextNodeItem(props: { icon: React.ReactNode, children?: React.ReactN
 export function ContextNode(props: { env: ContextEnv, context: Context, depth: number }) {
     const themeWithBoxes = props.env.config.themeWithBoxes;
 
-    let c = props.context;
-    let open = props.env.opened.has(c.uid);
+    const c = props.context;
+    const open = props.env.opened.has(c.uid);
     let backgroundColor = c.meta?.color_bg;
     if (!backgroundColor && themeWithBoxes) {
         backgroundColor = DEFAULT_COLORS[props.depth % 2];
     }
 
-    let mainColor = c.meta?.color;
+    const mainColor = c.meta?.color;
 
     // HACK =========
     // if (mainColor === "#ffb27f50") {
@@ -103,7 +105,7 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
     let icon: React.ReactNode;
     let small = false;
 
-    let iconStyle = { pr: 0.5, color: mainColor };
+    const iconStyle = { pr: 0.5, color: mainColor };
 
     if (c.state === "open") {
         icon = <Box component="span" sx={{ pr: 0.5 }}><CircularProgress size="1em" /></Box>
@@ -165,7 +167,7 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
                 (
                     inputs.map(({ property, value }, i) =>
 
-                        <ContextNodeItem key={i} icon={<ArrowForwardIcon />}>
+                        <ContextNodeItem key={i} icon={<ArrowForwardIcon style={NODE_ICON_STYLE} />}>
                             <Box><strong>{property}</strong></Box>
                             <DataRenderer uid={c.uid + "/inputs/" + property} contextDepth={props.depth} data={value} env={props.env} structDepth={0} />
                         </ContextNodeItem>
@@ -183,13 +185,13 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
             }
             {
                 c.result &&
-                <ContextNodeItem icon={<ArrowBackIcon />}>
+                <ContextNodeItem icon={<ArrowBackIcon style={NODE_ICON_STYLE} />}>
                     <DataRenderer uid={c.uid + "/result"} contextDepth={props.depth} data={c.result} env={props.env} structDepth={0} />
                 </ContextNodeItem>
             }
             {
                 c.error &&
-                <ContextNodeItem icon={<ReportProblemIcon />}>
+                <ContextNodeItem icon={<ReportProblemIcon style={NODE_ICON_STYLE} />}>
                     <DataRenderer uid={c.uid + "/error"} contextDepth={props.depth} data={c.error} hideType="error" env={props.env} structDepth={0} />
                 </ContextNodeItem>
             }
@@ -197,7 +199,7 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
     }
 
     const header = () => {
-        let short_result = undefined; // c.result ? short_repr(c.result) : null;
+        const short_result = undefined; // c.result ? short_repr(c.result) : null;
         const dur = duration(props.context);
         return <Box sx={{ display: "flex", alignContent: "space-between" }}>
             <Box style={{
