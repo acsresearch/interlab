@@ -6,7 +6,12 @@ import { ContextView } from "./ContextView";
 const config = { themeWithBoxes: false };
 
 export function SingleContextScreen(props: { context: Context }) {
-    const [opened, setOpened] = useState<Set<string>>(() => { const s = new Set<string>(); gatherKindsAndTags(props.context, s); return s });
+    const [opened, setOpened] = useState<Set<string>>(() => {
+        const s = new Set<string>();
+        gatherKindsAndTags(props.context, s);
+        s.add(props.context.uid)
+        return s
+    });
 
     /* Copy pasted from DataBrowser, need some refactoring */
     function setOpen(keys: string | string[], mode: OpenerMode) {
