@@ -370,14 +370,14 @@ class Context:
         _helper(self)
         return result
 
-    def write_static_html(self, filename: str):
+    def write_html(self, filename: str):
         from ..ui.staticview import create_context_static_page
 
         html = create_context_static_page(self)
         with open(filename, "w") as f:
             f.write(html)
 
-    def static_display(self):
+    def display(self):
         """Show context in Jupyter notebook"""
         from IPython.core.display import HTML
         from IPython.display import display

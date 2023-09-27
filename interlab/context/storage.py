@@ -71,7 +71,7 @@ class StorageBase(abc.ABC):
         for uid in self.list():
             yield self.read_context(uid)
 
-    def display(self, width="95%", height=700):
+    def live_display(self, width="95%", height=700):
         """Show context in Jupyter notebook"""
         if self._server is None:
             self.start_server()
