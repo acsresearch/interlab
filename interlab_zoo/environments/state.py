@@ -1,15 +1,19 @@
 from dataclasses import dataclass
+from typing import Any
+
+State = Any
 
 
 @dataclass
-class State:
+class Situation:
 
     env: "Environment"
     player: int | None
-    payload: any
+    state: State
 
     def is_terminal(self):
         return self.player is None
+
 
 
 
