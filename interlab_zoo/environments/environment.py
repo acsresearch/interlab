@@ -9,7 +9,7 @@ Action = Any
 
 class EnvironmentBase(abc.ABC):
     def __init__(self, actors: Sequence[ActorBase], initial_actor_idx=None):
-        assert len(self.actors) > 0
+        assert len(actors) > 0
         self.actors = actors
         self.current_actor_idx = initial_actor_idx or 0
         self.step = 0
@@ -22,7 +22,7 @@ class EnvironmentBase(abc.ABC):
     def current_actor(self):
         if self.current_actor_idx is None:
             return None
-        return self.current_actor[self.current_actor_idx]
+        return self.actors[self.current_actor_idx]
 
     def is_terminated(self):
         return self.current_actor_idx is None
@@ -51,7 +51,7 @@ class EnvironmentBase(abc.ABC):
         for actor in self.actors:
             actor.observe(observation, origin)
 
-    def run_until_end(self, max_steps: int | None):
+    def run_until_end(self, max_steps: int | None = None):
         if max_steps is not None:
             for _ in range(max_steps):
                 if self.is_terminated():
@@ -59,8 +59,8 @@ class EnvironmentBase(abc.ABC):
                 self.run_step()
             raise Exception("Maximal number of steps reached")
         else:
-            while self.is_terminated():
-                self.run_steps()
+            while not self.is_terminated():
+                self.run_step()
 
     def run_steps(self, max_steps: int):
         for _ in range(max_steps):
