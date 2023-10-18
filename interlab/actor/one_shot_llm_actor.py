@@ -1,7 +1,13 @@
 from typing import Any
 
 from ..context.data import FormatStr
-from ..lang_models import query_model
+from ..lang_models import (
+    query_model,
+    query_chat_model,
+    SystemMessage,
+    AiMessage,
+    HumanMessage,
+)
 from ..queries import query_for_json
 from .base import ActorWithMemory
 
@@ -49,3 +55,48 @@ class OneShotLLMActor(ActorWithMemory):
                 with_example=self.query_with_example,
                 with_cot=self.query_with_cot,
             )
+
+
+class OneShotChatActor(ActorWithMemory):
+    def __init__(
+        self,
+        name: str,
+        model: Any,
+        initial_prompt: str,
+        *,
+        query_with_example: bool = False,
+        query_with_cot: bool = False,
+        show_event_origin: bool = True,
+        **kwargs,
+    ):
+        super().__init__(name=name, **kwargs)
+        self.model = model
+        self.initial_prompt = initial_prompt
+        self.query_with_example = query_with_example
+        self.query_with_cot = query_with_cot
+        self.show_event_origin = show_event_origin
+
+    def _act(self, prompt: str = None, *, expected_type=None) -> str:
+        messages = [SystemMessage(self.initial_prompt)]
+
+        messages += [
+            AiMessage(e.data_as_string())
+            if e.origin == self.name
+            else HumanMessage(e.data_as_string())
+            for e in self.memory.get_events(prompt)
+        ]
+
+        if prompt is not None:
+            messages.append(HumanMessage(prompt))
+
+        if expected_type is str or expected_type is None:
+            return query_chat_model(self.model, messages)
+        else:
+            raise Exception("TODO")
+            # return query_for_json(
+            #     self.model,
+            #     expected_type,
+            #     q,
+            #     with_example=self.query_with_example,
+            #     with_cot=self.query_with_cot,
+            # )
