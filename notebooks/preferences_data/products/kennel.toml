@@ -1,0 +1,19 @@
+type="product"
+prompt="""
+BingoPaw Playpen Welded Wire Dog Kennel W/ Cover, 4.2 ft. x 4 ft. x 4.4 ft, indoors and outdoors,  galvanized metal iron thick wire tube fences, rust-resistance, no sharp edges, waterproof cover, 
+protect dog from the hot sun,  small and large size available, also for: chicken, rabbit, duck.
+"""
+
+human_desc = """
+BingoPaw Playpen Welded Wire Dog Kennel
+
+BingoPaw heavy-duty black dog crate suitable for use indoors and outdoors, thick wire tube fences, strong rust-proof ability. The dog shelter kennel is constructed of galvanized metal iron for superior durability, rust-resistance, paint-coated finish, and no sharp edges, all the corners are smooth after being processed to prevent scratching, which remains sturdy for long-time use, and can house even tough and rough dogs. Come with a waterproof cover, which provides shade to protect your dog from the hot sun, weather resistant to the cold and rain. Keeps your dogs protected and safe, calm them down, and reduces barking. The pet kennel with good ventilation and ensure pets stay in a safe place to enjoy the outdoors. Making your pets feel safe and secure, by creating a private, cozy den for resting and relaxing, playing, without worrying about them escaping.
+
+* Galvanized metal iron kennel for high strength, paint-coated finish, rust-resistance.
+* 210D oxford cloth cover, windproof, weatherproof, sun shade shelter.
+* Allows your dogs to enjoy relaxing outdoors in a safe and enclosed environment.
+* Convenient access to the inside through a solid latching swing gate.
+* Can be used as a garden fence for chicken, rabbit, duck.
+* Strong latches to ensure safety, and prevent dogs from running out.
+* Available in small and large sizes, easy to install the panels together to be a kennel.
+"""

@@ -1,0 +1,48 @@
+type = "user_review"
+
+prompt = "Computer game Fallout 4"
+
+human_desc = """
+In all seriousness: this game has divided fan opinions, but in short: if you don't mind losing some roleplay aspects in exchange for more modern take on combat and a metric crapton of things to do, then I'd recommend this game for you. I think this game should be reviewed by listing the good, the bad and the mixed things individually:
+
+The good:
+
++ By far the most detailed, vivid and interesting game world so far. The Commonwealth has a wide variety of different areas to explore, from urban ruins and blasted forests to swamps and the horrifically irradiated Glowing Sea. The game world is also nicely seamless, so there aren't many loading screens outside of interiors and major settlements.
+
++ The combat is so much better than in the last two games. For example, you can now throw grenades and mines without having to put down your current weapon, you can swing your gun to bash anyone that gets too close, and you're no longer forced to wait until the reload animation is finished before you can switch weapons or access your Pip-Boy. In general, the combat also feels much more fluent and intense.
+
++ The new crafting and settlement systems are very extensive (if not very realistic). You can upgrade your weapons and armor as you meet the perk requirements, but you can also use the system to make some rather atypical ones - things like laser autoshotguns, plasma flamers or, say, an automatic long-range carbines - without breaking the game balance. The settlement system can be used to build anything from a small personal safehouse to full-sized towns with it's own stores and services.
+
++ As mentioned before, there's a whole lot to do. The base game has plenty of side quests, and there are four possible factions you can side with - one of which allows you to spare two of the others if you so please. Each faction has it's own side missions, some of which can be repeated as many as times as you want in a new location. You can play multiple sides pretty far into the game, too, if you're undecided or want to collect several paychecks at once. There's also a new miscellaneous objectives system, which lets you keep track of minor tasks and clues you've come across.
+
++ The game has a decent degree of unpredictability to it. Random encounters from Fallout 3 make a return, and most generic location-specific enemies have randomized equipment and loot every playthrough. Just about every enemy also has different stronger variants, which may replace "regular" enemies depending on the player level.
+
++ The game looks and sounds really good. The graphics have been updated, but Bethesda also redid every animation from scratch. In general, almost everything from weapon animations to character movement feels natural and smooth. New Vegas had terrible voice acting for all but few characters, but luckily that mistake was not repeated in FO4: almost every character that talks has good or great voice acting (Deacon and Elder Maxson are good examples of the latter...but see the the first point of Mixed section). The soundtrack deserves a special mention, too: you can tell it has been done with love.
+
++ For a Bethesda game, Fallout 4 is surprisingly bug free. Of course, there's still a fair amount of them, but they tend to be visual/acoustic rather than crashing or game-breaking issues. I don't think I've had more than a few major cases during my playtime that I haven't caused myself with mods, which is pretty impressive considering how complex the game is.
+
+
+The bad:
+
+- The new dialogue system is definitely a step back from the last two games. You only have four dialogue choices every time, but the biggest problem is that each of them only have a brief description rather than the full line, which sometimes may be something else than you'd assume. You'll very likely want to fix the latter with mods.
+
+- The base story is somewhat lackluster. The new dialogue system severely restricts the amount of lore and background information that is conveyed to the player, so the underlying plot (particularly faction histories and motives) feels rather undetailed in the end. Other than that, the lack of lore is mostly fixed in form of notes and terminal entries, but it'd always be better to hear if from characters themselves.
+
+- Lip syncing doesn't seem to be Bethesda's strong suit. Guess that's the trade-off of having tens of thousands of voice lines in the game.
+
+- In contrast of the previous games, there are only a couple of S.P.E.C.I.A.L. skill checks in the game (aside from Charisma, of course). This feels like a huge unused potential, considering that in the previous games abilities like Intelligence and Perception allowed alternative approaches to many situations.
+
+The mixed:
+
+* The player character is voiced in Fallout 4. Both male and female voice actors tend to excel in sarcastic/humorous situations, but the rest is generally in the decent-enough category. Many would have preferred the silent protagonist, and I can see why.
+
+* Bethesda has made some retroactive changes into the canon - some good, some bad. For example, I personally love how power armor works in this game, but some other lore detail changes (which I will not spoil) seem to pointlessly contradict the previous games. Luckily, the bad retconning is limited to minor details only.
+
+* Creation Club. Like most of the world, I'm against paid mods, but fortunately you're by no means forced to buy anything. In fact, they seem to give out skins and other small stuff for free every week or two, so you can still reap some of the benefits without actually having to support the business practive whatsoever.
+
+In the end, I don't think I can give this game a rating that applies to everyone...so let me put it this way:
+
+If you prefer more in-depth roleplay, then you might be better off sticking to New Vegas and Fallout 3.
+
+If you don't mind that and the flaws listed above too much, then you'll probably find this game to be either 8 or 9 points out of 10. For what's it worth, I've certainly enjoyed it.
+"""

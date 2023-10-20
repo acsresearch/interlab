@@ -1,0 +1,31 @@
+type="product"
+prompt="""
+Squirrel house/nesting box; cedar wood; outdoors; glued and nailed; burned image of squirrel on a wall; 
+removable roof for cleaning and hanging the box; two screws and washers for mounting included; 
+Outside Dimensions (inches): 12x11x10; Inside Dimensions (inches): 5.75x9; 
+Squirrel Opening (inches): 3.5
+"""
+
+human_desc = """
+This is a beautiful hand crafted squirrel house/nesting box with beautiful architectural design. This house is made out of thick rustic cedar wood and is perfect for the outdoors. All walls are glued and nailed together. The house is built to withstand the weather and the wear and tear of squirrels.
+
+The outside of the house has an adorable squirrel burned into the wood by artist Drew Senesac on two sides along with a cute pine cone to add to the design.
+
+The one side of the roof has two screws to make it easy to remove for cleaning and hanging the box!
+
+The back of the house has two pre drilled holes and comes with two screws and washers for easy mounting.
+
+Outside Dimensions:
+
+12”x11”x10”
+
+Inside Dimensions:
+
+5 3/4”x9”
+
+Squirrel Opening:
+
+3 1/2”
+
+This is a perfect gift for yourself or anyone who loves squirrels and nature. It is always fun to watch squirrels and their cute behaviors. Always remember that squirrels play an important role in nature and our forests! Please take care of our beautiful furry friends!
+"""

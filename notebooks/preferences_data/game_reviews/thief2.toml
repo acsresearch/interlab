@@ -1,0 +1,27 @@
+type = "user_review"
+
+prompt = "Computer game Thief 2: The Metal Age"
+
+human_desc = """
+Thief 2: The Metal Age focuses on all the best aspects of Thief: Gold to forge the greatest stealth game ever made. This second outing features a more engrossing world, with more lines of dialogue and notes to read, and 15 new levels which are filled with dark secrets to pick apart and unravel. Most importantly, the developers understood everything which made the original compelling and cut all the fat, leaving a highlight reel of everything which makes the franchise memorable.
+
+Thief 2 is fundamentally about analysing and picking apart different hazards. Through your eyes and ears, you’re constantly assessing the situation and identifying new threats to your detection - and bypassing them how you see fit. Whilst Thief: Gold was limited in the number of ways you could approach an objective, in The Metal Age it feels like you genuinely have a slew of options up your sleeve at all times. Rope (and now vine) arrows actually see frequent usage now as both allow you to reach new heights, tactfully abseil down into rooms to snatch prized loot, or swing between to avoid reverberating floors.
+
+A great example of the much improved non-linear structure is the bank heist. In this level there are eight different entrances, including through the roof, the balcony, the veranda, the basement window, and There are so many different pathways creating more replay value, strategy and options to approach your objective and creating significantly more depth. These aren’t simply for gameplay sake either: Thief 2’s worlds feel much more believable as lived-in spaces, meaning if there’s a kitchen, there’s likely a dining room nearby with goblets to swipe. The buildings are designed to traditional logic, meaning your ability to ‘feel out’ spaces feels more natural than ever before. Almost every level could take the cake for my favourite in Thief history.
+
+These playgrounds are stuffed full of lore and secrets, including side stories which not only create compelling stories in their own right, but lead you to valuable spaces in the level. One example includes a haunted library with leftover notes, detailing the librarian’s risque love life, before leading you to a hidden passageway revealing the consequences of his promiscuous lifestyle. The main storyline is not as memorable or engaging as Thief: Gold, but this is made up for by the number of self-contained stories woven into each level. I especially loved the religious texts dotted around the landscape, revealing the game’s cynical perspective on religion.
+
+To Manipulate A Man Is A Careful Project. Too Light A Hand, And He Follows His Own Whim; Too Heavy A Hand, And He Will Turn On You.
+
+One thing that strikes me about Thief is how it fundamentally changed my perception of video game spaces I’ve otherwise seen a million times. Never in my 20+ years of gaming have I walked into a lit room and been terrified of what I’ve encountered, not through an enemy or trap, but the type of floor I’ve been greeted with. The importance of sound in Thief 2 means the prospect of traversing a chapel with a stone floor is the equivalent of a boss encounter. Indeed, tiptoeing across creaking wooden floors takes me back to my attempts as a kid to venture into the kitchen in the dead of night without alerting my family.
+
+Looking Glass has, once again, knocked the game’s voice acting out of the park. Distorted, robotized and static-laden voices are heavily used to create a chilling, dehumanised antagonist, Karras, whose voice echoes through the speakers of his mechanical creations. Huge hulking mechs patrol the landscape, chanting mantras such as:
+
+I give thanks for my eyes. They can seek out evil, and keep me from harm's way.
+I give thanks for my arms, with them I make the world less wretched.
+
+The cold, dark world, sends chills down your spine as you uncover the monstrous technology being forged by the Technocratic extremists: The Mechanists. The plot feels a little more hamfisted towards the end, especially as there’s an emotional pull towards the end which contrasts with Garrett’s "I’ve always equated feelings with getting caught" mentality. Thief 2’s story is at its best when Garrett is purely out for himself, trying to pull together enough coin to pay his rent, and inadvertently gets dragged into higher dealings.
+
+Thief 2 keeps the player on a knife-edge at all times, and it had me completely captivated throughout all 15 levels. Well, to tell the truth, the final level is a bit of a buzzkill - but I can forgive it. This is the best stealth game I’ve had the privilege to play and I’d heartily recommend it to any fans of the genre
+"""
+

@@ -1,0 +1,19 @@
+type="product"
+prompt="""
+Darkecho Gaming Office Chair with Footrest Massage Racing Ergonomic Leather Reclining Video Game Chair Adjustable Armrest High Back Gamer Chair with Headrest and Lumbar Support Purple; 
+Premium soft PU leather; hand-sewing diamond cross stitching; USB powered lumbar pillow with massage function; chair back 90° to 155° reclining; smooth 360° swivel; height adjustable;
+rocking 15°; Armrests are adjustable up and down & right and left; armrest coated in soft PU leather; integrated metal frame and 5-point heavy duty anti-rollover wheelbase; 2000 miles rolling tests;
+thickened explosion-proof chassis and tilt mechanism control; adjust the chair angle by 90° To 155°; safety lock to prevent overturning; Durable SGS and BIFMA certificated gas cylinder. Maximum weight capacity: 330lb; One-month free return; 5 years chair parts free replacement warrant
+"""
+
+human_desc = """
+Exquisite Quilted Leather: Premium soft PU leather accented with hand-sewing diamond cross stitching, more comfortable and durable than normal leather, giving better cushioning and support like sleeping on mattress,skin-friendly,waterproof,Dirt,Fade&Tear resistant and easy to clean. 4.3 in thick seat cushion made of high density shaped foam,it has great resilience and breathability ,comfortable to sit for long time working and gaming .
+
+Ergonomic Comfort: The USB powered lumbar pillow has massage function which can effectively reduce fatigue. The chair back 90° to 155° reclining and The retractable footrest make you relax like sleep in bed.The detachable and adjustable headrest pillow and lumbar support pillow give multi-point support to disperse the spine and body pressure, ensuring your comfortable and ideal posture in the gaming and working.
+
+Multi-Functions and Perfect Gift: Perfect for both gaming and office scenes. The chair back 90° to 155° reclining and The retractable footrest make you relax like sleep in bed. smooth 360° swivel and chair Height adjustable. rocking 15° back and forth comfortably. 2D Armrests are adjustable in up and down & right and left, while the armrest pad is coated in soft PU leather. A perfect gift for birthday, Valentine’s, Thanksgiving day, Christmas gift.
+
+Sturdy Structure: Strong integrated metal frame and 5-point heavy duty anti-rollover wheelbase makes the chair Extremely stable .Upgraded PU casters with 2000 miles rolling tests roll quite smoothly and noiseless and protect floor well.The thickened explosion-proof chassis and tilt mechanism control can adjust the chair angle by 90° To 155° at any angle，Safety lock design to prevent overturning. Durable SGS and BIFMA certificated gas cylinder. Maximum weight capacity: 330lb
+
+Easy to Assemble and Excellent Service: Detail instructions included in the package. We have screws pre-assembly to avoid screws assembly trouble.Your satisfaction is our top concern.If you have any problem, please contact us. 24/7 customer services team all for purchase experience. One-month free return and 5 years chair parts free replacement warranty. 
+"""

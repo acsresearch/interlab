@@ -1,0 +1,12 @@
+type = "product"
+
+prompt = """
+Philips Sonicare 4100 Power Toothbrush, Rechargeable Electric Toothbrush with Pressure Sensor, Black HX3681/24, removes up to 3x more plaque vs. a manual toothbrush, signals when your 2 minutes is up, 
+pressure sensor to prevent gun recession, includes 1 electric toothbrush, 1 SymplyClean brush head, 1 USB charger (without wall adaptor), 
+"""
+
+human_desc = """
+Philips Sonicare 4100 Power Toothbrush, Rechargeable Electric Toothbrush with Pressure Sensor, Black HX3681/24
+
+Remove plaque and experience a deep, effective clean with Sonicare technology, removing up to 3x more plaque vs. a manual toothbrush. Sonicare technology gently pulses water between your teeth, for a month's worth of manual brushing in just 2 minutes. The QuadPacer lets you know when you've spent the optimal amount of time on each section of your mouth while the SmarTimer signals when your 2 minutes is up. The pressure sensor flashes red to remind you to ease off, helping to prevent gum recession, while the 2 intensity settings ensure a comfortable clean that’s right for you. Its slim ergonomic design and familiar-shaped head gives you everything you need for an effective clean. The kit includes 1 Philips Sonicare 3100 electric toothbrush, 1 SimplyClean (C1) brush head and 1 USB charger (wall adaptor not included). 1 Philips Sonicare 3100 electric toothbrush, 1 SimplyClean (C1) brush head, 1 USB charger
+"""

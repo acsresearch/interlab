@@ -1,0 +1,23 @@
+type="product"
+prompt="""
+Cordless Handheld Standard Range Area Imager Kit with Presentation Cradle and USB Kit, Black,
+Compatible Devices: Laptop, Desktop, Power Source: Corded Electric, Usb Cable, 3 AAA batteries required.
+"""
+
+human_desc = """
+* Compatible Devices: Laptop, Desktop
+* Power Source: Corded Electric, Usb Cable
+* Brand: ZEBRA
+* Connectivity Technology: USB Cable
+* Number of Batteries: 3 AAA batteries required.
+
+AFFORDABLE 1D/2D SCANNER: An affordable 1D/2D imager that doesn’t compromise performance or features for price. Capture barcodes from mobile devices, 1D and 2D Paper barcodes on items for sale, coupons, loyalty cards and more.
+
+GENERAL PURPOSE USE: The DS4308 scanner is hand held with an ergonomic, lightweight design. Built to be used reliability all day long while reducing employee fatigue allowing this scanner to be used in a wide variety of business situations.
+
+BUILT FOR YOUR BUSINESS: This cordless imager is built primarily for retail and hospitality businesses everywhere, but the applications are endless. Placing this reliable tool at your point of sale will ensure quick transactions and keep the lines moving.
+
+EASY TO USE: Point and shoot scanning with omni-directional scanning means users never need to line up the imager and the barcode. The aim line guides users to scan at the ideal distance from the barcode. This is helpful when capturing wide barcodes.
+
+EASY TO DEPLOY: Pre-configured and ready to use right out of the box. Auto-host cables will identify your Point of Sale (POS) interface and connect the imager, simplifying and reducing set up time.
+"""

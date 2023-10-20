@@ -1,0 +1,20 @@
+type="product"
+prompt="""
+Walker's Razor Slim Earmuffs; Dynamic shooting range high-definition speakers; sound-activated compression reaction of 0.02 seconds with independent volume controls; 
+Noise reduction 23 dB; 2 omnidirectional microphones; audio input jack; recessed volume control knobs; 2 AAA batteries (included); size: 8.10 x 4.60 x 10.60 inches; weight: 0.98 pounds
+"""
+
+human_desc = """
+Walker's Razor Slim Earmuffs 
+
+
+Protect your hearing at the shooting range with Walker's Razor Slim Protection Ear Muff with low noise/frequency tuned for natural sound clarity and added safety
+
+Dynamic shooting range high-definition speakers for clear sound with sound-activated compression reaction of 0.02 seconds with independent volume controls
+
+Noise reduction rating of 23 dB with 2 omnidirectional microphones and includes an audio input jack and recessed volume control knobs plus composite housing for effective sound dampening
+
+Comfortable headband with a metal wire frame that folds for easy storage and operates on 2 AAA batteries that are already included in the package so it is ready out-of-the-box
+
+Easy to use and comfortable to wear that measures 8.10 x 4.60 x 10.60 inches and weighs 0.98 pounds so you cannot feel the heaviness of the ear protection when shooting
+"""

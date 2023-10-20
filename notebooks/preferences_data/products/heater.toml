@@ -1,0 +1,19 @@
+type="product"
+prompt="""
+KISSAIR Compact 1500W/750W Space Heater with Thermostat - ETL Certified Ceramic Portable Heater Fan, Ideal for Home/Dorm/Office/Kitchen, Black; indoor, electric, size: 7.72" x 6.38" x 9.13"; weight: 2.6 pounds, three modes: heating 750W, heating 1500W, air circulation; safety: automatically turns off at 45 degrees; delivers heating in 2 seconds, PTC (Positive Temperature Coefficient), noise below 45 dB"""
+
+human_desc = """
+KISSAIR Compact 1500W/750W Space Heater with Thermostat
+
+KISSAIR is an artistic home appliance brand dedicated to introducing innovative, superior performance and textured home appliances to meet the consumer needs of customers at home and abroad. KISSAIR offers high quality products and designs, and has global R&D, design, production and sales capabilities that have gained domestic and international consumer base and investors over the past 8 years.
+
+Intuitive Control: Easily adjust the heat settings using the control knob on the right side. Choose "I" for gentle warmth at 750 watts, "II" for faster and hotter heat at 1500 watts, or switch to "Fan" for cool air circulation. Fine-tune the temperature by turning the thermostat knob on the left, ensuring optimal comfort with precision.
+
+Enhanced Safety Feature: Experience peace of mind with built-in overheat protection and tip-over protection. The thermostat control automatically shuts off the heater when it reaches a preset temperature, reactivating once the temperature drops. Additionally, if the heater is accidentally overturned or tilted beyond 45 degrees, it instantly cuts off power, prioritizing the safety of you and your loved ones.
+
+Compact yet Powerful: With dimensions of 7.72" x 6.38" x 9.13" and weighing only 2.6 pounds, this lightweight mini heater is incredibly portable. Don't let its size fool you, though. Powered by ceramic technology, it delivers quick heating within 2 seconds, warming up a 200-square-foot space in no time. By efficiently heating specific areas instead of the entire house, it helps you save on electricity bills. Whether in your bedroom, living room, study, or office, enjoy its convenient portability.
+
+Advanced Ceramic Technolog: The Easy Control Heater employs a PTC (Positive Temperature Coefficient) heating element, which offers superior stability compared to traditional heating elements. Benefit from rapid heat generation, dependable performance, and optimum safety. Its low thermal resistance ensures swift heat exchange without any visible redness on the heater's surface, reducing the risk of burns, fire hazards, and other safety concerns. Consider it the ideal electric heating component available today.
+
+Whisper-Quiet Operation: Operating at noise levels below 45 dB, this ceramic heater provides a tranquil environment. Its quiet operation allows you to use it in the bedroom while sleeping without disturbance. Enjoy a peaceful and comfortable ambiance, and relish in the cozy warmth it brings.
+"""

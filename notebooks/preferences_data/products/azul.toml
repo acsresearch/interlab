@@ -1,0 +1,22 @@
+type="product"
+prompt="Board game Azul"
+
+human_desc = """
+Board game Azul
+
+* Brand: Next Move
+* Material: Paper
+* Theme: Patterns
+* Genre: Family
+* Number of Players: 2-4
+
+BECOME AN ARTISAN: Craft exquisite tile mosaics in this award-winning board game.
+
+STRATEGY MATTERS: Plan your moves carefully to outscore opponents and disrupt their plans.
+
+HIGH-QUALITY COMPONENTS: Enjoy top-notch components and beautiful tile pieces.
+
+FAMILY-FRIENDLY FUN: Suitable for players of all ages, making it a perfect addition to game night.
+
+DESIGNED BY A MASTER: Created by world-renowned game author Michael Riesling.
+"""

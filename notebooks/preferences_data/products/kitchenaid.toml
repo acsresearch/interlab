@@ -1,0 +1,32 @@
+type="product"
+
+prompt="""KitchedAid 5 (more then 20 color variants, capacity 9 dozen cookies or 4 loaves of bread in single batch, 59 touch points planetary mixing, includes: Quart Stainless Steel Bowl, Coated Flat Beater, Coated Dough Hook, 6-Wire Whip, Pouring Shield)"""
+
+human_desc = ["""
+KitechAid5
+Whether you need 9 dozen* of your signature chocolate chips cookies or shredded chicken for Taco Tuesday with friends and family, the KitchenAid® Artisan® Series 5 Quart Tilt-Head Stand Mixer has the capacity for every occasion. This durable tilt-head stand mixer was built to last, and features 10 speeds to gently knead, thoroughly mix and whip ingredients for a wide variety of recipes and comes in over 20 colors to perfectly match your kitchen design or personality. Get creative and make more with your mixer with over 10 optional hub-powered attachments**, from food grinders to pasta makers and more. *Using the flat beater; 28g dough each **sold separately.
+- #1 Mixer Brand in the World* *Source: Euromonitor International Ltd. for retail sales revenue, USD, all retail channels. More information, including date ranges available at: mixerclaim.kitchenaid.com
+- Built to Take It All On, with the durable and built-to-last metal construction, with 59 touchpoints around the mixer bowl for great mixing results.
+- 5 Quart Stainless Steel Bowl with comfortable handle for small or large batches, to mix up 9 dozen cookies* in a single batch. Dishwasher safe. *Using the flat beater; 28g dough each.
+- Easily add ingredients with the tilt-head design, because you'll have better access to the bowl. Lock the head in place while mixing.
+- 10 Speeds for Nearly any Task or Recipe. From mixing ingredients together on the stir speed, to whipping cream at speed 8, you'll get thorough ingredient incorporation every time.
+- 10+ Attachments* to make more with your mixer to make everything from fresh pasta to burgers, veggie noodles, ice cream and more. *sold separately.
+- Model KSM150PS includes (1) 5 Quart Stainless Steel Bowl, (1) Coated Flat Beater, (1) Coated Dough Hook, (1) 6-Wire Whip, (1) Pouring Shield
+""",
+
+"""
+KitechAid5
+* Built to take it all on with the durable and built-to-last metal construction, and 59 touchpoints around the mixer bowl for great mixing results. 
+* 5 Quart Stainless Steel Bowl with comfortable handle for small or large batches, to mix up 9 dozen cookies* in a single batch. Dishwasher safe. *Using the flat beater; 28g dough each. 
+* Easily add ingredients with the tilt-head design, because you'll have better access to the bowl - lock the head in place while mixing. 
+* 10 speeds for nearly any task or recipe, from mixing ingredients together on the stir speed, to whipping cream at speed 8, you'll get thorough ingredient incorporation every time. 
+* Match your style with over 20 colors available. Choose from a full palette of color options to best match your style and personality.
+* Choose from all the color options to find the one that best matches your style and personality.
+* The power hub turns your stand mixer into a culinary center with more than 15 optional attachments available.
+* 5-Qt. stainless steel bowl with comfortable handle offers enough capacity to mix dough for 9 dozen cookies or 4 loaves of bread in a single batch.
+* 59-Point Planetary Mixing Action means 59 touchpoints per rotation around the bowl for thorough ingredient incorporation.
+* The tilt-head design allows clear access to the bowl and attached beater or accessory so you can easily add ingredients for a recipe.
+* Powerful enough for nearly any task or recipe, whether you’re stirring wet and dry ingredients together, kneading bread dough or whipping cream.
+* Includes coated flat beater, coated dough hook, 6-wire whip and 1-piece pouring shield. The flat beater and dough hook are dishwasher-safe.
+"""
+]

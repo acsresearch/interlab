@@ -1,0 +1,20 @@
+type="product"
+prompt="""
+Yingzhao Set of 5 Poinsettia Christmas Wreaths, 16 Inch Prelit Christmas Wreath with Pine Cone Red Berry, LED Lighted Christmas Garland Christmas Wreath Bows for Front Door Fireplace Xmas Party Decor;
+contains: 1 pcs lighted Christmas wreath with pine cones red berries, 2 pcs Christmas garland with lights, 2 pcs red Christmas bows, and 1 pcs metal hanger; materials: PE synthetic fir; warm yello LED lights, 
+powered by battery; garland size: 106 inches long with 10 inches of diameter; each gerland 315 branch tips, Xmas wreath size: 17.72 inches in diameter; red bow size: 23.6 x 13.8 inches
+"""
+
+human_desc = """
+Yingzhao Set of 5 Poinsettia Christmas Wreaths, 16 Inch Prelit Christmas Wreath with Pine Cone Red Berry, LED Lighted Christmas Garland Christmas Wreath Bows for Front Door Fireplace Xmas Party Decor
+
+Christmas Wreaths Decoration: you will get 1 pcs lighted Christmas wreath with pine cones red berries, 2 pcs Christmas garland with lights, 2 pcs red Christmas bows, and 1 pcs metal hanger, nice in combination will bring an animate and enjoyable ambiance to your home, look gorgeous indoor or outdoor covered porch
+
+Realistic and Exquisite: our Christmas door wreath is made of PE synthetic fir and PVC material, providing you with incredibly realistic spruce branch tips, also adorned with Xmas red bow, pine cones, and red berries, look lifelike and elegant, creating a lively feel to your Christmas decor
+
+Wonderful Christmas Decorations: this holiday wreath is ideal for decorating homes, shops, hotels, living rooms, Christmas parties; You can hang them up on front doors, fireplaces, Christmas trees, mantel, porch, cabinets, shelves, as alluring decorations for the upcoming Christmas
+
+Charming LED Lights: paired with warm yellow LED lights, the Christmas wreaths can look more charming at night, you can hang it on doors, windows, fireplaces, stairs, walls, or anywhere you like to fill your home with joyous holiday ambient, bring a charming and festive glow to light up your house
+
+Suitable Size: the battery operated Christmas garland measures about 106 inches long with 10 inches of diameter, each garland has 315 branch tips, the Xmas wreath measures about 45 cm / 17.72 inches in diameter, and the red bow is about 23.6 x 13.8 inches/ 60 x 35 cm; The bright red brings a strong Christmas atmosphere
+"""

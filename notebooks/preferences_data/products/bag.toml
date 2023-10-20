@@ -1,0 +1,27 @@
+type="product"
+prompt="""
+Travelhouse Underseat Hardshell Carry On Luggage 20" Lightweight Hardside Suitcase With Silent Spinner Wheels; Purple;  21" carry-on hardside underseat luggage; Color: Blue, Black, Orange, Purple, Green, Light Green, Light Purple; ABS hard shell, steel rod; Capacity: 33L; Size: 21.85" x 8.35" x 14.76" (L x W x H); Weight: 5.62lb; 360 degree silent double spinner wheels
+"""
+
+human_desc = """
+Travelhouse small size 21" carry-on hardside underseat luggage is extremely lightweight, easy to take with you for traveling, camping, business trip or going back to school! This fashion hard luggage is constructed with ABS hard shell and smooth steel rod, very sturdy and durable. 33L capacity provide enough space to pack items needed of one person for a 1-3 days trip. The suitcase is equipped with 360 degree silent double spinner wheels for easy maneuver on different kind of ground. And there is also a TSA lock on the side of the luggage to ensure your belongs is safe to travel with you. You can fully enjoy the journey with these travel luggage sets!
+
+Specification:
+
+Material: ABS HardShell, Steel
+
+Color: Blue, Black, Orange, Purple, Green, Light Green, Light Purple
+
+Size: 21.85" x 8.35" x 14.76" (L x W x H)
+
+Weight: 5.62lb
+
+Packing Capacity: 33L
+
+* High Quality Luggage; Made of 100% ABS material; this texture is extremely impact-resistant scratch-resistant and fairly light in weight, This luggage weighs only 5.62 lbs. Best choice for 1-3days travels and business trips.
+* Top material for every part; 4x Silent & Smooth Multi-directional Spinner Wheels Can accept a height of 1 meter and a weight of 60lb without breakage; TPR soft handle with straight handle makes you more comfortable when you need to carry.
+* Elegant + Practical Design; Features textured finish to prevent against scratches, keeping case beautiful after a trip. Stainless steels pull rod can be adjusted for three lengths.
+* Organized & Secure Interior; Interior mesh zip pocket and elasticated, Squared full-capacity design, Capacity : 33L
+"""
+
+

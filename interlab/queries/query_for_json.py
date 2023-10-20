@@ -48,6 +48,7 @@ def query_for_json(
     with_cot: bool = False,
     max_repeats: int = 5,
     model_for_examples: Any = None,
+    throw_on_failure: bool = True,
 ) -> TOut:
     """
     Prompt `model` to produce a JSON representation of type `T`, and return it parsed and validated.
@@ -160,6 +161,10 @@ def query_for_json(
                 if i < max_repeats - 1:
                     continue
                 # Errors on last turn get logged into context and propagated
-                raise ParsingFailure(
-                    f"model repeatedly returned a response without a valid JSON instance of {T.__class__.__name__}"
-                ) from e
+                if throw_on_failure:
+                    raise ParsingFailure(
+                        f"model repeatedly returned a response without a valid JSON instance of {T.__class__.__name__}"
+                    ) from e
+                else:
+                    c.set_result(None)
+                    return None

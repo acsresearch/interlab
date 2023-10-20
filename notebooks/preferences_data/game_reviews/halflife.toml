@@ -1,0 +1,19 @@
+type = "user_review"
+
+prompt = "Computer game Half-life"
+
+human_desc = """
+Half-life
+
+The Half-Life game series is arguably the most influential in the PC gaming industry. It starts in 1998, most of the popular games at the time were Quake and Doom. In those games you play as super soldiers. Super hero-like characters with powerful strength. When Half-Life came out, you literally spawned playing as “man on his way to work”. It was a new concept compared to any other game, and even more relatable to the player. You didn't have super-strength, you didn't have mind-control. You were a normal scientist with a hazard suit. The suit, named HEV suit or Hazardous Environment Suit. It was the only real power that the main character, Gordon Freeman had at his disposal. It's a suit that's not meant for war, simply working in hazardous environments.
+
+When you start the game, you are greeted with a long train ride to your workplace. You are Gordon Freeman, a man with a PhD in Theoretical Physics. Along the train ride, you witness the advanced AI. You see NPCs (Non Playable Characters) at work, at break and interacting with each other. Having normal human conversations, such as “Do you know who ate all the doughnuts?” And generally complaining about work environments or equipment failures.
+
+You work at Black Mesa Research Facility, a government facility located in the New Mexico desert. It's a top secret facility working on all sorts of super cool futuristic technologies. A massive underground facility with housing, amenities and even their own TV and news entertainment. They have a small security force that works all over the facility to protect it from any failed Frankenstein-like experiments.
+
+When you arrive at your train stop, you are greeted by a friendly security guard who lets you out of your train and warns you that you are late to work and they are soon going to start a big experiment. Once freed from the train car, you enter the lobby of Sector C. You are then greeted by NPCs who tell you that you are late and must go to the test chamber. Once you have put on the HEV Suit and arrived at the test chamber, you begin the experiment. As predicted, it goes very wrong. You unintentionally create a portal to another planet prompting the native species to invade earth.
+
+Fighting your way through the facility, you learn that the military has been ordered to cover up everything. They do this by eliminating everyone associated with the failed experiment. When the military fails, the CIA special forces are there to do the same thing. They are even ordered to eliminate the leftover military forces who originally failed. All while this is happening, the player is mysteriously stalked by a man known as The G-Man. A tall pale man in a blue suit carrying a black leather briefcase. Nothing is really known about him and how he relates to the main game, but it's speculated that he plays a major role.
+
+I rate Half-Life 10/10. It is an absolute perfect RPG with an engaging story. Although at the time it took them 6 years to release Half-Life 2, I was not born yet so it did not affect me! I got to play the half life series back to back and I enjoyed every bit of it! I’ve bonded with many friends over the Half-Life series and even the games based off of Half-Life such as the Counter-Strike series, HL Deathmatch, Ricochet, Day Of Defeat and Gary’s Mod. All great games that originally started with Half-Life, a game about a man who had a bad day at work.
+"""
