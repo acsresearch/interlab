@@ -5,7 +5,7 @@ from typing import Any
 from fastapi.encoders import jsonable_encoder
 
 
-@dataclass
+@dataclass(frozen=True)
 class Event:
     # str or any JSON-serializable type
     data: Any

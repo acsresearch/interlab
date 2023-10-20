@@ -11,6 +11,9 @@ class MemoryBase(abc.ABC):
     def __init__(self, *, format: FormatBase = None):
         self.format = format
 
+    def copy(self):
+        raise NotImplementedError
+
     @abc.abstractmethod
     def add_event(self, event: Event):
         raise NotImplementedError()

@@ -32,7 +32,7 @@ class RelevanceTextMemory(MemoryBase):
         text_model=None,
     ):
         self.embed_model = embed_model or openai.Embedding()
-        self.text_model = embed_model or langchain.chat_models.ChatOpenAI()
+        self.text_model = text_model or langchain.chat_models.ChatOpenAI()
         self.summary_limit = 300
         self.summary_request = "100 words"
         self.events = []

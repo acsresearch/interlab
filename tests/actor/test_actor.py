@@ -27,3 +27,16 @@ def test_memory_actor():
     assert a1.memory.get_events() == (o1,)
     a1.observe(Event("Baz"))
     assert a1.memory.get_formatted("ignored") == "Barbara: Bar!\n\nBaz"
+
+
+@patch.multiple(ActorWithMemory, __abstractmethods__=set())
+def test_memory_actor_copy():
+    a1 = ActorWithMemory("Barbara")
+    a2 = a1.copy()
+    assert a2.name == "Barbara"
+    a1.observe("Hello!")
+    assert len(a1.memory.get_events()) == 1
+    assert len(a2.memory.get_events()) == 0
+    a2.observe("New event")
+    assert len(a1.memory.get_events()) == 1
+    assert len(a2.memory.get_events()) == 1

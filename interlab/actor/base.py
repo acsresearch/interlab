@@ -1,5 +1,6 @@
 import abc
 import random
+from copy import copy
 from typing import Any
 
 from ..context import Context
@@ -30,6 +31,9 @@ class ActorBase(abc.ABC):
                     self.name, saturation=0.5, lighness=0.3
                 )
             )
+
+    def copy(self):
+        raise NotImplementedError
 
     def act(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
         """Calls self._act to determine the action, wraps the action in Event, and wraps the call in Context."""
@@ -97,3 +101,8 @@ class ActorWithMemory(ActorBase):
 
     def _observe(self, event: Event):
         self.memory.add_event(event)
+
+    def copy(self):
+        actor = copy(self)
+        actor.memory = self.memory.copy()
+        return actor
