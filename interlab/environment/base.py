@@ -3,6 +3,7 @@ import abc
 
 from interlab.actor import ActorBase
 from interlab.context import Context
+from .monitor import Monitor
 
 
 class BaseEnvironment(abc.ABC):
@@ -11,6 +12,7 @@ class BaseEnvironment(abc.ABC):
         self.actors = actors
         self.step_counter = 0
         self.result = None
+        self.monitor = Monitor()
 
     def is_finished(self) -> bool:
         return self.result is not None
@@ -30,16 +32,20 @@ class BaseEnvironment(abc.ABC):
         with Context(name, meta=self.current_step_style()):
             self.result = self._step()
 
-    def run_until_end(self, max_steps: int = None):
+    def run_until_end(self, max_steps: int = None, verbose=False):
         if max_steps is not None:
             if self.is_finished():
                 return self.result
             for _ in range(max_steps):
+                if verbose:
+                    print("Step", self.step_counter)
                 self.step()
                 if self.is_finished():
                     break
         else:
             while not self.is_finished():
+                if verbose:
+                    print("Step", self.step_counter)
                 self.step()
         return self.result
 
@@ -47,7 +53,15 @@ class BaseEnvironment(abc.ABC):
         for actor in self.actors:
             actor.observe(observation, origin)
 
-    @abc.abstractmethod()
+    def trace_value(self, name, value):
+        self.monitor.trace(name, self.step_counter, value)
+
+    def increment_value(self, name, value=1):
+        self.monitor.increment(name, self.step_counter, value)
+
+    # Methods to overload
+
+    @abc.abstractmethod
     def _step(self):
         raise NotImplementedError
 

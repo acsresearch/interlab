@@ -1,5 +1,8 @@
 from typing import Sequence, Literal
+
+import numpy as np
 from pydantic.dataclasses import dataclass, Field
+import matplotlib.pyplot as plt
 
 from enum import Enum
 
@@ -16,11 +19,19 @@ class CommunicateAndPlayGame(BaseEnvironment):
         actors: Sequence[ActorBase],
         n_rounds: int,
         action_names: Sequence[str],
+        payoff_matrix: np.ndarray | None
     ):
         super().__init__(actors)
 
+        if payoff_matrix is not None:
+            assert len(payoff_matrix.shape) == self.n_actors + 1
+            for i in range(self.n_actors):
+                assert payoff_matrix.shape[i] == len(action_names)
+            assert payoff_matrix.shape[-1] == self.n_actors
+
         self.n_rounds = n_rounds
         self.action_names = action_names
+        self.payoff_matrix = payoff_matrix
 
         action_enum = Enum(  # type: ignore[misc]
             "ActionEnum",
@@ -40,11 +51,6 @@ class CommunicateAndPlayGame(BaseEnvironment):
         self.comm_action = CommunicationAction
         self.history = []
 
-    def current_actor(self) -> None | ActorBase:
-        if self.is_finished():
-            return None
-        return self.actors[self.current_actor_idx]
-
     @property
     def game_round(self):
         return len(self.history) + 1
@@ -63,10 +69,26 @@ class CommunicateAndPlayGame(BaseEnvironment):
         )
         observations = [actor.act(play_prompt, expected_type=self.play_action).data.action for actor in self.actors]
 
-        for actor, event in zip(self.actors, observations):
+        if self.payoff_matrix is not None:
+            payoffs = self.payoff_matrix[tuple(self.action_names.index(a) for a in observations)]
+        else:
+            payoffs = None
+
+        for i, (actor, event) in enumerate(zip(self.actors, observations)):
+            self.increment_value(f"{actor.name}-{event}")
+            if payoffs is not None:
+                self.increment_value(f"{actor.name}-payoff", payoffs[i])
             self.everyone_observe(
                 f"Action in round {self.game_round}: " + event,
                 origin=actor,
             )
+        self.history.append(observations)
+
         if self.game_round > self.n_rounds:
             return self.history
+
+    def payoff_chart(self):
+        names = [f"{actor.name}-payoff" for actor in self.actors]
+        colors = [actor.style["color"] for actor in self.actors]
+        labels = [actor.name for actor in self.actors]
+        return self.monitor.line_chart(names, colors=colors, labels=labels)
