@@ -26,6 +26,7 @@ class Monitor:
 
     def line_chart(self, names: list[str], *, colors: list[str] | None = None, labels: list[str] | None = None, legend_loc: str = "upper left"):
         fig = plt.figure()
+        plt.title("Payoffs")
         for i, name in enumerate(names):
             color = colors[i] if colors else None
             label = labels[i] if labels else None
