@@ -1,4 +1,5 @@
 import dataclasses
+import enum
 import traceback
 from typing import Any, Callable, Dict, List, TypeVar
 
@@ -74,6 +75,8 @@ def serialize_with_type(obj: Any) -> Data:
         if isinstance(serialized, dict) and "_type" not in serialized:
             serialized["_type"] = type(obj).__name__
         return serialized
+    if isinstance(obj, enum.Enum):
+        return str(obj)
     if dataclasses.is_dataclass(obj):
         serialized = dataclasses.asdict(obj, dict_factory=_dataclass_serialize_helper)
         if "_type" not in serialized:

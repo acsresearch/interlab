@@ -411,7 +411,6 @@ def with_context(
     """
     if isinstance(fn, str):
         raise TypeError("use `with_context()` with explicit `name=...` parameter")
-    name = name or fn.__name__
 
     def helper(func):
         signature = inspect.signature(func)
@@ -420,7 +419,7 @@ def with_context(
         def wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
             with Context(
-                name=name, kind=kind or "call", inputs=binding.arguments, tags=tags
+                name=name or func.__name__, kind=kind or "call", inputs=binding.arguments, tags=tags
             ) as ctx:
                 result = func(*a, **kw)
                 ctx.set_result(result)
