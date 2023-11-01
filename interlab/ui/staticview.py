@@ -5,7 +5,7 @@ from interlab.context import Context
 from interlab.ui.staticfiles import get_current_js_and_css_filenames
 
 JS_FILE, CSS_FILE = get_current_js_and_css_filenames()
-CDN_VERSION = "8f87963d954d894a0ecdaf6649081ca40f8d6f2a"  # In future, it should match the released version
+CDN_VERSION = "5464935062082e96e24a95cda009e5419ce09a51"  # In future, it should match the released version
 CDN_URL = f"https://cdn.jsdelivr.net/gh/acsresearch/interlab@{CDN_VERSION}/interlab/ui/browser/assets/"
 
 # ONLY FOR LOCAL TESTING
