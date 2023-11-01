@@ -163,7 +163,7 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
         }
 
         return <Box sx={{ borderLeft, textAlign: "left", ml: 5.7 }}>
-            {inputs &&
+            {inputs !== undefined &&
                 (
                     inputs.map(({ property, value }, i) =>
 
@@ -176,7 +176,7 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
                 )
             }
             {
-                c.children && (
+                c.children !== undefined && (
                     <Box sx={{ ml: 1, mt: 1, mb: 1, }}>
                         {c.children?.filter(isVisible).map((ctx) =>
                             <ContextNode key={ctx.uid} env={props.env} context={ctx} depth={props.depth + 1} />)}
@@ -184,13 +184,13 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
                 )
             }
             {
-                c.result &&
+                c.result !== undefined &&
                 <ContextNodeItem icon={<ArrowBackIcon style={NODE_ICON_STYLE} />}>
                     <DataRenderer uid={c.uid + "/result"} contextDepth={props.depth} data={c.result} env={props.env} structDepth={0} />
                 </ContextNodeItem>
             }
             {
-                c.error &&
+                c.error !== undefined &&
                 <ContextNodeItem icon={<ReportProblemIcon style={NODE_ICON_STYLE} />}>
                     <DataRenderer uid={c.uid + "/error"} contextDepth={props.depth} data={c.error} hideType="error" env={props.env} structDepth={0} />
                 </ContextNodeItem>
