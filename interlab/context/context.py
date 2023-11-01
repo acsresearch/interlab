@@ -419,7 +419,10 @@ def with_context(
         def wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
             with Context(
-                name=name or func.__name__, kind=kind or "call", inputs=binding.arguments, tags=tags
+                name=name or func.__name__,
+                kind=kind or "call",
+                inputs=binding.arguments,
+                tags=tags,
             ) as ctx:
                 result = func(*a, **kw)
                 ctx.set_result(result)
@@ -428,7 +431,9 @@ def with_context(
         async def async_wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
             with Context(
-                name=name, kind=kind or "acall", inputs=binding.arguments
+                name=name or func.__name__,
+                kind=kind or "acall",
+                inputs=binding.arguments,
             ) as ctx:
                 result = await func(*a, **kw)
                 ctx.set_result(result)
