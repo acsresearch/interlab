@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from enum import Enum
 
+from .monitor import Monitor
 from ..actor import ActorBase
 from .base import BaseEnvironment
 
@@ -19,7 +20,7 @@ class CommunicateAndPlayGame(BaseEnvironment):
         actors: Sequence[ActorBase],
         n_rounds: int,
         action_names: Sequence[str],
-        payoff_matrix: np.ndarray | None
+        payoff_matrix: np.ndarray | None,
     ):
         super().__init__(actors)
 
@@ -45,18 +46,27 @@ class CommunicateAndPlayGame(BaseEnvironment):
 
         @dataclass
         class CommunicationAction:
-            message: str = Field(description="Message to other " + "players" if len(actors) > 2 else "player")
+            message: str = Field(
+                description="Message to other " + "players"
+                if len(actors) > 2
+                else "player"
+            )
 
         self.play_action = PlayAction
         self.comm_action = CommunicationAction
         self.history = []
+        self.action_monitor = Monitor(self)
+        self.payoff_monitor = Monitor(self)
 
     @property
     def game_round(self):
         return len(self.history) + 1
 
-    def _step(self) -> bool:
-        observations = [actor.act(self.comm_prompt, expected_type=self.comm_action).data.message for actor in self.actors]
+    def _step(self):
+        observations = [
+            actor.act(self.comm_prompt, expected_type=self.comm_action).data.message
+            for actor in self.actors
+        ]
 
         for actor, event in zip(self.actors, observations):
             self.everyone_observe(
@@ -64,20 +74,23 @@ class CommunicateAndPlayGame(BaseEnvironment):
                 origin=actor,
             )
 
-        play_prompt = self.play_prompt.format(
-            actions=",".join(self.action_names)
-        )
-        observations = [actor.act(play_prompt, expected_type=self.play_action).data.action for actor in self.actors]
+        play_prompt = self.play_prompt.format(actions=",".join(self.action_names))
+        observations = [
+            actor.act(play_prompt, expected_type=self.play_action).data.action
+            for actor in self.actors
+        ]
 
         if self.payoff_matrix is not None:
-            payoffs = self.payoff_matrix[tuple(self.action_names.index(a) for a in observations)]
+            payoffs = self.payoff_matrix[
+                tuple(self.action_names.index(a) for a in observations)
+            ]
         else:
             payoffs = None
 
         for i, (actor, event) in enumerate(zip(self.actors, observations)):
-            self.increment_value(f"{actor.name}-{event}")
+            self.action_monitor.trace(f"{actor.name}-{event}", 1)
             if payoffs is not None:
-                self.increment_value(f"{actor.name}-payoff", payoffs[i])
+                self.payoff_monitor.trace(actor.name, payoffs[i])
             self.everyone_observe(
                 f"Action in round {self.game_round}: " + event,
                 origin=actor,
@@ -87,8 +100,9 @@ class CommunicateAndPlayGame(BaseEnvironment):
         if self.game_round > self.n_rounds:
             return self.history
 
-    def payoff_chart(self):
-        names = [f"{actor.name}-payoff" for actor in self.actors]
+    def payoff_chart(self, cumsum=False):
         colors = [actor.style["color"] for actor in self.actors]
         labels = [actor.name for actor in self.actors]
-        return self.monitor.line_chart(names, colors=colors, labels=labels)
+        return self.payoff_monitor.line_chart(
+            colors=colors, labels=labels, cumsum=cumsum
+        )
