@@ -12,7 +12,10 @@ nav:
       - Serialization: contexts/serialization.md
       - Storage:  contexts/storage.md
       - Data Browser:  contexts/databrowser.md
-
+  - Actors:
+      - Basics: actors/basics.md
+  - Environments:
+      - Basics: environments/basics.md
 
 theme:
   name: material
