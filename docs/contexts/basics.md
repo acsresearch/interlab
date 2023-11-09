@@ -1,14 +1,17 @@
 # Contexts
 
-InterLab Contexts are a framework for logging, tracing,
-result storage, and visualization of nested computations and actor interactions.
-They have been designed with large textual and structured (e.g. JSON) inputs and outputs in mind, as well as generic and
-custom visualizations.
+InterLab Contexts are a framework for logging, tracing, storing results and
+and visualisation of nested computations and actor interactions.
+They are designed to support large textual and structured (e.g. JSON) inputs and outputs, as well as generic and custom visualisations.
+custom visualisations.
 
-An instance of [Context](pdoc:interlab.context.Context) is a core object of InterLab logging infrastructure and 
+An instance of [Context](pdoc:interlab.context.Context) is a core object of InterLab logging infrastructure and
 represents a single (sub)task in a nested hierarchy.
 
-The [Context](pdoc:interlab.context.Context) can be used as context manager, e.g.:
+
+## Using a Context as a context manager
+
+To utilize a Context within your code, here's a pattern involving `with` statements:
 
 ```python
 from interlab.context import Context
@@ -18,12 +21,12 @@ with Context("my context", inputs={"x": 42}) as c:
     c.set_result(y)
 ```
 
-## Nesting contexts
+## Hierarchically Nested Contexts
 
-Contexts can be nested and creates a hierarchy:
+Contexts can be nested to construct a clear hierarchy reflecting the structure of a complex computation:
 
 ```python
-with Context("root"):
+with Context("root") as root_ctx:
     with Context("child-1"):
        with Context("child-1-1"):
            pass
@@ -33,15 +36,15 @@ with Context("root"):
        pass
 ```
 
-If this context are visualized in [Data Browser](databrowser.md):
+If this context are visualized in [Data Browser](databrowser.md) or in Jupyter notebook via `root_ctx.display()`:
 
 ![Data browser screenshot](../assets/imgs/hierarchy.png)
 
 ## Context states
 
-A context is in one of the following states: 
+Throughout its lifetime, a context traverses several states:
 
-* *New* - Newly created Context
+* *New* -  Freshly instantiated Context
 * *Open* - Running context
 * *Finished* - Successfully finished context
 * *Error* - Unsuccessfully finished context
@@ -50,11 +53,11 @@ A context is in one of the following states:
 ctx = Context("my context")  # Context in NEW state
 with ctx:
     # Context in OPEN state
-    compute_something()    
+    compute_something()
 # Context in FINISHED state
 ```
 
-When an unhandled exception goes through a boundary of context then it sets context in the ERROR state. Example:
+When an unhandled exception passes through a context boundary, it sets the context to the ERROR state. Example:
 
 ```python
 with Context("my context"):
@@ -62,11 +65,11 @@ with Context("my context"):
 # Context in ERROR state
 ```
 
-Alternatively, method `.set_error` can be called on context to explicitly set a context into the ERROR state.
+Alternatively, the `.set_error(error)` method can be called on context to explicitly set a context to the ERROR state.
 
-## Context inputs and results
+## Managing Inputs and Results
 
-Context may have one or more named inputs and at most one result.
+Context may have one or more named inputs and at most one result
 
 ```python
 from interlab.context import Context
@@ -78,10 +81,10 @@ with Context("my context", inputs={"x": 42}) as c: # Set inputs when context is 
 
 The name of the input has to be string.
 
-## `with_context` decorator
+## Enhancing Functions with `with_context`
 
 A function can be annotated with [with_context](pdoc:interlab.context.with_context) decorator. It automatically
-creates a new context that captures inputs and result when the function is called. 
+creates a new context that captures inputs and the result when the function is called.
 
 ```python
 from interlab.context import with_context
@@ -93,7 +96,7 @@ def my_computation(x):
 
 ## Events
 
-An events is an instant context with immediate result and no children contexts.
+An event is an instant context with immediate result and no child contexts.
 
 ```python
 with Context("root") as c:
@@ -103,34 +106,34 @@ with Context("root") as c:
 
 ## Tags
 
-Tags are user-defined labels that can be attached to any Context. Later, contexts may be filtered by tags.
-A tag is instance of class [`Tag`](pdoc:interlab.context.Tag). You may also provide just a string and it will be
-automatically converted into a tag.
+Utilizing Tags
 
-Tag may have attached a string with HTML color, that defines how the tag is shown in Data Browser.
+Tags are custom identifiers attachable to any Context, facilitating subsequent filtering based on these tags. A tag is either directly a string or an instance of [`Tag`](pdoc:interlab.context.Tag).
+
+Tag appearances in the Data Browser can be customized with an associated HTML color:
+
 
 ```python
 from interlab.context import Context, Tag
 
-with Context("root", tags=["tag1", Tag("tag2")]) as c:
-    c.add_tag("exp1")  # Add to a context dynamically
-    c.add_tag(Tag("success!", color="lightgreen"))  # Add colored tag
+with Context("root", tags=["tag1", Tag("tag2")]) as ctx:
+    c.add_tag("exp1")  # Add tag to a context dynamically
+    c.add_tag(Tag("success!", color="lightgreen"))  # Add a tag with custom color
 ```
 
-## Meta information
+## Attaching Meta information
 
 A meta information can be attached to every context.
 It is a dictionary with string keys. Keys and values may be user defined; however, some keys are recognized by
 DataBrowser and influences how the context is rendered.
 
 ```python
-with Context("root", meta={"key": "value"}) as c:
+with Context("root", meta={"key": "value"}) as ctx:
     pass
 ```
 
-Interlab recognizes the following keys:
+InterLab specifically recognizes and utilizes the following metadata keys, influencing the visual rendering in the Data Browser:
 
-* "color": [HTML color] - The main color of the Context. In the current version, it is used for title of context and a line when context is expanded. 
-* "color_bg": [HTML color] - The color of background of the Context.
-* "color_border": [HTML color] - Enables a border around Context with the given color
-
+* "color": [HTML color] - Defines the main color of the Context. In the current version, it is used for the title of context and a line when context is expanded.
+* "color_bg": [HTML color] - Sets the Context's background color.
+* "color_border": [HTML color] - Draws a border with the specified color around the Context.
