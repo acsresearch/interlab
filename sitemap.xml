@@ -16,6 +16,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://acsresearch.org/interlab/actors/basics/</loc>
+         <lastmod>2023-11-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://acsresearch.org/interlab/contexts/basics/</loc>
          <lastmod>2023-11-09</lastmod>
          <changefreq>daily</changefreq>
@@ -32,6 +37,11 @@
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/contexts/storage/</loc>
+         <lastmod>2023-11-09</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://acsresearch.org/interlab/environments/basics/</loc>
          <lastmod>2023-11-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
