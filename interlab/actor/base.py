@@ -90,7 +90,7 @@ class ActorWithMemory(ActorBase):
     You still need to implement _act if you inherit from this actor.
     """
 
-    DEFAULT_FORMAT = format.LLMTextFormat
+    DEFAULT_FORMAT = format.DefaultTextFormat
     DEFAULT_MEMORY = memory_module.ListMemory
 
     def __init__(self, name=None, *, memory: memory_module.MemoryBase = None, **kwargs):
