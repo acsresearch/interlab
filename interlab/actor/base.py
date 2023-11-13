@@ -1,5 +1,6 @@
 import abc
 import random
+from abc import ABC
 from copy import copy
 from typing import Any
 
@@ -14,9 +15,9 @@ class ActorBase(abc.ABC):
     """
     Interface for generic actor, to be used with LLMs, game theory or otherwise.
 
-    Override methods _act and _observe in derived classes.
+    Override methods _query and _observe in derived classes.
 
-    Note: The interface is intentinally not async (for now, for usability reasons),
+    Note: The interface is intentionally not async (for now, for usability reasons),
     use multi-threading for parallel inquiries. (Helpers for this are WIP.)
     """
 
@@ -35,8 +36,10 @@ class ActorBase(abc.ABC):
     def copy(self):
         raise NotImplementedError
 
-    def act(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
-        """Calls self._act to determine the action, wraps the action in Event, and wraps the call in Context."""
+    def query(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
+        """Calls self._query to determine the action, wraps the action in Event, and wraps the call in Context.
+        Query does not modify the actor's memory. Call .observe(event) on actor if agent should observe the result.
+        """
         if prompt:
             name = f"{self.name} acts, prompt: {text.shorten_str(str(prompt))!r}"
             inputs = {"prompt": prompt}
@@ -50,15 +53,15 @@ class ActorBase(abc.ABC):
         inputs.update(**kwargs)
 
         with Context(name, kind="action", meta=self.style, inputs=inputs) as ctx:
-            action = self._act(prompt, expected_type=expected_type, **kwargs)
+            action = self._query(prompt, expected_type=expected_type, **kwargs)
             ctx.set_result(action)
             # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification
             ev = Event(origin=self.name, data=action)
         return ev
 
     @abc.abstractmethod
-    def _act(self, prompt: Any = None, **kwargs) -> Any:
-        raise NotImplementedError("Implement _act in a derived actor class")
+    def _query(self, prompt: Any = None, **kwargs) -> Any:
+        raise NotImplementedError("Implement _query in a derived actor class")
 
     def observe(self, event: Event | Any, origin: str | None = None):
         """Observe the given Event.
@@ -83,11 +86,11 @@ class ActorBase(abc.ABC):
         return f"<{self.__class__.__name__} {self.name}>"
 
 
-class ActorWithMemory(ActorBase):
+class ActorWithMemory(ActorBase, ABC):
     """
     Actor with an instance of MemoryBase recording all observations.
 
-    You still need to implement _act if you inherit from this actor.
+    You still need to implement _query if you inherit from this actor.
     """
 
     DEFAULT_FORMAT = format.DefaultTextFormat

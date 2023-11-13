@@ -23,7 +23,7 @@ class OneShotLLMActor(ActorWithMemory):
         self.query_with_example = query_with_example
         self.query_with_cot = query_with_cot
 
-    def _act(self, prompt: str = None, *, expected_type=None) -> str:
+    def _query(self, prompt: str = None, *, expected_type=None) -> str:
         if prompt is None:
             prompt = FormatStr("As {name}, what is your next action?").format(
                 name=self.name

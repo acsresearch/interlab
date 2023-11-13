@@ -17,7 +17,7 @@ class WebConsoleActor(ActorBase):
     def _observe(self, event: Event):
         self.server.add_message(event.data_as_string())
 
-    def _act(self, prompt: Any = None, expected_type=None):
+    def _query(self, prompt: Any = None, expected_type=None):
         self.server.add_message(str(prompt))
         if expected_type is not None:
             T = get_pydantic_model(expected_type)

@@ -29,7 +29,7 @@ class SimpleCoTLLMActor(ActorWithMemory):
 2. State your current goals.
 3. Propose actions that can be taken within the current circumstances to reach the goal."""
 
-    def _act(self, prompt: str = None, *, expected_type=None) -> str:
+    def _query(self, prompt: str = None, *, expected_type=None) -> str:
         hist = self.memory.get_formatted()
 
         q1 = f"""\

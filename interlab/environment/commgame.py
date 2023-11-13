@@ -71,7 +71,7 @@ class CommunicateAndPlayGame(BaseEnvironment):
 
     def _step(self):
         observations = [
-            actor.act(self.comm_prompt, expected_type=self.comm_action).data.message
+            actor.query(self.comm_prompt, expected_type=self.comm_action).data.message
             for actor in self.actors
         ]
 
@@ -83,7 +83,7 @@ class CommunicateAndPlayGame(BaseEnvironment):
 
         play_prompt = self.play_prompt.format(actions=",".join(self.action_names))
         observations = [
-            actor.act(play_prompt, expected_type=self.play_action).data.action
+            actor.query(play_prompt, expected_type=self.play_action).data.action
             for actor in self.actors
         ]
 
