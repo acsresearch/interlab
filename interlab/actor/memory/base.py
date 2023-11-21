@@ -5,7 +5,7 @@ from ..event import Event
 from .format import FormatBase
 
 
-class MemoryBase(abc.ABC):
+class BaseMemory(abc.ABC):
     """Base class for memory systems; formatter may be None for unformatted events"""
 
     def __init__(self, *, format: FormatBase = None):

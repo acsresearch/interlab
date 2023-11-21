@@ -1,10 +1,10 @@
 from typing import Any
 
 from ..event import Event
-from .base import MemoryBase
+from .base import BaseMemory
 
 
-class ListMemory(MemoryBase):
+class ListMemory(BaseMemory):
     """Simple memory that is effectively just a list of Events"""
 
     def __init__(self, events=None, **kwargs):

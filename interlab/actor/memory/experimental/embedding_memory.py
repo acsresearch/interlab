@@ -12,7 +12,7 @@ from pydantic.dataclasses import dataclass
 from ....context.data import FormatStr
 from ....lang_models import count_tokens, query_model
 from ...event import Event
-from ..base import MemoryBase
+from ..base import BaseMemory
 
 
 @dataclass(config=ConfigDict(arbitrary_types_allowed=True))
@@ -25,7 +25,7 @@ class RelevanceTextMemoryItem:
     summary_token_count: int
 
 
-class RelevanceTextMemory(MemoryBase):
+class RelevanceTextMemory(BaseMemory):
     def __init__(
         self,
         embed_model=None,

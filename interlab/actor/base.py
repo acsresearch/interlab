@@ -96,7 +96,7 @@ class ActorWithMemory(BaseActor, ABC):
     DEFAULT_FORMAT = format.DefaultTextFormat
     DEFAULT_MEMORY = memory_module.ListMemory
 
-    def __init__(self, name=None, *, memory: memory_module.MemoryBase = None, **kwargs):
+    def __init__(self, name=None, *, memory: memory_module.BaseMemory = None, **kwargs):
         super().__init__(name, **kwargs)
         self.memory = memory
         if self.memory is None:
