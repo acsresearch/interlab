@@ -7,6 +7,7 @@ nav:
   - Home: index.md
   - Getting started: installation.md
   - Overview: overview.md
+  - Examples: examples.md
   - Contexts:
       - Basics: contexts/basics.md
       - Serialization: contexts/serialization.md
@@ -14,8 +15,11 @@ nav:
       - Data Browser:  contexts/databrowser.md
   - Actors:
       - Basics: actors/basics.md
+      - Subclassing: actors/custom.md
+      - Web console actor: actors/webactor.md
   - Environments:
       - Basics: environments/basics.md
+  - API docs: apidoc.md
 
 theme:
   name: material
