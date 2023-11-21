@@ -32,5 +32,9 @@ class WebConsoleActor(BaseActor):
             r = expected_type(r)
         return r
 
+    @property
+    def url(self):
+        return self.server.url
+
     def display(self, width=1000, height=700):
         return self.server.display(width, height)
