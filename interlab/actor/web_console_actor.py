@@ -5,11 +5,11 @@ import dirtyjson
 
 from ..queries import get_pydantic_model
 from ..ui.console_server import ConsoleServer
-from .base import ActorBase
+from .base import BaseActor
 from .event import Event
 
 
-class WebConsoleActor(ActorBase):
+class WebConsoleActor(BaseActor):
     def __init__(self, name: str, port: int = 0):
         super().__init__(name=name)
         self.server = ConsoleServer(f"Actor: {name}", port)

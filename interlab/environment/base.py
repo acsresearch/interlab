@@ -2,12 +2,12 @@ from typing import Sequence, Any
 import abc
 from copy import copy
 
-from interlab.actor import ActorBase
+from interlab.actor import BaseActor
 from interlab.context import Context
 
 
 class BaseEnvironment(abc.ABC):
-    def __init__(self, actors: Sequence[ActorBase]):
+    def __init__(self, actors: Sequence[BaseActor]):
         self._actors = list(actors)
         self._step_counter = 0
         self._result = None
@@ -26,7 +26,7 @@ class BaseEnvironment(abc.ABC):
         return len(self._actors)
 
     @property
-    def actors(self) -> list[ActorBase]:
+    def actors(self) -> list[BaseActor]:
         return self._actors
 
     @property
@@ -71,7 +71,7 @@ class BaseEnvironment(abc.ABC):
     def _step(self):
         raise NotImplementedError
 
-    def current_actor(self) -> None | ActorBase:
+    def current_actor(self) -> None | BaseActor:
         return None
 
     def current_step_style(self) -> None | dict[str, Any]:

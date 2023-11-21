@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from enum import Enum
 
 from .monitor import Monitor
-from ..actor import ActorBase
+from ..actor import BaseActor
 from .base import BaseEnvironment
 
 
@@ -17,7 +17,7 @@ class CommunicateAndPlayGame(BaseEnvironment):
 
     def __init__(
         self,
-        actors: Sequence[ActorBase],
+        actors: Sequence[BaseActor],
         n_rounds: int,
         action_names: Sequence[str],
         payoff_matrix: np.ndarray | None,

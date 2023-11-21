@@ -1,12 +1,12 @@
 from unittest.mock import MagicMock, patch
 
-from interlab.actor.base import ActorBase, ActorWithMemory
+from interlab.actor.base import BaseActor, ActorWithMemory
 from interlab.actor.event import Event
 
 
-@patch.multiple(ActorBase, __abstractmethods__=set())
+@patch.multiple(BaseActor, __abstractmethods__=set())
 def test_simple_actor():
-    a1 = ActorBase("Anna")
+    a1 = BaseActor("Anna")
     a1._query = MagicMock()
     a1._query.return_value = "Bar!"
     o1 = a1.query("Foo?")
