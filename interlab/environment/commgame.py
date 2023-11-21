@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pydantic.dataclasses import Field, dataclass
 
-from ..actor import ActorBase
+from ..actor.base import BaseActor
 from .base import BaseEnvironment
 from .monitor import Monitor
 
@@ -16,7 +16,7 @@ class CommunicateAndPlayGame(BaseEnvironment):
 
     def __init__(
         self,
-        actors: Sequence[ActorBase],
+        actors: Sequence[BaseActor],
         n_rounds: int,
         action_names: Sequence[str],
         payoff_matrix: np.ndarray | None,

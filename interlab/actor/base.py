@@ -11,7 +11,7 @@ from .event import Event
 from .memory import format
 
 
-class ActorBase(abc.ABC):
+class BaseActor(abc.ABC):
     """
     Interface for generic actor, to be used with LLMs, game theory or otherwise.
 
@@ -86,7 +86,7 @@ class ActorBase(abc.ABC):
         return f"<{self.__class__.__name__} {self.name}>"
 
 
-class ActorWithMemory(ActorBase, ABC):
+class ActorWithMemory(BaseActor, ABC):
     """
     Actor with an instance of MemoryBase recording all observations.
 
