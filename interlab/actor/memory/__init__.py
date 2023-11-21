@@ -1,4 +1,4 @@
-from .base import MemoryBase  # noqa: F401
+from .base import BaseMemory  # noqa: F401
 from .format import (
     FormatBase,
     JsonFormattingTextFormat,
