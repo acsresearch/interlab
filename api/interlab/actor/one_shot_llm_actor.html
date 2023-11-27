@@ -82,7 +82,7 @@
 </span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">query_with_example</span> <span class="o">=</span> <span class="n">query_with_example</span>
 </span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">query_with_cot</span> <span class="o">=</span> <span class="n">query_with_cot</span>
 </span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="k">def</span> <span class="nf">_act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>    <span class="k">def</span> <span class="nf">_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a>        <span class="k">if</span> <span class="n">prompt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>            <span class="n">prompt</span> <span class="o">=</span> <span class="n">FormatStr</span><span class="p">(</span><span class="s2">&quot;As </span><span class="si">{name}</span><span class="s2">, what is your next action?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
 </span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -140,7 +140,7 @@
 </span><span id="OneShotLLMActor-24"><a href="#OneShotLLMActor-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">query_with_example</span> <span class="o">=</span> <span class="n">query_with_example</span>
 </span><span id="OneShotLLMActor-25"><a href="#OneShotLLMActor-25"><span class="linenos">25</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">query_with_cot</span> <span class="o">=</span> <span class="n">query_with_cot</span>
 </span><span id="OneShotLLMActor-26"><a href="#OneShotLLMActor-26"><span class="linenos">26</span></a>
-</span><span id="OneShotLLMActor-27"><a href="#OneShotLLMActor-27"><span class="linenos">27</span></a>    <span class="k">def</span> <span class="nf">_act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="OneShotLLMActor-27"><a href="#OneShotLLMActor-27"><span class="linenos">27</span></a>    <span class="k">def</span> <span class="nf">_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expected_type</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="OneShotLLMActor-28"><a href="#OneShotLLMActor-28"><span class="linenos">28</span></a>        <span class="k">if</span> <span class="n">prompt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="OneShotLLMActor-29"><a href="#OneShotLLMActor-29"><span class="linenos">29</span></a>            <span class="n">prompt</span> <span class="o">=</span> <span class="n">FormatStr</span><span class="p">(</span><span class="s2">&quot;As </span><span class="si">{name}</span><span class="s2">, what is your next action?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
 </span><span id="OneShotLLMActor-30"><a href="#OneShotLLMActor-30"><span class="linenos">30</span></a>                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -171,16 +171,16 @@
 
             <div class="docstring"><p>Actor with an instance of MemoryBase recording all observations.</p>
 
-<p>You still need to implement _act if you inherit from this actor.</p>
+<p>You still need to implement _query if you inherit from this actor.</p>
 </div>
 
 
                             <div class="inherited">
                                 <h5>Inherited Members</h5>
                                 <dl>
-                                    <div><dt><a href="base.html#ActorBase">interlab.actor.base.ActorBase</a></dt>
-                                <dd id="OneShotLLMActor.act" class="function"><a href="base.html#ActorBase.act">act</a></dd>
-                <dd id="OneShotLLMActor.observe" class="function"><a href="base.html#ActorBase.observe">observe</a></dd>
+                                    <div><dt><a href="base.html#BaseActor">interlab.actor.base.BaseActor</a></dt>
+                                <dd id="OneShotLLMActor.query" class="function"><a href="base.html#BaseActor.query">query</a></dd>
+                <dd id="OneShotLLMActor.observe" class="function"><a href="base.html#BaseActor.observe">observe</a></dd>
 
             </div>
                                 </dl>
