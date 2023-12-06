@@ -7,6 +7,33 @@ from interlab.context import Context
 
 
 class BaseEnvironment(abc.ABC):
+    """
+    This is base class for Environment.
+
+    When subclassed you have to override "_step" method.
+    By default, "copy" method makes a shallow copy of other argument added by subclasss.
+    If shallow copy is not enough you have to override also "copy":
+
+    E.g.:
+
+    class MyEnv(BaseEnvironment):
+        def __init__(self, ...):
+            ...
+            self.my_list = []
+
+        ...
+
+        def copy(self):
+            env = super().copy()
+            env.my_list = self.my_list[:]
+            return env
+
+    If environment has a distinguished "actor" each step, you may override "current_actor",
+    to get coloring of context for the step from this actor.
+
+    You may also override "current_step_style" to set style for step context.
+    """
+
     def __init__(self, actors: Sequence[BaseActor]):
         self._actors = list(actors)
         self._step_counter = 0
