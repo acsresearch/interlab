@@ -292,8 +292,31 @@
 </span></pre></div>
 
 
-            <div class="docstring"><p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+            <div class="docstring"><p>This is base class for Environment.</p>
+
+<p>When subclassed you have to override "_step" method.
+By default, "copy" method makes a shallow copy of other argument added by subclasss.
+If shallow copy is not enough you have to override also "copy":</p>
+
+<p>E.g.:</p>
+
+<p>class MyEnv(BaseEnvironment):
+    def __init__(self, ...):
+        ...
+        self.my_list = []</p>
+
+<pre><code>...
+
+def copy(self):
+    env = super().copy()
+    env.my_list = self.my_list[:]
+    return env
+</code></pre>
+
+<p>If environment has a distinguished "actor" each step, you may override "current_actor",
+to get coloring of context for the step from this actor.</p>
+
+<p>You may also override "current_step_style" to set style for step context.</p>
 </div>
 
 

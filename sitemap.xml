@@ -2,67 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://acsresearch.org/interlab/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/apidoc/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/examples/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/installation/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/overview/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/actors/basics/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/actors/custom/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/actors/webactor/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/contexts/basics/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/contexts/databrowser/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/contexts/serialization/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/contexts/storage/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/environments/basics/</loc>
-         <lastmod>2023-11-27</lastmod>
+         <lastmod>2023-12-06</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://acsresearch.org/interlab/environments/custom/</loc>
+         <lastmod>2023-12-06</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
