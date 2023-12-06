@@ -45,10 +45,16 @@ class PriceNegotiation(BaseEnvironment):
     def maximizer(self):
         return self.actors[1]
 
+    def current_actor(self) -> None | BaseActor:
+        if not self.minimizer_starts_first:
+            return self.actors[self.current_step_id % 2]
+        else:
+            return self.actors[(self.current_step_id + 1) % 2]
+
     def _step(self):
         current = self.current_step_id
 
-        if self.minimizer_starts_first:
+        if not self.minimizer_starts_first:
             me = self.actors[current % 2]
             other = self.actors[(current + 1) % 2]
         else:
