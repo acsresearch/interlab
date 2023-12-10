@@ -1,0 +1,31 @@
+{
+  "name": "interlab",
+  "version": "0.4.0",
+  "description": "A TypeScript implementation of the InterLab project",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/interlab.git"
+  },
+  "author": "Alignment of Complex Systems Lab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/acsresearch/interlab/issues"
+  },
+  "homepage": "https://github.com/acsresearch/interlab#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.10.4",
+    "@types/seedrandom": "^3.0.8",
+    "jest": "^29.7.0",
+    "typescript": "^5.3"
+  },
+  "dependencies": {
+    "colorjs.io": "^0.4.5",
+    "lodash": "^4.17.21",
+    "seedrandom": "^3.0.5"
+  }
+}
