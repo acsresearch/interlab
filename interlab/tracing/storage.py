@@ -10,7 +10,7 @@ from typing import Callable, Iterator, List, Optional, Sequence
 
 from ..utils.display import display_iframe
 from ..utils.text import validate_uid
-from .context import Context
+from .tracingnode import TracingNode
 from .serialization import Data
 
 _STORAGE_STACK = contextvars.ContextVar("_STORAGE_STACK", default=())
@@ -19,60 +19,60 @@ _STORAGE_STACK = contextvars.ContextVar("_STORAGE_STACK", default=())
 class StorageBase(abc.ABC):
     def __init__(self):
         self._lock = threading.Lock()
-        self._ephemeral_contexts = {}
+        self._ephemeral_nodes = {}
         self._server = None
         self._token = None
 
-    def register_context(self, context: Context):
-        """Register running context (without writing into the persistent storage)"""
+    def register_node(self, node: TracingNode):
+        """Register running tracing node (without writing into the persistent storage)"""
         with self._lock:
-            self._ephemeral_contexts[context.uid] = context
+            self._ephemeral_nodes[node.uid] = node
 
-    def get_ephemeral_context(self, uid: str) -> Optional[Context]:
-        """Get running context (not from persistent storage)"""
+    def get_ephemeral_node(self, uid: str) -> Optional[TracingNode]:
+        """Get running tracing node (not from persistent storage)"""
         with self._lock:
-            return self._ephemeral_contexts.get(uid)
+            return self._ephemeral_nodes.get(uid)
 
     @abc.abstractmethod
-    def write_context(self, context: Context):
-        """Write context into persistent storage"""
+    def write_node(self, node: TracingNode):
+        """Write tracing node into persistent storage"""
         raise NotImplementedError
 
     @abc.abstractmethod
     def read(self, uid: str) -> Data:
-        """Read unserialized context from the storage"""
+        """Read unserialized tracing from the storage"""
         raise NotImplementedError
 
     @abc.abstractmethod
     def read_root(self, uid: str) -> Data:
-        """Read context without children"""
+        """Read tracing without children"""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def remove_context(self, uid: str):
-        """Remove context from storage"""
+    def remove_node(self, uid: str):
+        """Remove tracing from storage"""
         raise NotImplementedError
 
     @abc.abstractmethod
     def list(self) -> List[str]:
-        """List all context uids in storage"""
+        """List all tracing uids in storage"""
         raise NotImplementedError
 
     def read_roots(self, uids: Sequence[str]) -> List[Data]:
-        """Read given root contexts without children"""
+        """Read given root nodes without children"""
         return [self.read_root(uid) for uid in uids]
 
-    def read_context(self, uid: str) -> Context:
-        """Read and serialize context from storage"""
-        return Context.deserialize(self.read(uid))
+    def read_node(self, uid: str) -> TracingNode:
+        """Read and serialize tracing node from storage"""
+        return TracingNode.deserialize(self.read(uid))
 
-    def read_all_contexts(self) -> Iterator[Context]:
-        """Read all contexts from storage"""
+    def read_all_nodes(self) -> Iterator[TracingNode]:
+        """Read all nodes from storage"""
         for uid in self.list():
-            yield self.read_context(uid)
+            yield self.read_node(uid)
 
     def live_display(self, width="95%", height=700):
-        """Show context in Jupyter notebook"""
+        """Show tracing in Jupyter notebook"""
         if self._server is None:
             self.start_server()
         display_iframe(self._server.url, self._server.port, width, height)
@@ -91,9 +91,9 @@ class StorageBase(abc.ABC):
         self._server = start_storage_server(storage=self, port=port)
         return self._server
 
-    def find_contexts(self, predicate: Callable) -> Iterator[Context]:
-        for context in self.read_all_contexts():
-            yield from context.find_contexts(predicate)
+    def find_nodes(self, predicate: Callable) -> Iterator[TracingNode]:
+        for node in self.read_all_nodes():
+            yield from node.find_nodes(predicate)
 
     def __enter__(self):
         if self._token:
@@ -127,40 +127,40 @@ class FileStorage(StorageBase):
     def _dir_path(self, directory, name: str) -> str:
         return os.path.join(directory, f"{name}.ctx")
 
-    def write_context(self, context: Context):
-        if not validate_uid(context.uid):
+    def write_node(self, node: TracingNode):
+        if not validate_uid(node.uid):
             raise Exception("Invalid uid")
-        self._write_context_into(self.directory, context, True)
+        self._write_node_into(self.directory, node, True)
         with self._lock:
-            self._ephemeral_contexts.pop(context.uid, None)
+            self._ephemeral_nodes.pop(node.uid, None)
 
-    def _write_context_into(self, directory: str, context: Context, root_context: bool):
-        if not validate_uid(context.uid):
+    def _write_node_into(self, directory: str, node: TracingNode, root_node: bool):
+        if not validate_uid(node.uid):
             raise Exception("Invalid uid")
-        if context.directory:
-            self._write_context_dir(directory, context, root_context)
+        if node.directory:
+            self._write_node_dir(directory, node, root_node)
         else:
-            data = json.dumps(context.to_dict(root=root_context)).encode()
-            data_root = json.dumps(context.to_dict(False, root=root_context)).encode()
+            data = json.dumps(node.to_dict(root=root_node)).encode()
+            data_root = json.dumps(node.to_dict(False, root=root_node)).encode()
             # Write full first, so when root exists, then full is definitely there
-            self._write_context_file(directory, context.uid + ".full", data)
-            self._write_context_file(directory, context.uid + ".root", data_root)
+            self._write_node_file(directory, node.uid + ".full", data)
+            self._write_node_file(directory, node.uid + ".root", data_root)
 
-    def _write_context_dir(self, directory: str, context: Context, root_context: bool):
-        path = self._dir_path(directory, context.uid)
+    def _write_node_dir(self, directory: str, node: TracingNode, node_content: bool):
+        path = self._dir_path(directory, node.uid)
         tmp_path = path + "._tmp"
         try:
             os.mkdir(tmp_path)
-            data_root = json.dumps(context.to_dict(False, root=root_context)).encode()
-            self._write_context_file(tmp_path, "_self", data_root)
-            for child in context.children:
-                self._write_context_into(tmp_path, child, False)
+            data_root = json.dumps(node.to_dict(False, root=node_content)).encode()
+            self._write_node_file(tmp_path, "_self", data_root)
+            for child in node.children:
+                self._write_node_into(tmp_path, child, False)
             os.rename(tmp_path, path)
         finally:
             if os.path.exists(tmp_path):
                 shutil.rmtree(tmp_path)
 
-    def _write_context_file(self, directory: str, name: str, data: Data):
+    def _write_node_file(self, directory: str, name: str, data: Data):
         path = self._file_path(directory, name)
         tmp_path = path + "._tmp"
         try:
@@ -174,17 +174,17 @@ class FileStorage(StorageBase):
     def read(self, uid: str) -> Data:
         if not validate_uid(uid):
             raise Exception("Invalid uid")
-        context = self.get_ephemeral_context(uid)
-        if context:
-            return context.to_dict()
+        node = self.get_ephemeral_node(uid)
+        if node:
+            return node.to_dict()
         return self._read_from(self.directory, uid)
 
     def read_root(self, uid) -> Data:
         if not validate_uid(uid):
             raise Exception("Invalid uid")
-        context = self.get_ephemeral_context(uid)
-        if context:
-            return context.to_dict(with_children=False)
+        node = self.get_ephemeral_node(uid)
+        if node:
+            return node.to_dict(with_children=False)
 
         dir_path = self._dir_path(self.directory, uid)
         if os.path.isdir(dir_path):
@@ -220,7 +220,7 @@ class FileStorage(StorageBase):
         dir_suffix = ".ctx"
 
         with self._lock:
-            ephemeral = list(self._ephemeral_contexts.keys())
+            ephemeral = list(self._ephemeral_nodes.keys())
 
         lst = os.listdir(self.directory)
         return (
@@ -229,7 +229,7 @@ class FileStorage(StorageBase):
             + [name[: -len(dir_suffix)] for name in lst if name.endswith(dir_suffix)]
         )
 
-    def remove_context(self, uid: str):
+    def remove_node(self, uid: str):
         if not validate_uid(uid):
             raise Exception("Invalid uid")
         # First try to remove .root, so it immediately disappear from listing
@@ -243,7 +243,7 @@ class FileStorage(StorageBase):
             if os.path.isdir(path):
                 shutil.rmtree(path)
         with self._lock:
-            self._ephemeral_contexts.pop(uid, None)
+            self._ephemeral_nodes.pop(uid, None)
 
     def __repr__(self):
         return f"<FileStorage directory={repr(self.directory)}>"

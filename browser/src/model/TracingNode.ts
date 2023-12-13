@@ -4,20 +4,20 @@ export type Tag = {
     color?: string,
 }
 
-export type ContextMeta = {
+export type TracingNodeMeta = {
     color?: string,
     color_bg?: string,
     color_border?: string,
 }
 
-export type Context = {
-    _type: "Context",
+export type TracingNode = {
+    _type: "TracingNode",
     name: string,
     kind?: string,
     uid: string,
     state?: string,
-    meta?: ContextMeta,
-    children?: Context[],
+    meta?: TracingNodeMeta,
+    children?: TracingNode[],
     inputs?: any,
     result?: any,
     error?: any,
@@ -26,12 +26,12 @@ export type Context = {
     tags?: (Tag | string)[],
 }
 
-export function gatherKindsAndTags(ctx: Context, result: Set<string>) {
-    if (ctx.kind !== undefined && ctx.kind !== null) {
-        result.add(ctx.kind)
+export function gatherKindsAndTags(node: TracingNode, result: Set<string>) {
+    if (node.kind !== undefined && node.kind !== null) {
+        result.add(node.kind)
     }
-    if (ctx.tags) {
-        for (const tag of ctx.tags) {
+    if (node.tags) {
+        for (const tag of node.tags) {
             if (typeof tag === 'string') {
                 result.add(tag)
             } else {
@@ -39,20 +39,20 @@ export function gatherKindsAndTags(ctx: Context, result: Set<string>) {
             }
         }
     }
-    if (ctx.children) {
-        for (const child of ctx.children) {
+    if (node.children) {
+        for (const child of node.children) {
             gatherKindsAndTags(child, result)
         }
     }
 }
 
 
-export function collectTags(contexts: Context[]): Tag[] {
+export function collectTags(nodes: TracingNode[]): Tag[] {
     const result: Tag[] = [];
-    for (const ctx of contexts) {
+    for (const ctx of nodes) {
         if (ctx.tags) {
             for (const tagOrString of ctx.tags) {
-                let tag = typeof tagOrString === 'string' ? { "name": tagOrString } : tagOrString;
+                const tag = typeof tagOrString === 'string' ? { "name": tagOrString } : tagOrString;
                 if (!result.find((t) => t.name === tag.name)) {
                     result.push(tag);
                 }
@@ -62,9 +62,9 @@ export function collectTags(contexts: Context[]): Tag[] {
     return result;
 }
 
-export function hasTag(context: Context, tagName: string) {
-    if (context.tags) {
-        for (const tag of context.tags) {
+export function hasTag(node: TracingNode, tagName: string) {
+    if (node.tags) {
+        for (const tag of node.tags) {
             if (typeof tag === 'string') {
                 if (tag === tagName) {
                     return true;
@@ -79,7 +79,7 @@ export function hasTag(context: Context, tagName: string) {
     return false
 }
 
-export function duration(ctx: Context): number | null {
+export function duration(ctx: TracingNode): number | null {
     if (ctx.start_time && ctx.end_time) {
         const start = new Date(ctx.start_time);
         const end = new Date(ctx.end_time);
@@ -93,9 +93,9 @@ export function duration(ctx: Context): number | null {
 }
 
 
-export function getContextAge(ctx: Context): number | null {
-    if (ctx.start_time) {
-        const start = new Date(ctx.start_time);
+export function getNodeAge(node: TracingNode): number | null {
+    if (node.start_time) {
+        const start = new Date(node.start_time);
         return Date.now() - start.getTime();
     } else {
         return null;
@@ -103,16 +103,16 @@ export function getContextAge(ctx: Context): number | null {
 }
 
 
-export function getAllChildren(ctx: Context): string[] {
+export function getAllChildren(node: TracingNode): string[] {
     const result: string[] = [];
-    function _crawl(ctx: Context) {
-        result.push(ctx.uid);
-        if (ctx.children) {
-            for (const c of ctx.children) {
+    function _crawl(node: TracingNode) {
+        result.push(node.uid);
+        if (node.children) {
+            for (const c of node.children) {
                 _crawl(c);
             }
         }
     }
-    _crawl(ctx);
+    _crawl(node);
     return result;
 }

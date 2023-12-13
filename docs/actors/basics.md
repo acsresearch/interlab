@@ -43,11 +43,11 @@ class Event:
     origin: str | None = None
 ```
 
-It serves as a class for exchanging observations. 
-If method `observe` is called on an actor with non-event argument, then 
+It serves as a class for exchanging observations.
+If method `observe` is called on an actor with non-event argument, then
 data automatically wrapped into an event.
 
-Method `query` always returns an instance of `Event` where `origin` is set to the actor's name. 
+Method `query` always returns an instance of `Event` where `origin` is set to the actor's name.
 
 Actor's name is a string that has to be provided in constructor.
 

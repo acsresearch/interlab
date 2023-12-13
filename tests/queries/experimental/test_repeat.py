@@ -1,19 +1,19 @@
 import pytest
 
-from interlab.context import Context
+from interlab.tracing import TracingNode
 from interlab.queries.experimental.repeat import QueryFailure, repeat_on_failure
 from tests.testutils import strip_tree
 
 
 def test_repeat_pass():
-    with Context("root") as root:
+    with TracingNode("root") as root:
         result = repeat_on_failure(lambda: 123)
     assert result == 123
     assert strip_tree(root.to_dict()) == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "children": [
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "kind": "repeat_on_failure",
                 "name": "<lambda>: 1/3",
                 "result": 123,
@@ -31,14 +31,14 @@ def test_repeat_fail():
         raise MyException("MyException")
 
     with pytest.raises(MyException, match="MyException"):
-        with Context("root") as root:
+        with TracingNode("root") as root:
             repeat_on_failure(fail)
 
     assert strip_tree(root.to_dict(), erase_error_details=True) == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "children": [
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "error": {
                     "_type": "MyException",
                     "message": "MyException",
@@ -64,14 +64,14 @@ def test_repeat_query_fail():
         raise QueryFailure("MyFail")
 
     with pytest.raises(QueryFailure, match="Subqueries failed on all 3 repetitions"):
-        with Context("root") as root:
+        with TracingNode("root") as root:
             repeat_on_failure(query_fail)
 
     assert strip_tree(root.to_dict(), erase_error_details=True) == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "children": [
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "error": {
                     "_type": "QueryFailure",
                     "message": "MyFail",
@@ -82,7 +82,7 @@ def test_repeat_query_fail():
                 "state": "error",
             },
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "error": {
                     "_type": "QueryFailure",
                     "message": "MyFail",
@@ -93,7 +93,7 @@ def test_repeat_query_fail():
                 "state": "error",
             },
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "error": {
                     "_type": "QueryFailure",
                     "message": "MyFail",

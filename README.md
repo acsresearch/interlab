@@ -14,11 +14,11 @@ If you use InterLab, want to share ideas, feedback or have any questions, please
 
 InterLab is composed of several core modules, each providing distinct functionalities:
 
-- `context` offers comprehensive structured logging of nested `Context`s, storage for contexts, and custom visualization of content such as Images, generic HTML, and tracking f-string-like field substitutions in larger text (with `FormatStr`).
+- `tracing` offers comprehensive structured logging of nested `TracingNodes`s, storage for traing nodes, and custom visualization of content such as Images, generic HTML, and tracking f-string-like field substitutions in larger text (with `FormatStr`).
 - `actor` provides framework for actor interactions, including a generic LLM single-shot agent and a web console for playing as an actor, along with actor memory systems. The agents may be queried for any JSON-like action type.
-- `lang_models` includes helpers for querying various language models (in particular both LangChain chat and base models), tokenization, summarization etc., all with structured `Context` logging. It also includes a web-console "LLM" for debugging and user interaction, and several internal API wrappers (though those are mostly obsoleted by using langchain).
+- `lang_models` includes helpers for querying various language models (in particular both LangChain chat and base models), tokenization, summarization etc., all with structured `TracingNode` logging. It also includes a web-console "LLM" for debugging and user interaction, and several internal API wrappers (though those are mostly obsoleted by using langchain).
 - `queries` presents powerful helpers for advanced queries to the models: querying the model for structured data for any dataclass or Pydantic model (incl. auto-generating example instances of a schema), and providing robust and comprehensive response parsing for JSON (with repeat and validation options). It also includes simple yet robust summarization.
-- `ui` contains a server for context browser and web consoles (actor and model), along with pre-compiled web apps.
+- `ui` contains a server for tracing node browser and web consoles (actor and model), along with pre-compiled web apps.
 - `utils` encompasses several text utilities, color handling, and other helpers.
 - `ext` includes extensions and integrations with other systems, currently Matplotlib and Google Colab.
 
@@ -29,9 +29,9 @@ Beyond that, you can find more less-tested and experimental code in `experimenta
 In-notebook or independent browser for the structured logs, with live updates, support for JSON-like structured data and inline visualizations. Captures both high-level interaction structure and the low-level API calls for easy inspection and debugging.
 Example screenshots (click to zoom in):
 
-<p align="center"><img src="docs/assets/imgs/context-browser-2.png" alt= "Context browser screenshot" width="100%" ></p>
+<p align="center"><img src="docs/assets/imgs/context-browser-2.png" alt= "Tracing browser screenshot" width="100%" ></p>
 
-<p align="center"><img src="docs/assets/imgs/context-browser-1.png" alt= "Context browser screenshot" width="90%" ></p>
+<p align="center"><img src="docs/assets/imgs/context-browser-1.png" alt= "Tracing browser screenshot" width="90%" ></p>
 
 ### Example notebooks
 
@@ -39,7 +39,7 @@ You can find Jupyter notebooks with a few worked-out examples [here](https://git
 
 ### InterLab Zoo
 
-The `interlab_zoo` package serves as a repository for specific and opinionated implementations of actors, scenarios, actor memory systems, context post-processing, and other tools that enhance the InterLab project. Its mission is to gather code that is both widely applicable and useful, while maintaining a compact and focused core package.
+The `interlab_zoo` package serves as a repository for specific and opinionated implementations of actors, scenarios, actor memory systems, tracing post-processing, and other tools that enhance the InterLab project. Its mission is to gather code that is both widely applicable and useful, while maintaining a compact and focused core package.
 
 ## Install
 
@@ -128,7 +128,7 @@ A rough overview where the project is heading in our minds, incomplete and subje
 
 Listing a few directly related to the framework:
 
-- How much does asking for JSON change the nature/properties of the responses (vs asking for response in natural language only)? 
+- How much does asking for JSON change the nature/properties of the responses (vs asking for response in natural language only)?
   - If it tunrs it does, we can do all JSON requests in two steps: first answer in free-form text, then use a second independent request to just extract the response information into the JSON.
   - The request for free-form text reply needs to ask about all the fields of the expected data type. Can this question creation be automated?
 - Other sensitivity to formulations: Use an LLM to generate variants of prompts (GPT-4 can do this) and evaluate differences in outcomes.
@@ -142,7 +142,7 @@ Listing a few directly related to the framework:
 
 ## Contributions and development
 
-To contribute, please submit a pull request with your proposed changes based on the latest `main` branch. 
+To contribute, please submit a pull request with your proposed changes based on the latest `main` branch.
 
 By submitting a pull request for this project, you agree to license your contribution under the MIT license to this project as written in the `LICENSE` file.
 

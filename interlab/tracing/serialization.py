@@ -48,7 +48,7 @@ def _serialize_exception(exc: BaseException) -> Data:
     }
 
     if exc.__context__:
-        result["context"] = _serialize_exception(exc.__context__)
+        result["tracing"] = _serialize_exception(exc.__context__)
 
     return result
 
@@ -70,8 +70,8 @@ def serialize_with_type(obj: Any) -> Data:
         if "_type" not in serialized:
             serialized["_type"] = type(obj).__name__
         return serialized
-    if hasattr(obj, "__log_to_context__"):
-        serialized = obj.__log_to_context__()
+    if hasattr(obj, "__trace_to_node__"):
+        serialized = obj.__trace_to_node__()
         if isinstance(serialized, dict) and "_type" not in serialized:
             serialized["_type"] = type(obj).__name__
         return serialized

@@ -3,7 +3,7 @@ from typing import Any
 
 import numpy as np
 
-from interlab.context.serialization import (
+from interlab.tracing.serialization import (
     register_custom_serializer,
     serialize_with_type,
     unregister_custom_serializer,
@@ -15,7 +15,7 @@ def test_log_to_context():
         def __init__(self):
             self.x = "hi!"
 
-        def __log_to_context__(self):
+        def __trace_to_node__(self):
             return {"attr": self.x}
 
     class MyOtherClass:

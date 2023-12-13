@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from ..context import Context
+from ..tracing import TracingNode
 from .base import BaseEnvironment
 
 
@@ -20,7 +20,7 @@ def expand_tree(
         children = []
         if depth < max_depth and not env.is_finished():
             for i in range(n_children):
-                with Context(f"{i + 1}. child") as ctx:
+                with TracingNode(f"{i + 1}. child") as ctx:
                     e = env.copy()
                     e.step()
                     ctx.add_input("environment", e)
@@ -30,6 +30,6 @@ def expand_tree(
                         ctx.set_result(e.result)
         return EnvNode(env, children)
 
-    with Context(f"root") as ctx:
+    with TracingNode(f"root") as ctx:
         ctx.add_input("environment", environment)
         return helper(environment, 0)

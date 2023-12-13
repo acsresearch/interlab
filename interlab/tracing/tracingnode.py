@@ -12,32 +12,32 @@ from ..utils.text import generate_uid, shorten_str
 from ..version import VERSION
 from .serialization import Data, serialize_with_type
 
-CONTEXT_FORMAT_VERSION = "1.0"
+TRACING_FORMAT_VERSION = "2.0"
 
 _LOG = logging.getLogger(__name__)
 
-_CONTEXT_STACK = contextvars.ContextVar("_CONTEXT_STACK", default=())
+_TRACING_STACK = contextvars.ContextVar("_TRACING_STACK", default=())
 
 
-class ContextState(Enum):
+class TracingNodeState(Enum):
     """
-    An enumeration representing the state of a context.
+    An enumeration representing the state of a tracing node.
     """
 
     NEW = "new"
-    """The context has been created but has not started yet."""
+    """The tracing node has been created but has not started yet."""
     OPEN = "open"
-    """The context is currently running."""
+    """The tracing node is currently running."""
     FINISHED = "finished"
-    """The context has successfully finished execution."""
+    """The tracing node has successfully finished execution."""
     ERROR = "error"
-    """The context finished with an exception."""
+    """The tracing node finished with an exception."""
 
 
 @dataclass
 class Tag:
     """
-    A simple class representing a tag that can be applied to a context. Optionally with style information.
+    A simple class representing a tag that can be applied to a tracing node. Optionally with style information.
     """
 
     name: str
@@ -54,22 +54,22 @@ class Tag:
         raise Exception(f"Object {obj!r} cannot be converted into Tag")
 
 
-class Context:
+class TracingNode:
     """
-    A context object that represents a single request or (sub)task in a nested hierarchy.
+    A tracing object that represents a single request or (sub)task in a nested hierarchy.
 
     The class has several attributes that are intended as read-only; use setters to modify them.
 
-    The `Context` can be used as context manager, e.g.:
+    The `TracingNode` can be used as context manager, e.g.:
 
     ```python
-    with Context("my context", inputs={"z": 42}) as c:
+    with TracingNode("my node", inputs={"z": 42}) as c:
         c.add_input("x", 1)
         y = do_some_computation(x=1)
-        # The context would also note any exceptions raised here
+        # The tracing node would also note any exceptions raised here
         # (letting it propagate upwards), but a result needs to be set manually:
         c.set_result(y)
-    # <- Here the context is already closed.
+    # <- Here the tracing node is already closed.
     ```
     """
 
@@ -85,18 +85,18 @@ class Context:
         result=None,
     ):
         """
-        - `name` - A description or name for the context.
-        - `kind` - Indicates category of the context, may e.g. influence display of the context.
-        - `inputs` - A dictionary of inputs for the context.
-        - `meta` - A dictionary of any metadata for the context, e.g. UI style data.
-        - `tags` - A list of tags for the context
-        - `storage` - A storage object for the context. Set on the root context to log all contexts below it.
-        - `directory` - Whether to create a sub-directory for the context while storing.
+        - `name` - A description or name for the tracing node.
+        - `kind` - Indicates category of the tracing node, may e.g. influence display of the tracing node.
+        - `inputs` - A dictionary of inputs for the tracing node.
+        - `meta` - A dictionary of any metadata for the tracing node, e.g. UI style data.
+        - `tags` - A list of tags for the tracing node
+        - `storage` - A storage object for the tracing node. Set on the root tracing node to log all nodes below it.
+        - `directory` - Whether to create a sub-directory for the tracing node while storing.
           This allows you to split the stored data across multiple files.
-        - `result` - The result value of the context, if it has already been computed.
+        - `result` - The result value of the tracing node, if it has already been computed.
         """
 
-        if storage is None and current_context(False) is None:
+        if storage is None and current_tracing_node(False) is None:
             storage = current_storage()
 
         if inputs:
@@ -118,11 +118,11 @@ class Context:
         self.inputs = inputs
         self.result = result
         self.error = None
-        self.state: ContextState = (
-            ContextState.NEW if result is None else ContextState.FINISHED
+        self.state: TracingNodeState = (
+            TracingNodeState.NEW if result is None else TracingNodeState.FINISHED
         )
         self.uid = generate_uid(name)
-        self.children: List[Context] = []
+        self.children: List[TracingNode] = []
         self.tags: List[Tag] = tags
         self.start_time = None
         self.end_time = None if result is None else datetime.datetime.now()
@@ -134,26 +134,28 @@ class Context:
         self._lock = Lock()
 
         if storage:
-            storage.register_context(self)
+            storage.register_node(self)
 
     @classmethod
     def deserialize(cls, data: Data, depth=0):
         """
-        Deserialize a `Context` object from given JSON data.
+        Deserialize a `TracingNode` object from given JSON data.
 
-        - `data` - A dictionary containing the serialized context data.
+        - `data` - A dictionary containing the serialized tracing data.
         """
         assert isinstance(data, dict)
-        assert data["_type"] == "Context"
+
+        # For backward compatibility we also "Context"
+        assert data["_type"] == "TracingNode" or data["_type"] == "Context"
         self = cls.__new__(cls)
         self.uid = data["uid"]
         self.name = data["name"]
 
         state = data.get("state")
         if state:
-            state = ContextState(state)
+            state = TracingNodeState(state)
         else:
-            state = ContextState.FINISHED
+            state = TracingNodeState.FINISHED
         self.state = state
         for name in ["kind", "inputs", "result", "error", "tags", "meta"]:
             setattr(self, name, data.get(name))
@@ -179,7 +181,7 @@ class Context:
         else:
             new_depth = depth + 1
             self.children = [
-                Context.deserialize(child, depth=new_depth) for child in children
+                TracingNode.deserialize(child, depth=new_depth) for child in children
             ]
 
         self._token = None
@@ -189,18 +191,18 @@ class Context:
 
     def to_dict(self, with_children=True, root=True):
         """
-        Serialize `Context` object into JSON structure.
+        Serialize `TracingNode` object into JSON structure.
 
         - `with_children` - If True then children are recursively serialized.
                             If False then serialization of children is skipped and only
                             children UIDs are put into key `children_uids`
         """
         with self._lock:
-            result = {"_type": "Context", "name": self.name, "uid": self.uid}
+            result = {"_type": "TracingNode", "name": self.name, "uid": self.uid}
             if root:
-                result["version"] = CONTEXT_FORMAT_VERSION
+                result["version"] = TRACING_FORMAT_VERSION
                 result["interlab"] = VERSION
-            if self.state != ContextState.FINISHED:
+            if self.state != TracingNodeState.FINISHED:
                 result["state"] = self.state.value
             for name in ["kind", "result", "error", "tags"]:
                 value = getattr(self, name)
@@ -230,18 +232,18 @@ class Context:
         def _helper(depth):
             with self._lock:
                 assert not self._token
-                assert self.state == ContextState.NEW
+                assert self.state == TracingNodeState.NEW
                 self.start_time = datetime.datetime.now()
                 self._depth = depth
-                self._token = _CONTEXT_STACK.set(parents + (self,))
-                self.state = ContextState.OPEN
+                self._token = _TRACING_STACK.set(parents + (self,))
+                self.state = TracingNodeState.OPEN
                 _LOG.debug(
-                    f"{self._pad}Context {self.kind} inputs={shorten_str(self.inputs, 50)}"
+                    f"{self._pad}TracingNode {self.kind} inputs={shorten_str(self.inputs, 50)}"
                 )
 
         # First we need to get Lock from parent to not get in collision
         # with to_dict() that goes down the tree
-        parents = _CONTEXT_STACK.get()
+        parents = _TRACING_STACK.get()
         if parents:
             parent = parents[-1]
             with parent._lock:  # noqa
@@ -254,29 +256,29 @@ class Context:
     def __exit__(self, _exc_type, exc_val, _exc_tb):
         with self._lock:
             assert self._token
-            assert self.state == ContextState.OPEN
+            assert self.state == TracingNodeState.OPEN
             if exc_val:
                 # Do not call set_error here as it takes a lock
-                self.state = ContextState.ERROR
+                self.state = TracingNodeState.ERROR
                 self.error = serialize_with_type(exc_val)
                 _LOG.debug(
                     f"{self._pad}-> ERR  {self.kind} error={shorten_str(exc_val, 50)}"
                 )
             else:
-                self.state = ContextState.FINISHED
+                self.state = TracingNodeState.FINISHED
                 _LOG.debug(
                     f"{self._pad}-> OK   {self.kind} result={shorten_str(repr(self.result), 50)}"
                 )
             self.end_time = datetime.datetime.now()
-            _CONTEXT_STACK.reset(self._token)
+            _TRACING_STACK.reset(self._token)
             self._token = None
         if self.storage:
-            self.storage.write_context(self)
+            self.storage.write_node(self)
         return False  # Propagate any exception
 
     def add_tag(self, tag: str | Tag):
         """
-        Add a tag to the context.
+        Add a tag to the tracing node.
         """
         with self._lock:
             if self.tags is None:
@@ -291,15 +293,15 @@ class Context:
         data: Optional[Any] = None,
         meta: Optional[Dict[str, Data]] = None,
         tags: Optional[List[str | Tag]] = None,
-    ) -> "Context":
-        event = Context(name=name, kind=kind, result=data, meta=meta, tags=tags)
+    ) -> "TracingNode":
+        event = TracingNode(name=name, kind=kind, result=data, meta=meta, tags=tags)
         with self._lock:
             self.children.append(event)
         return event
 
     def add_input(self, name: str, value: object):
         """
-        Add a named input value to the context.
+        Add a named input value to the tracing node.
 
         If an input of the same name already exists, an exception is raised.
         """
@@ -312,7 +314,7 @@ class Context:
 
     def add_inputs(self, inputs: dict[str, object]):
         """
-        Add a new input values to the context.
+        Add a new input values to the tracing node.
 
         If an input of the same name already exists, an exception is raised.
         """
@@ -327,22 +329,22 @@ class Context:
 
     def set_result(self, value: Any):
         """
-        Set the result value of the context.
+        Set the result value of the tracing node.
         """
         with self._lock:
             self.result = serialize_with_type(value)
 
     def set_error(self, exc: Any):
         """
-        Set the error value of the context (usually an `Exception` instance).
+        Set the error value of the tracing node (usually an `Exception` instance).
         """
         with self._lock:
-            self.state = ContextState.ERROR
+            self.state = TracingNodeState.ERROR
             self.error = serialize_with_type(exc)
 
     def has_tag_name(self, tag_name: str):
         """
-        Returns `True` if the context has a tag with the given name.
+        Returns `True` if the tracing node has a tag with the given name.
         """
         if not self.tags:
             return False
@@ -351,66 +353,66 @@ class Context:
                 return True
         return False
 
-    def find_contexts(self, predicate: Callable) -> List["Context"]:
+    def find_nodes(self, predicate: Callable) -> List["TracingNode"]:
         """
-        Find all contexts matching the given callable `predicate`.
+        Find all nodes matching the given callable `predicate`.
 
-        The predicate is called with a single argument, the `Context` to check, and should return `bool`.
+        The predicate is called with a single argument, the `TracingNode` to check, and should return `bool`.
         """
 
-        def _helper(context: Context):
-            with context._lock:
-                if predicate(context):
-                    result.append(context)
-                if context.children:
-                    for ctx in context.children:
-                        _helper(ctx)
+        def _helper(node: TracingNode):
+            with node._lock:
+                if predicate(node):
+                    result.append(node)
+                if node.children:
+                    for child in node.children:
+                        _helper(child)
 
         result = []
         _helper(self)
         return result
 
     def write_html(self, filename: str):
-        from ..ui.staticview import create_context_static_page
+        from ..ui.staticview import create_node_static_page
 
-        html = create_context_static_page(self)
+        html = create_node_static_page(self)
         with open(filename, "w") as f:
             f.write(html)
 
     def display(self):
-        """Show context in Jupyter notebook"""
+        """Show tracing in Jupyter notebook"""
         from IPython.core.display import HTML
         from IPython.display import display
 
-        from ..ui.staticview import create_context_static_html
+        from ..ui.staticview import create_node_static_html
 
-        html = create_context_static_html(self)
+        html = create_node_static_html(self)
         display(HTML(html))
 
 
-def with_context(
+def with_tracing(
     fn: Callable = None, *, name=None, kind=None, tags: Optional[List[str | Tag]] = None
 ):
     """
-    A decorator wrapping every execution of the function in a new `Context`.
+    A decorator wrapping every execution of the function in a new `TracingNode`.
 
     The `inputs`, `result`, and `error` (if any) are set automatically.
-    Note that you can access the created context in your function using `current_context`.
+    Note that you can access the created tracing in your function using `current_tracing_node`.
 
     *Usage:*
 
     ```python
-    @with_context
+    @with_tracing
     def func():
         pass
 
-    @with_context(name="custom_name", kind="custom_kind", tags=['tag1', 'tag2'])
+    @with_tracing(name="custom_name", kind="custom_kind", tags=['tag1', 'tag2'])
     def func():
         pass
     ```
     """
     if isinstance(fn, str):
-        raise TypeError("use `with_context()` with explicit `name=...` parameter")
+        raise TypeError("use `with_tracing()` with explicit `name=...` parameter")
 
     def helper(func):
         signature = inspect.signature(func)
@@ -418,25 +420,25 @@ def with_context(
         @functools.wraps(func)
         def wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
-            with Context(
+            with TracingNode(
                 name=name or func.__name__,
                 kind=kind or "call",
                 inputs=binding.arguments,
                 tags=tags,
-            ) as ctx:
+            ) as node:
                 result = func(*a, **kw)
-                ctx.set_result(result)
+                node.set_result(result)
                 return result
 
         async def async_wrapper(*a, **kw):
             binding = signature.bind(*a, **kw)
-            with Context(
+            with TracingNode(
                 name=name or func.__name__,
                 kind=kind or "acall",
                 inputs=binding.arguments,
-            ) as ctx:
+            ) as node:
                 result = await func(*a, **kw)
-                ctx.set_result(result)
+                node.set_result(result)
                 return result
 
         if inspect.iscoroutinefunction(func):
@@ -451,17 +453,17 @@ def with_context(
         return helper
 
 
-def current_context(check: bool = True) -> Optional[Context]:
+def current_tracing_node(check: bool = True) -> Optional[TracingNode]:
     """
-    Returns the inner-most open context, if any.
+    Returns the inner-most open tracing node, if any.
 
-    Throws an error if `check` is `True` and there is no current context. If `check` is `False` and there is
-    no current context, it returns `None`.
+    Throws an error if `check` is `True` and there is no current tracing node. If `check` is `False` and there is
+    no current tracing node, it returns `None`.
     """
-    stack = _CONTEXT_STACK.get()
+    stack = _TRACING_STACK.get()
     if not stack:
         if check:
-            raise Exception("No current context")
+            raise Exception("No current tracing")
         return None
     return stack[-1]
 

@@ -8,11 +8,11 @@ nav:
   - Getting started: installation.md
   - Overview: overview.md
   - Examples: examples.md
-  - Contexts:
-      - Basics: contexts/basics.md
-      - Serialization: contexts/serialization.md
-      - Storage:  contexts/storage.md
-      - Data Browser:  contexts/databrowser.md
+  - Tracing:
+      - Basics: tracing/basics.md
+      - Serialization: tracing/serialization.md
+      - Storage:  tracing/storage.md
+      - Data Browser:  tracing/databrowser.md
   - Actors:
       - Basics: actors/basics.md
       - Subclassing: actors/custom.md

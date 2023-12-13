@@ -1,6 +1,6 @@
 
 
-import { Context, duration, getAllChildren } from "../model/Context";
+import { TracingNode, duration, getAllChildren } from "../model/TracingNode";
 import { Box, CircularProgress, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack } from "@mui/material";
 
 import { grey } from '@mui/material/colors';
@@ -26,7 +26,7 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import { humanReadableDuration } from "../common/utils";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { OpenerMode } from "./DataBrowser";
-import { ContextEnv } from "./ContextView";
+import { NodeViewEnv } from "./TracingNodeView";
 import { TagChip } from "./TagChip";
 import React from "react";
 
@@ -36,7 +36,7 @@ const DEFAULT_COLORS = [grey[100], grey[300]];
 // This is needed for Jypyter because Jupyter gives a style for svg that broke the layout
 const NODE_ICON_STYLE = { height: "min-content" }
 
-function ContextMenu(props: { context: Context, env: ContextEnv }) {
+function NodeMenu(props: { node: TracingNode, env: NodeViewEnv }) {
 
     return (
         <PopupState variant="popover">
@@ -46,19 +46,19 @@ function ContextMenu(props: { context: Context, env: ContextEnv }) {
 
                     <Menu {...bindMenu(popupState)}>
 
-                        <MenuItem onClick={() => { props.env.setOpen(getAllChildren(props.context), OpenerMode.Open); popupState.close() }}>
+                        <MenuItem onClick={() => { props.env.setOpen(getAllChildren(props.node), OpenerMode.Open); popupState.close() }}>
                             <ListItemIcon>
                                 <ArrowDropDownIcon fontSize="small" />
                             </ListItemIcon>
                             <ListItemText>Expand all children</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={() => { props.env.setOpen(getAllChildren(props.context), OpenerMode.Close); popupState.close() }}>
+                        <MenuItem onClick={() => { props.env.setOpen(getAllChildren(props.node), OpenerMode.Close); popupState.close() }}>
                             <ListItemIcon>
                                 <ArrowRightIcon fontSize="small" />
                             </ListItemIcon>
                             <ListItemText>Collapse all children</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={() => { props.env.showContextDetails(props.context); popupState.close() }}>
+                        <MenuItem onClick={() => { props.env.showNodeDetails(props.node); popupState.close() }}>
                             <ListItemIcon>
                                 <DataObjectIcon fontSize="small" />
                             </ListItemIcon>
@@ -71,7 +71,7 @@ function ContextMenu(props: { context: Context, env: ContextEnv }) {
     );
 }
 
-function ContextNodeItem(props: { icon: React.ReactNode, children?: React.ReactNode }) {
+function TreeNodeItem(props: { icon: React.ReactNode, children?: React.ReactNode }) {
     return <Stack direction="row" sx={{ ml: 2, mt: 1, mb: 1, }}>
         {props.icon}
         <Box sx={{ ml: 1 }}>{props.children}</Box>
@@ -79,10 +79,10 @@ function ContextNodeItem(props: { icon: React.ReactNode, children?: React.ReactN
 }
 
 
-export function ContextNode(props: { env: ContextEnv, context: Context, depth: number }) {
+export function TreeNode(props: { env: NodeViewEnv, node: TracingNode, depth: number }) {
     const themeWithBoxes = props.env.config.themeWithBoxes;
 
-    const c = props.context;
+    const c = props.node;
     const open = props.env.opened.has(c.uid);
     let backgroundColor = c.meta?.color_bg;
     if (!backgroundColor && themeWithBoxes) {
@@ -128,7 +128,7 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
 
     const borderColor = c.meta?.color_border;
 
-    function isVisible(ctx: Context) {
+    function isVisible(ctx: TracingNode) {
         if (ctx.kind) {
             if (!props.env.opened.has(ctx.kind)) {
                 return false;
@@ -167,10 +167,10 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
                 (
                     inputs.map(({ property, value }, i) =>
 
-                        <ContextNodeItem key={i} icon={<ArrowForwardIcon style={NODE_ICON_STYLE} />}>
+                        <TreeNodeItem key={i} icon={<ArrowForwardIcon style={NODE_ICON_STYLE} />}>
                             <Box><strong>{property}</strong></Box>
-                            <DataRenderer uid={c.uid + "/inputs/" + property} contextDepth={props.depth} data={value} env={props.env} structDepth={0} />
-                        </ContextNodeItem>
+                            <DataRenderer uid={c.uid + "/inputs/" + property} nodeDepth={props.depth} data={value} env={props.env} structDepth={0} />
+                        </TreeNodeItem>
                     )
 
                 )
@@ -179,28 +179,28 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
                 c.children !== undefined && (
                     <Box sx={{ ml: 1, mt: 1, mb: 1, }}>
                         {c.children?.filter(isVisible).map((ctx) =>
-                            <ContextNode key={ctx.uid} env={props.env} context={ctx} depth={props.depth + 1} />)}
+                            <TreeNode key={ctx.uid} env={props.env} node={ctx} depth={props.depth + 1} />)}
                     </Box>
                 )
             }
             {
                 c.result !== undefined &&
-                <ContextNodeItem icon={<ArrowBackIcon style={NODE_ICON_STYLE} />}>
-                    <DataRenderer uid={c.uid + "/result"} contextDepth={props.depth} data={c.result} env={props.env} structDepth={0} />
-                </ContextNodeItem>
+                <TreeNodeItem icon={<ArrowBackIcon style={NODE_ICON_STYLE} />}>
+                    <DataRenderer uid={c.uid + "/result"} nodeDepth={props.depth} data={c.result} env={props.env} structDepth={0} />
+                </TreeNodeItem>
             }
             {
                 c.error !== undefined &&
-                <ContextNodeItem icon={<ReportProblemIcon style={NODE_ICON_STYLE} />}>
-                    <DataRenderer uid={c.uid + "/error"} contextDepth={props.depth} data={c.error} hideType="error" env={props.env} structDepth={0} />
-                </ContextNodeItem>
+                <TreeNodeItem icon={<ReportProblemIcon style={NODE_ICON_STYLE} />}>
+                    <DataRenderer uid={c.uid + "/error"} nodeDepth={props.depth} data={c.error} hideType="error" env={props.env} structDepth={0} />
+                </TreeNodeItem>
             }
         </Box>
     }
 
     const header = () => {
         const short_result = undefined; // c.result ? short_repr(c.result) : null;
-        const dur = duration(props.context);
+        const dur = duration(props.node);
         return <Box sx={{ display: "flex", alignContent: "space-between" }}>
             <Box style={{
                 display: 'flex',
@@ -213,7 +213,7 @@ export function ContextNode(props: { env: ContextEnv, context: Context, depth: n
                 {dur && dur > 0 ? <Box component="span" sx={{ color: "#999", marginLeft: 1 }}>{humanReadableDuration(dur)}</Box> : ""}
                 {c.tags?.map((t, i) => <Box component="span" sx={{ marginLeft: 0.5 }} key={i}><TagChip tag={t} /></Box>)}
             </Box>
-            <ContextMenu context={c} env={props.env} />
+            <NodeMenu node={c} env={props.env} />
         </Box>
     }
 

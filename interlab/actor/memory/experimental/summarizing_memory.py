@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 
 from interlab.actor.event import Event
-from interlab.context import Context, current_context
+from interlab.tracing import TracingNode, current_tracing_node
 from interlab.lang_models.count_tokens import count_tokens
 from interlab.queries.summarize import summarize_with_limit
 from interlab.utils.text import shorten_str
@@ -55,7 +55,7 @@ class SummarizingMemory(ListMemory):
                     f"{shorten_str(item.text)!r}"
                 )
                 _LOG.debug(msg)
-                current_context().add_event(msg)
+                current_tracing_node().add_event(msg)
                 item.text = summarize_with_limit(
                     item.text,
                     model=self.model,
@@ -80,7 +80,7 @@ class SummarizingMemory(ListMemory):
                     f"(level {i2.level}) messages to {self.summary_limit} tokens"
                 )
                 _LOG.debug(msg)
-                current_context().add_event(msg)
+                current_tracing_node().add_event(msg)
                 text = summarize_with_limit(
                     f"{i1.text}\n\n{i2.text}",
                     model=self.model,
@@ -97,7 +97,7 @@ class SummarizingMemory(ListMemory):
         raise Exception("Bug: summarization failed")
 
     def add_event(self, event: Event | str):
-        with Context("SummarizingMemory.add_event", inputs=dict(event=event)) as c:
+        with TracingNode("SummarizingMemory.add_event", inputs=dict(event=event)) as c:
             text = str(event)
             tokens = count_tokens(text, self.model)  # Estimate for newlines etc.
             if tokens > self.one_message_limit:

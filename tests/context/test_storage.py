@@ -1,18 +1,18 @@
-from interlab.context import Context
-from interlab.context.storage import current_storage
+from interlab.tracing import TracingNode
+from interlab.tracing.storage import current_storage
 
 
 def test_file_storage(storage):
-    with Context("test1") as c1:
-        with Context("test1-1"):
+    with TracingNode("test1") as c1:
+        with TracingNode("test1-1"):
             pass
 
-    storage.write_context(c1)
+    storage.write_node(c1)
 
     ctx = storage.read(c1.uid)
     assert ctx == c1.to_dict()
 
-    with Context("test2", storage=storage) as c2:
+    with TracingNode("test2", storage=storage) as c2:
         pass
 
     ctx = storage.read(c2.uid)
@@ -24,29 +24,29 @@ def test_file_storage(storage):
     assert roots[0] == c1.to_dict(with_children=False)
     assert roots[1] == c2.to_dict(with_children=False)
 
-    assert storage.read_context(c2.uid).to_dict() == c2.to_dict()
-    contexts = list(storage.read_all_contexts())
+    assert storage.read_node(c2.uid).to_dict() == c2.to_dict()
+    contexts = list(storage.read_all_nodes())
     assert len(contexts) == 2
 
-    storage.remove_context(c2.uid)
+    storage.remove_node(c2.uid)
     assert {c1.uid} == set(storage.list())
 
 
 def test_file_storage_dirs(storage):
-    with Context("test1", directory=True) as c1:
-        with Context("test1-1", directory=True):
-            with Context("test-1-1-1"):
+    with TracingNode("test1", directory=True) as c1:
+        with TracingNode("test1-1", directory=True):
+            with TracingNode("test-1-1-1"):
                 pass
-            with Context("test-1-1-2"):
+            with TracingNode("test-1-1-2"):
                 pass
-        with Context("test1-2"):
+        with TracingNode("test1-2"):
             pass
-        with Context("test1-3"):
+        with TracingNode("test1-3"):
             pass
-        with Context("test1-4", directory=True):
+        with TracingNode("test1-4", directory=True):
             pass
 
-    storage.write_context(c1)
+    storage.write_node(c1)
     data = storage.read(c1.uid)
     assert data == c1.to_dict()
 
@@ -55,7 +55,7 @@ def test_file_storage_dirs(storage):
     roots = storage.read_roots([c1.uid])
     assert roots[0] == c1.to_dict(with_children=False)
 
-    storage.remove_context(c1.uid)
+    storage.remove_node(c1.uid)
     assert storage.list() == []
 
 
@@ -63,8 +63,8 @@ def test_storage_with_block(storage):
     assert current_storage() is None
     with storage:
         assert current_storage() is storage
-        with Context("c") as c:
-            with Context("c2"):
+        with TracingNode("c") as c:
+            with TracingNode("c2"):
                 pass
     assert current_storage() is None
     assert storage.list() == [c.uid]

@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Divider, IconButton, ListItemButton, ListItemText, Menu, MenuItem, Paper, Tooltip } from "@mui/material";
-import { Context, Tag, collectTags, getContextAge, hasTag } from "../model/Context";
+import { TracingNode, Tag, collectTags, getNodeAge, hasTag } from "../model/TracingNode";
 import { useState } from "react";
 import axios from "axios";
 import { SERVICE_PREFIX } from "../config";
@@ -26,7 +26,7 @@ export type RootsVisibility = {
 
 
 
-function RootItem(props: { root: Context, selectedCtx: Context | null, selectRoot: (uid: string) => void }) {
+function RootItem(props: { root: TracingNode, selectedCtx: TracingNode | null, selectRoot: (uid: string) => void }) {
     const { root, selectedCtx, selectRoot } = props;
     const primary = root.uid.slice(0, 40);
 
@@ -43,7 +43,7 @@ function RootItem(props: { root: Context, selectedCtx: Context | null, selectRoo
         icon = <DoneIcon sx={{ fontSize: "110%", paddingRight: 0.5 }} />
     }
 
-    const age = getContextAge(root);
+    const age = getNodeAge(root);
 
     return (
         <ListItemButton selected={selectedCtx !== null && root.uid === selectedCtx.uid} key={root.uid} component="a" onClick={() => selectRoot(root.uid)}>
@@ -56,7 +56,7 @@ function RootItem(props: { root: Context, selectedCtx: Context | null, selectRoo
     )
 }
 
-export function FilterByTagButton(props: { roots: Context[], tagFilters: Tag[], onClick: (tag: Tag) => void }) {
+export function FilterByTagButton(props: { roots: TracingNode[], tagFilters: Tag[], onClick: (tag: Tag) => void }) {
     return <PopupState variant="popover">
         {(popupState) => {
             const tags = popupState.isOpen ? collectTags(props.roots).filter(tag => !props.tagFilters.find(t => t.name === tag.name)) : [];
@@ -70,14 +70,14 @@ export function FilterByTagButton(props: { roots: Context[], tagFilters: Tag[], 
     </PopupState >
 }
 
-export function RootPanel(props: { roots: Context[], selectedCtx: Context | null, selectRoot: (ctx: string) => void, showRoots: RootsVisibility, setShowRoots: (v: RootsVisibility) => void, refresh: () => void, addInfo: AddInfo }) {
+export function RootPanel(props: { roots: TracingNode[], selectedNode: TracingNode | null, selectRoot: (ctx: string) => void, showRoots: RootsVisibility, setShowRoots: (v: RootsVisibility) => void, refresh: () => void, addInfo: AddInfo }) {
     const [confirmDialog, setConfirmDialog] = useState<boolean>(false);
     const [tagFilters, setTagFilters] = useState<Tag[]>([]);
 
     const showRoots = props.showRoots;
 
 
-    function filterRoots(ctx: Context) {
+    function filterRoots(ctx: TracingNode) {
         if (!showRoots.showFinished && ctx.state === undefined) {
             return false;
         }
@@ -91,9 +91,9 @@ export function RootPanel(props: { roots: Context[], selectedCtx: Context | null
     }
 
     function copyIntoClipboard() {
-        if (props.selectedCtx) {
-            navigator.clipboard.writeText(props.selectedCtx.uid);
-            props.addInfo("success", `Context uid '${props.selectedCtx.uid} copied into clipboard`)
+        if (props.selectedNode) {
+            navigator.clipboard.writeText(props.selectedNode.uid);
+            props.addInfo("success", `Node uid '${props.selectedNode.uid} copied into clipboard`)
         }
     }
 
@@ -101,8 +101,8 @@ export function RootPanel(props: { roots: Context[], selectedCtx: Context | null
         setConfirmDialog(false);
         if (confirmed) {
             callGuard(async () => {
-                if (props.selectedCtx) {
-                    await axios.delete(SERVICE_PREFIX + "/contexts/uid/" + props.selectedCtx.uid);
+                if (props.selectedNode) {
+                    await axios.delete(SERVICE_PREFIX + "/nodes/uid/" + props.selectedNode.uid);
                     props.refresh();
                 }
             }, props.addInfo)
@@ -113,7 +113,7 @@ export function RootPanel(props: { roots: Context[], selectedCtx: Context | null
     return <div style={{ width: 360, float: "left" }}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span>
-                <Tooltip title="Show/Hide finished contexts">
+                <Tooltip title="Show/Hide finished nodes">
                     <ToggleButton
                         size="small"
                         value="check"
@@ -125,7 +125,7 @@ export function RootPanel(props: { roots: Context[], selectedCtx: Context | null
                         <DoneIcon />
                     </ToggleButton>
                 </Tooltip>
-                <Tooltip title="Show/Hide failed contexts">
+                <Tooltip title="Show/Hide failed nodes">
                     <ToggleButton
                         size="small"
                         value="check"
@@ -156,13 +156,13 @@ export function RootPanel(props: { roots: Context[], selectedCtx: Context | null
         }
 
         <Paper style={{ maxHeight: "calc(100vh - 40px)", overflow: 'auto' }}>
-            {props.roots.filter(filterRoots).map((root) => <RootItem key={root.uid} root={root} selectedCtx={props.selectedCtx} selectRoot={props.selectRoot} />
+            {props.roots.filter(filterRoots).map((root) => <RootItem key={root.uid} root={root} selectedCtx={props.selectedNode} selectRoot={props.selectRoot} />
             )}
         </Paper>
 
         {
-            props.selectedCtx && <ConfirmDialog open={confirmDialog} confirmText={"Remove context"} onConfirm={onDelete}>
-                Remove context <strong>{props.selectedCtx.uid}</strong>?
+            props.selectedNode && <ConfirmDialog open={confirmDialog} confirmText={"Remove node"} onConfirm={onDelete}>
+                Remove node <strong>{props.selectedNode.uid}</strong>?
             </ConfirmDialog>
         }
     </div >

@@ -24,7 +24,7 @@ pb = actor.OneShotLLMActor("Bob", e35, "I want to sell ...")
 # Setup the PriceNegotiation environment.
 env = PriceNegotiation(minimizer=pa, maximizer=pb, max_steps=10)
 
-# Run the simulation inside a context, storing the result.
+# Run the simulation inside a tracing node, storing the result.
 with interlab.Context("negotiation", storage=storage) as ctx:
     result = env.run_until_end()
     ctx.set_result(result)

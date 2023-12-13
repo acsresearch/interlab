@@ -103,7 +103,7 @@ class FormatStr:
         ps = [p if isinstance(p, str) else p.into_html(level) for p in self._parts]
         return f'<span class="FmtString__span" style="white-space: pre-wrap;">{"".join(ps)}</span>'
 
-    def __log_to_context__(self):
+    def __trace_to_node__(self):
         return {"_type": "$html", "html": self.into_html()}
 
     @classmethod

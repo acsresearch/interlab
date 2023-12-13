@@ -6,7 +6,7 @@ from typing import Any, Optional
 
 import anthropic
 
-from ..context import Context
+from ..tracing import TracingNode
 from ..utils.text import group_newlines, remove_leading_spaces, shorten_str
 from .base import LangModelBase
 
@@ -69,7 +69,7 @@ class AnthropicModel(LangModelBase):
 
     async def aquery(self, prompt: str, max_tokens=1024) -> str:
         name, conf = self.prepare_conf(max_tokens, strip=True)
-        with Context(name, inputs={"prompt": prompt, "conf": conf}) as c:
+        with TracingNode(name, inputs={"prompt": prompt, "conf": conf}) as c:
             async with _anthropic_semaphore:
                 r = await self.aclient.completions.create(
                     prompt=f"{anthropic.HUMAN_PROMPT} {prompt}{anthropic.AI_PROMPT}",

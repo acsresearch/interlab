@@ -7,7 +7,7 @@ from typing import Any, Optional
 import backoff
 import openai
 
-from ..context import Context
+from ..tracing import TracingNode
 from ..utils.text import group_newlines, remove_leading_spaces, shorten_str
 from .base import LangModelBase
 
@@ -122,7 +122,9 @@ class OpenAiChatModel(LangModelBase):
 
     async def aquery(self, prompt: str, max_tokens=1024) -> str:
         name, conf = self.prepare_conf(max_tokens, True)
-        with Context(name, kind="query", inputs={"prompt": prompt, "conf": conf}) as c:
+        with TracingNode(
+            name, kind="query", inputs={"prompt": prompt, "conf": conf}
+        ) as c:
             async with _openai_semaphore:  # !!!  acquire semaphore outside of @backoff function is intensional
                 result = await _make_openai_chat_async_query(
                     self.api_key, self.api_org, prompt, conf

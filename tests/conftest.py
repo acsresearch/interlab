@@ -8,7 +8,7 @@ ROOT_DIR = os.path.dirname(TESTS_DIR)
 
 sys.path.insert(0, ROOT_DIR)
 
-from interlab.context import FileStorage  # noqa E402
+from interlab.tracing import FileStorage  # noqa E402
 
 
 @pytest.fixture

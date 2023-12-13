@@ -1,6 +1,6 @@
 from typing import Any
 
-from ..context.data import FormatStr
+from ..tracing.data import FormatStr
 from ..lang_models import query_model
 from ..queries import query_for_json
 from .base import ActorWithMemory

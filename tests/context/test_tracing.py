@@ -4,59 +4,58 @@ import json
 
 import pytest
 
-from interlab.context import Context, Tag, current_context, with_context
-from interlab.context.context import ContextState
+from interlab.tracing import TracingNode, Tag, current_tracing_node, with_tracing
+from interlab.tracing.tracingnode import TracingNodeState
 from tests.testutils import strip_tree
 
 
-def serialization_check(context: Context):
-    d = context.to_dict()
-    assert d == Context.deserialize(d).to_dict()
+def serialization_check(node: TracingNode):
+    d = node.to_dict()
+    assert d == TracingNode.deserialize(d).to_dict()
 
 
-def test_context_basic():
+def test_tracing_node_basic():
     class TestException(Exception):
         pass
 
-    @with_context
+    @with_tracing
     def func1(param1, param2):
-        assert with_context(lambda x: x)("abc") == "abc"
-        assert with_context(lambda x: x, name="myfn")("abc") == "abc"
+        assert with_tracing(lambda x: x)("abc") == "abc"
+        assert with_tracing(lambda x: x, name="myfn")("abc") == "abc"
         return param1 + param2
 
-    root_ctx = Context("Test", kind="root")
-    serialization_check(root_ctx)
-    assert root_ctx.state == ContextState.NEW
-    assert current_context(check=False) is None
+    root_node = TracingNode("Test", kind="root")
+    serialization_check(root_node)
+    assert root_node.state == TracingNodeState.NEW
+    assert current_tracing_node(check=False) is None
 
-    with root_ctx as c:
-        assert c.state == ContextState.OPEN
-        assert current_context() is c
-        with Context("c1") as c2:
+    with root_node as c:
+        assert c.state == TracingNodeState.OPEN
+        assert current_tracing_node() is c
+        with TracingNode("c1") as c2:
             c2.set_result("blabla")
-        assert c2.state == ContextState.FINISHED
+        assert c2.state == TracingNodeState.FINISHED
         with pytest.raises(TestException, match="well"):
-            with Context("c2") as c2:
-                assert current_context() is c2
+            with TracingNode("c2") as c2:
+                assert current_tracing_node() is c2
                 serialization_check(c2)
                 raise TestException("Ah well")
-        assert c2.state == ContextState.ERROR
+        assert c2.state == TracingNodeState.ERROR
         assert func1(10, 20) == 30
 
-    assert c.state == ContextState.FINISHED
-    # with_new_context("ch3", lambda d: f"Hello {d.name}", Data(name="LLM"))
+    assert c.state == TracingNodeState.FINISHED
     serialization_check(c)
-    output = strip_tree(root_ctx.to_dict())
+    output = strip_tree(root_node.to_dict())
 
     print(json.dumps(output, indent=2))
     assert output == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "name": "Test",
         "kind": "root",
         "children": [
-            {"_type": "Context", "name": "c1", "result": "blabla"},
+            {"_type": "TracingNode", "name": "c1", "result": "blabla"},
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "name": "c2",
                 "state": "error",
                 "error": {
@@ -66,7 +65,7 @@ def test_context_basic():
                         "_type": "$traceback",
                         "frames": [
                             {
-                                "name": "test_context_basic",
+                                "name": "test_tracing_node_basic",
                                 "filename": __file__,
                                 "line": 'raise TestException("Ah well")',
                             }
@@ -75,21 +74,21 @@ def test_context_basic():
                 },
             },
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "name": "func1",
                 "kind": "call",
                 "inputs": {"param1": 10, "param2": 20},
                 "result": 30,
                 "children": [
                     {
-                        "_type": "Context",
+                        "_type": "TracingNode",
                         "name": "<lambda>",
                         "kind": "call",
                         "inputs": {"x": "abc"},
                         "result": "abc",
                     },
                     {
-                        "_type": "Context",
+                        "_type": "TracingNode",
                         "name": "myfn",
                         "kind": "call",
                         "inputs": {"x": "abc"},
@@ -101,7 +100,7 @@ def test_context_basic():
     }
 
 
-def test_context_inner_exception():
+def test_tracing_node_inner_exception():
     def f1():
         raise Exception("Exception 1")
 
@@ -112,13 +111,13 @@ def test_context_inner_exception():
             raise Exception("Exception 2")
 
     with pytest.raises(Exception):
-        with Context("root") as c:
+        with TracingNode("root") as c:
             f2()
 
     output = strip_tree(c.to_dict())
     print(json.dumps(output, indent=2))
     assert output == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "name": "root",
         "state": "error",
         "error": {
@@ -128,7 +127,7 @@ def test_context_inner_exception():
                 "_type": "$traceback",
                 "frames": [
                     {
-                        "name": "test_context_inner_exception",
+                        "name": "test_tracing_node_inner_exception",
                         "filename": __file__,
                         "line": "f2()",
                     },
@@ -139,7 +138,7 @@ def test_context_inner_exception():
                     },
                 ],
             },
-            "context": {
+            "tracing": {
                 "_type": "Exception",
                 "message": "Exception 1",
                 "traceback": {
@@ -162,50 +161,50 @@ def test_context_inner_exception():
     }
 
 
-def test_context_dataclass():
+def test_tracing_dataclass():
     @dataclasses.dataclass
     class MyData:
         name: str
         age: int
 
-    with Context("root") as c:
+    with TracingNode("root") as c:
         c.add_input("my_input", MyData("Bob", 25))
         c.set_result(MyData("Alice", 26))
-    assert c.state == ContextState.FINISHED
+    assert c.state == TracingNodeState.FINISHED
     # with_new_context("ch3", lambda d: f"Hello {d.name}", Data(name="LLM"))
     output = strip_tree(c.to_dict())
     assert output == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "name": "root",
         "inputs": {"my_input": {"_type": "MyData", "age": 25, "name": "Bob"}},
         "result": {"name": "Alice", "age": 26, "_type": "MyData"},
     }
 
 
-def test_context_add_inputs():
+def test_tracing_node_add_inputs():
     class A:
         pass
 
     a = A()
 
-    with Context("root") as c:
-        with Context("child1") as c2:
+    with TracingNode("root") as c:
+        with TracingNode("child1") as c2:
             c2.add_inputs({"x": 10, "y": a})
-        with Context("child1", inputs={"z": 20}) as c2:
+        with TracingNode("child1", inputs={"z": 20}) as c2:
             c2.add_inputs({"x": 10, "y": a})
     output = strip_tree(c.to_dict())
     print(output)
     assert output == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "name": "root",
         "children": [
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "name": "child1",
                 "inputs": {"x": 10, "y": {"_type": "A", "id": id(a)}},
             },
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "name": "child1",
                 "inputs": {
                     "z": 20,
@@ -217,30 +216,30 @@ def test_context_add_inputs():
     }
 
 
-def test_context_lists():
-    with Context("root", inputs={"a": [1, 2, 3]}) as c:
+def test_tracing_node_lists():
+    with TracingNode("root", inputs={"a": [1, 2, 3]}) as c:
         c.set_result(["A", ["B", "C"]])
     output = strip_tree(c.to_dict())
     print(output)
     assert output == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "name": "root",
         "inputs": {"a": [1, 2, 3]},
         "result": ["A", ["B", "C"]],
     }
 
 
-def test_context_events():
-    with Context("root") as c:
+def test_tracing_node_events():
+    with TracingNode("root") as c:
         c.add_event("Message to Alice", kind="message", data={"x": 10, "y": 20})
     output = strip_tree(c.to_dict())
     print(json.dumps(output, indent=2))
     assert output == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "name": "root",
         "children": [
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "name": "Message to Alice",
                 "kind": "message",
                 "result": {"x": 10, "y": 20},
@@ -250,12 +249,12 @@ def test_context_events():
 
 
 @pytest.mark.asyncio
-async def test_async_context():
-    @with_context
+async def test_async_tracing_node():
+    @with_tracing
     async def make_queries():
         return "a"
 
-    with Context("root") as c:
+    with TracingNode("root") as c:
         q1 = make_queries()
         q2 = make_queries()
 
@@ -264,17 +263,17 @@ async def test_async_context():
 
     output = strip_tree(c.to_dict())
     assert output == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "name": "root",
         "children": [
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "name": "make_queries",
                 "kind": "acall",
                 "result": "a",
             },
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "name": "make_queries",
                 "kind": "acall",
                 "result": "a",
@@ -283,17 +282,17 @@ async def test_async_context():
     }
 
 
-def test_context_tags():
-    with Context("root", tags=["abc", "xyz"]) as c:
+def test_tracing_node_tags():
+    with TracingNode("root", tags=["abc", "xyz"]) as c:
         c.add_tag("123")
-        with Context("child"):
-            current_context().add_tag("mmm")
-            current_context().add_tag(Tag("nnn", color="green"))
+        with TracingNode("child"):
+            current_tracing_node().add_tag("mmm")
+            current_tracing_node().add_tag(Tag("nnn", color="green"))
 
     data = c.to_dict()
     root = strip_tree(copy.deepcopy(data))
     assert root == {
-        "_type": "Context",
+        "_type": "TracingNode",
         "name": "root",
         "tags": [
             {"name": "abc", "color": None, "_type": "Tag"},
@@ -302,7 +301,7 @@ def test_context_tags():
         ],
         "children": [
             {
-                "_type": "Context",
+                "_type": "TracingNode",
                 "name": "child",
                 "tags": [
                     {"name": "mmm", "color": None, "_type": "Tag"},
@@ -312,21 +311,21 @@ def test_context_tags():
         ],
     }
     print(json.dumps(data, indent=2))
-    root2 = Context.deserialize(data).to_dict()
+    root2 = TracingNode.deserialize(data).to_dict()
     assert data == root2
 
 
-def test_find_contexts():
-    with Context("root") as c:
+def test_find_tracing_nodes():
+    with TracingNode("root") as c:
         c.add_tag("123")
-        with Context("child"):
-            with Context("child3") as c3:
+        with TracingNode("child"):
+            with TracingNode("child3") as c3:
                 c3.add_tag("x")
                 c3.set_result("abc")
-        with Context("child2", tags=[Tag("x")]) as c4:
+        with TracingNode("child2", tags=[Tag("x")]) as c4:
             pass
 
-    assert c.find_contexts(lambda ctx: ctx.has_tag_name("x")) == [c3, c4]
+    assert c.find_nodes(lambda ctx: ctx.has_tag_name("x")) == [c3, c4]
 
 
 @pytest.mark.parametrize(
@@ -334,7 +333,7 @@ def test_find_contexts():
     [pytest.param(None, id="None"), pytest.param("", id='""'), 0, 1, "abc", {"x": 10}],
 )
 def test_to_dict(result):
-    with Context("root") as c:
+    with TracingNode("root") as c:
         c.set_result(result)
     assert c.result == result
 

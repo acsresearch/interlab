@@ -1,5 +1,5 @@
 """
-This module provides the Context class, context log storage, logged data and parameter
+This module provides the TracingNode class, tracing log storage, logged data and parameter
 serialization specialized for several data types (dataclasses, pydantic, etc),
 and several special types that allow custom display of parts of any
 serialized value (including deep in nested structures).
@@ -9,16 +9,16 @@ and tracking f-string-like substitution in string templates (with `FormatStr`).
 """
 
 
-from . import context, data, storage  # noqa: F401
-from .context import Context, Tag, current_context, with_context
+from . import tracingnode, data, storage  # noqa: F401
+from .tracingnode import TracingNode, Tag, current_tracing_node, with_tracing
 from .storage import FileStorage, StorageBase
 
 __all__ = [
     "data",
-    "Context",
+    "TracingNode",
     "Tag",
-    "current_context",
-    "with_context",
+    "current_tracing_node",
+    "with_tracing",
     "FileStorage",
     "StorageBase",
 ]

@@ -1,21 +1,21 @@
 # Serialization to JSON
 
-Context can be serialized into JSON via [to_dict](pdoc:interlab.context.Context.to_dict) method:
+`TracingNode` can be serialized into JSON via [to_dict](pdoc:interlab.tracing.TracingNode.to_dict) method:
 
 ```python
-from interlab.context import Context
+from interlab.tracing import TracingNode
 
-with Context("my context", inputs={"x": 42}) as c:
-    c.set_result("my_result")
+with TracingNode("my node", inputs={"x": 42}) as node:
+    node.set_result("my_result")
 ```
 
-Calling ```c.to_dict()``` returns:
+Calling ```node.to_dict()``` returns:
 
 ```python
 {
-  "_type": "Context",
-  "name": "my context",
-  "uid": "2023-08-23T16:41:35-my_context-Z9YpEb",
+  "_type": "TracingNode",
+  "name": "my node",
+  "uid": "2023-08-23T16-41-35-my_node-Z9YpEb",
   "inputs": {
     "x": 42
   },
@@ -36,31 +36,31 @@ Dataclasses are serialized as `dict`:
 class Person:
     name: str
     age: int
-    
-@with_context
+
+@with_tracing
 def say_hi(person):
     return f"Hi {person.name}!"
 
-with Context("root") as c:
+with TracingNode("root") as c:
     person = Person("Alice", 21)
     say_hi(person)
 ```
 
-creates the following context:
+creates the following JSON description of the node:
 
 ```python
 {
-  "_type": "Context",
+  "_type": "TracingNode",
   "name": "root",
   "uid": "2023-08-23T16:52:43-root-H4JCSN",
   "children": [
     {
-      "_type": "Context",
+      "_type": "TracingNode",
       "name": "say_hi",
       "uid": "2023-08-23T16:52:43-say_hi-GGfCCe",
       "kind": "call",
       "result": "Hi Alice!",
-      "inputs": {                       
+      "inputs": {
         "person": {                     # <<<<
           "name": "Alice",              # <<<<
           "age": 21,                    # <<<<
@@ -76,22 +76,22 @@ creates the following context:
 }
 ```
 
-### Method `__log_to_context__`
+### Method `__trace_to_node__`
 
-A user type may define method `__log_to_context__` to provide a custom serializer.
+A user type may define method `__trace_to_node__` to provide a custom serializer.
 
-```
+```python
 class Person:
     name: str
     age: int
-    
+
     def __init__(self, name, age):
         self.name = name
         self.age = age
 
-    def __log_to_context__(self):
+    def __trace_to_node__(self):
         return {"name": self.name, "age": self.age}
-        
+
 person = Person("Peter", 24)
 ```
 
@@ -110,23 +110,26 @@ When `person` is serialized, the following dictionary is produced:
 Sometimes we do not or we cannot modify a class. Registration a serializer for a given type is there for this purpose.
 
 ```python
-    from interlab.context.serialization import register_custom_serializer
+from interlab.tracing.serialization import register_custom_serializer
 
-    class MyClass:
-        def __init__(self, x):
-            self.x = x
 
-    def myclass_serializer(m: MyClass):
-        return {"x": m.x}
+class MyClass:
+    def __init__(self, x):
+        self.x = x
 
-    register_custom_serializer(MyClass, myclass_serializer)
+
+def myclass_serializer(m: MyClass):
+    return {"x": m.x}
+
+
+register_custom_serializer(MyClass, myclass_serializer)
 ```
 
 ### Fallback
 
 When no mechanism above is used then only name of the type and object `id` is serialized.
 
-E.g.: 
+E.g.:
 
 ```python
 {

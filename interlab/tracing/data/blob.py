@@ -15,7 +15,7 @@ class DataWithMime:
         self.data = data
         self.mime_type = mime_type
 
-    def __log_to_context__(self):
+    def __trace_to_node__(self):
         return {
             "_type": "$blob",
             "data": base64.b64encode(self.data).decode(),

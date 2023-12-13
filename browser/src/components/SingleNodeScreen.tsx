@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Context, gatherKindsAndTags } from "../model/Context";
+import { TracingNode, gatherKindsAndTags } from "../model/TracingNode";
 import { OpenerMode } from "./DataBrowser";
-import { ContextView } from "./ContextView";
+import { TracingNodeView } from "./TracingNodeView";
 
 const config = { themeWithBoxes: false };
 
-export function SingleContextScreen(props: { context: Context }) {
+export function SingleNodeScreen(props: { node: TracingNode }) {
     const [opened, setOpened] = useState<Set<string>>(() => {
         const s = new Set<string>();
-        gatherKindsAndTags(props.context, s);
-        s.add(props.context.uid)
+        gatherKindsAndTags(props.node, s);
+        s.add(props.node.uid)
         return s
     });
 
@@ -39,5 +39,5 @@ export function SingleContextScreen(props: { context: Context }) {
         })
     }
 
-    return <ContextView context={props.context} opened={opened} setOpen={setOpen} config={config} />
+    return <TracingNodeView node={props.node} opened={opened} setOpen={setOpen} config={config} />
 }

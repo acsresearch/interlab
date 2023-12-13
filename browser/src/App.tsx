@@ -4,11 +4,11 @@ import { InfoMessage, Severity } from './common/info';
 import { Alert, Snackbar } from '@mui/material';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Console } from './components/Console';
-import { Context } from './model/Context';
+import { TracingNode } from './model/TracingNode';
 
 declare global {
   interface Window {
-    INTERLAB_CONTEXT: Context | undefined;
+    INTERLAB_ROOT_NODE: TracingNode | undefined;
   }
 }
 

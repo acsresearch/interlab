@@ -5,8 +5,8 @@ from typing import Any, TypeVar
 import pydantic
 from fastapi.encoders import jsonable_encoder
 
-from ..context import Context
-from ..context.data import FormatStr
+from ..tracing import TracingNode
+from ..tracing.data import FormatStr
 from ..lang_models.query_model import query_model
 from .json_examples import generate_json_example
 from .json_parsing import find_and_parse_json_block
@@ -84,8 +84,8 @@ def query_for_json(
 
     *Notes:*
 
-    - Context logging: `query_for_json` logs one Context for its call, and uses `query_model` which
-      also logs Contexts for the LLM calls themselves by default.
+    - Tracing: `query_for_json` logs one TraceNode for its call, and uses `query_model` which
+      also logs TraceNodes for the LLM calls themselves by default.
 
     - Uses pydatinc under the hood to construction of JSON schemas, flexible conversion of types to schema,
       validation etc.
@@ -132,7 +132,7 @@ def query_for_json(
     else:
         prompt_with_fmt = prompt.format(**{_FORMAT_VAR: format_prompt})
 
-    with Context(
+    with TracingNode(
         f"query for JSON of type {T}",
         kind="query",
         inputs=dict(
@@ -159,7 +159,7 @@ def query_for_json(
             except (ValueError, pydantic.ValidationError) as e:
                 if i < max_repeats - 1:
                     continue
-                # Errors on last turn get logged into context and propagated
+                # Errors on last turn get logged into tracing and propagated
                 raise ParsingFailure(
                     f"model repeatedly returned a response without a valid JSON instance of {T.__class__.__name__}"
                 ) from e

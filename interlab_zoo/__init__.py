@@ -2,7 +2,7 @@
 InterLab Zoo
 ------------
 
-A collection of implementations of actors, scenarios, actor memory systems, context post-processing,
+A collection of implementations of actors, scenarios, actor memory systems, tracing post-processing,
 and other useful tools extending the InterLab project. This repository is intended for code that is
 still mostly generic and widely useful while being opinionated about particular implementation details
 and prompt wording.

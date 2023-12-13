@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { OpenerMode } from "./DataBrowser";
 import { Button } from "@mui/material";
-import { ContextEnv } from "./ContextView";
+import { NodeViewEnv } from "./TracingNodeView";
 
 
 enum OverflowDirection {
@@ -10,7 +10,7 @@ enum OverflowDirection {
     Both,
 }
 
-export function OverflowWrapper(props: { uid: string, env: ContextEnv, reducedWidth: number, children: React.ReactNode }) {
+export function OverflowWrapper(props: { uid: string, env: NodeViewEnv, reducedWidth: number, children: React.ReactNode }) {
     const [over, setOver] = useState<OverflowDirection | null>(null);
     const isOpen = over !== null && props.env.opened.has(props.uid);
 

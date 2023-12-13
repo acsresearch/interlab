@@ -4,8 +4,8 @@ from typing import Type
 
 import pytest
 
-from interlab.context import Context
-from interlab.context.serialization import serialize_with_type
+from interlab.tracing import TracingNode
+from interlab.tracing.serialization import serialize_with_type
 from interlab.lang_models import AnthropicModel, LangModelBase, OpenAiChatModel
 from tests.testutils import strip_tree
 
@@ -40,7 +40,7 @@ def test_serialize_models():
 @pytest.mark.parametrize("model_cls", [AnthropicModel, OpenAiChatModel])
 def test_query(model_cls: Type[LangModelBase]):
     model = model_cls()
-    with Context("my_query") as c:
+    with TracingNode("my_query") as c:
         output = model.query("Hello", max_tokens=10)
         assert isinstance(output, str)
         assert output

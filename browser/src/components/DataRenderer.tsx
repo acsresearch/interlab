@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material";
 import { OpenerMode } from "./DataBrowser";
 import parse from 'html-react-parser';
 import { OverflowWrapper } from "./OverflowWrapper";
-import { ContextEnv } from "./ContextView";
+import { NodeViewEnv } from "./TracingNodeView";
 
 const IMAGE_MIME_TYPES = ["image/jpeg", "image/png"];
 
@@ -25,7 +25,7 @@ function Frame(props: { frame: TracebackFrame }) {
     </Box >
 }
 
-function Traceback(props: { env: ContextEnv, frames: TracebackFrame[], uid: string }) {
+function Traceback(props: { env: NodeViewEnv, frames: TracebackFrame[], uid: string }) {
     let frames = props.frames;
     if (!frames || !(frames.length >= 1)) {
         return <Box component="span">Invalid traceback</Box >
@@ -44,10 +44,10 @@ function Traceback(props: { env: ContextEnv, frames: TracebackFrame[], uid: stri
 
 }
 
-export function DataRenderer(props: { env: ContextEnv, contextDepth: number, structDepth: number, data: any, uid: string, hideType?: string }) {
+export function DataRenderer(props: { env: NodeViewEnv, nodeDepth: number, structDepth: number, data: any, uid: string, hideType?: string }) {
     const { opened, setOpen } = props.env;
     let d = props.data;
-    const reducedWidth = props.contextDepth * 60 + props.structDepth * 30;
+    const reducedWidth = props.nodeDepth * 60 + props.structDepth * 30;
     if (d === null) {
         return <>None</>
     }
@@ -103,6 +103,6 @@ export function DataRenderer(props: { env: ContextEnv, contextDepth: number, str
         {(props.hideType !== type && type) && <>{type}</>}
         {isLong && <Button onClick={() => setOpen(props.uid, OpenerMode.Close)}>Hide items</Button>}
         <ul style={{ paddingTop: 0, paddingBottom: 0, margin: 0, paddingLeft: 25 }}>
-            {children.map(({ property, value }) => <li style={{ padding: 0, margin: 0 }} key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} contextDepth={props.contextDepth} structDepth={props.structDepth + 1} data={value} env={props.env} /></li>)}
+            {children.map(({ property, value }) => <li style={{ padding: 0, margin: 0 }} key={property}><strong>{property}</strong>: <DataRenderer uid={props.uid + "/" + property} nodeDepth={props.nodeDepth} structDepth={props.structDepth + 1} data={value} env={props.env} /></li>)}
         </ul></>);
 }

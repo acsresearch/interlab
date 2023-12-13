@@ -1,6 +1,6 @@
 import argparse
 
-from interlab.context.storage import FileStorage
+from interlab.tracing.storage import FileStorage
 
 
 def main():

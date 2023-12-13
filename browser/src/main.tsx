@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { SingleContextScreen } from './components/SingleContextScreen.tsx';
-import { Context } from './model/Context.ts';
+import { SingleNodeScreen } from './components/SingleNodeScreen.tsx';
+import { TracingNode } from './model/TracingNode.ts';
 
 declare global {
   interface Window {
@@ -12,10 +12,10 @@ declare global {
 }
 
 
-function initInterlab(root: string, context?: Context) {
+function initInterlab(root: string, node?: TracingNode) {
   ReactDOM.createRoot(document.getElementById(root)!).render(
     <React.StrictMode>
-      {context ? <SingleContextScreen context={context} /> : <App />}
+      {node ? <SingleNodeScreen node={node} /> : <App />}
     </React.StrictMode>,
   )
 }

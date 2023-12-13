@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { Tag } from "../model/Context";
+import { Tag } from "../model/TracingNode";
 
 export function TagChip(props: { tag: string | Tag, onDelete?: () => void, size?: "small" }) {
     let tag;

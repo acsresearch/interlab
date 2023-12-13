@@ -4,7 +4,7 @@ from abc import ABC
 from copy import copy
 from typing import Any
 
-from ..context import Context
+from ..tracing import TracingNode
 from ..utils import html_color, text
 from . import memory as memory_module
 from .event import Event
@@ -37,7 +37,7 @@ class BaseActor(abc.ABC):
         raise NotImplementedError
 
     def query(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
-        """Calls self._query to determine the action, wraps the action in Event, and wraps the call in Context.
+        """Calls self._query to determine the action, wraps the action in Event, and wraps the call in TracingNode.
         Query does not modify the actor's memory. Call .observe(event) on actor if agent should observe the result.
         """
         if prompt:
@@ -52,7 +52,7 @@ class BaseActor(abc.ABC):
             ] = f"{expected_type.__module__}.{expected_type.__qualname__}"
         inputs.update(**kwargs)
 
-        with Context(name, kind="action", meta=self.style, inputs=inputs) as ctx:
+        with TracingNode(name, kind="action", meta=self.style, inputs=inputs) as ctx:
             action = self._query(prompt, expected_type=expected_type, **kwargs)
             ctx.set_result(action)
             # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification
@@ -70,7 +70,7 @@ class BaseActor(abc.ABC):
         """
         if not isinstance(event, Event):
             event = Event(data=event, origin=origin)
-        with Context(
+        with TracingNode(
             f"{self.name} observes {text.shorten_str(str(event))!r}",
             kind="observation",
             meta=self.style,

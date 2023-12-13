@@ -1,5 +1,5 @@
 import { Box, Switch } from "@mui/material";
-import { Context, gatherKindsAndTags } from "../model/Context";
+import { TracingNode, gatherKindsAndTags } from "../model/TracingNode";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVICE_PREFIX } from "../config";
@@ -8,7 +8,7 @@ import { AddInfo } from "../common/info";
 import ToggleButton from '@mui/material/ToggleButton';
 
 import { RootPanel, RootsVisibility } from "./RootPanel";
-import { ContextView } from "./ContextView";
+import { TracingNodeView } from "./TracingNodeView";
 
 
 export type BrowserConfig = {
@@ -26,8 +26,8 @@ export type Opener = (keys: string | string[], mode: OpenerMode) => void
 
 export function DataBrowser(props: { addInfo: AddInfo }) {
     const [config, setConfig] = useState<BrowserConfig>({ themeWithBoxes: false });
-    const [selectedCtx, setSelectedCtx] = useState<Context | null>(null);
-    const [roots, setRoots] = useState<Context[]>([]);
+    const [selectedNode, setSelectedNode] = useState<TracingNode | null>(null);
+    const [roots, setRoots] = useState<TracingNode[]>([]);
     const [opened, setOpened] = useState<Set<string>>(new Set());
     const [kinds, setKinds] = useState<Set<string>>(new Set());
     const [showRoots, setShowRoots] = useState<RootsVisibility>({ showFinished: true, showFailed: true });
@@ -35,7 +35,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
 
     function refresh() {
         callGuard(async () => {
-            const response1 = await axios.get(SERVICE_PREFIX + "/contexts/list");
+            const response1 = await axios.get(SERVICE_PREFIX + "/nodes/list");
             if (response1 === null) {
                 return;
             }
@@ -49,11 +49,11 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                     to_download.push(uid);
                 }
             }
-            const response2 = await axios.post(SERVICE_PREFIX + "/contexts/roots", { "uids": to_download });
+            const response2 = await axios.post(SERVICE_PREFIX + "/nodes/roots", { "uids": to_download });
             if (response2 === null) {
                 return;
             }
-            const new_roots = response2.data as Context[];
+            const new_roots = response2.data as TracingNode[];
             const uids_set = new Set(uids);
 
             const final_roots = forget_open.filter((c) => uids_set.has(c.uid)).concat(new_roots);
@@ -73,23 +73,23 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
 
             setRoots(final_roots);
 
-            if (selectedCtx === null && final_roots.length > 0) {
+            if (selectedNode === null && final_roots.length > 0) {
                 selectRoot(final_roots[0].uid);
-            } else if (selectedCtx !== null && final_roots.find((x) => x.uid === selectedCtx.uid)) {
-                selectRoot(selectedCtx.uid);
+            } else if (selectedNode !== null && final_roots.find((x) => x.uid === selectedNode.uid)) {
+                selectRoot(selectedNode.uid);
             } else {
-                setSelectedCtx(null);
+                setSelectedNode(null);
             }
         }, props.addInfo);
     }
 
     function selectRoot(root: string) {
         callGuard(async () => {
-            const response = await axios.get(SERVICE_PREFIX + "/contexts/uid/" + root);
-            const ctx = response.data as Context;
-            setSelectedCtx(ctx);
+            const response = await axios.get(SERVICE_PREFIX + "/nodes/uid/" + root);
+            const node = response.data as TracingNode;
+            setSelectedNode(node);
             setOpened((op) => {
-                let o = new Set(op);
+                const o = new Set(op);
                 o.add(root);
                 if (newKinds.size !== kinds.size) {
                     newKinds.forEach((k) => {
@@ -101,7 +101,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                 return o;
             })
             const newKinds = new Set(kinds);
-            gatherKindsAndTags(ctx, newKinds);
+            gatherKindsAndTags(node, newKinds);
             if (newKinds.size !== kinds.size) {
                 setKinds(newKinds);
             }
@@ -140,7 +140,7 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
     useEffect(() => { refresh() }, []);
 
     return <div>
-        <RootPanel showRoots={showRoots} setShowRoots={setShowRoots} roots={roots} selectedCtx={selectedCtx} refresh={refresh} selectRoot={selectRoot} addInfo={props.addInfo} />
+        <RootPanel showRoots={showRoots} setShowRoots={setShowRoots} roots={roots} selectedNode={selectedNode} refresh={refresh} selectRoot={selectRoot} addInfo={props.addInfo} />
         <div style={{ float: "left", width: "calc(100% - 365px)", overflow: 'auto' }}>
             <Box
                 m={1} //margin
@@ -154,8 +154,8 @@ export function DataBrowser(props: { addInfo: AddInfo }) {
                 />
                 {sortedKinds.map((kind) => <ToggleButton sx={{ paddingTop: 0.2, paddingBottom: 0.2, marginLeft: 0.5 }} value={""} selected={opened.has(kind)} onChange={() => setOpen(kind, OpenerMode.Toggle)} key={kind}>{kind}</ToggleButton>)}
             </Box>
-            {selectedCtx && <ContextView context={selectedCtx} opened={opened} setOpen={setOpen} config={config}></ContextView>}
-            {roots.length === 0 && !selectedCtx && <span>No context registed in Data Browser</span>}
+            {selectedNode && <TracingNodeView node={selectedNode} opened={opened} setOpen={setOpen} config={config}></TracingNodeView>}
+            {roots.length === 0 && !selectedNode && <span>No nodes registed in Data Browser</span>}
         </div>
     </div >
 }

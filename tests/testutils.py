@@ -1,11 +1,11 @@
-from interlab.context.context import CONTEXT_FORMAT_VERSION
+from interlab.tracing.tracingnode import TRACING_FORMAT_VERSION
 from interlab.version import VERSION
 
 
 def strip_tree(obj, erase_error_details=False, root=True):
     if isinstance(obj, dict):
         t = obj.get("_type")
-        if t == "Context":
+        if t == "TracingNode":
             assert "uid" in obj
             assert isinstance(obj.pop("uid"), str)
             if "start_time" in obj:
@@ -13,7 +13,7 @@ def strip_tree(obj, erase_error_details=False, root=True):
             if "end_time" in obj:
                 assert isinstance(obj.pop("end_time"), str)
             if root:
-                assert obj.pop("version") == CONTEXT_FORMAT_VERSION
+                assert obj.pop("version") == TRACING_FORMAT_VERSION
                 assert obj.pop("interlab") == VERSION
         elif t == "$traceback":
             if erase_error_details:

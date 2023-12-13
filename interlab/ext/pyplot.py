@@ -1,4 +1,4 @@
-from ..context.data.blob import DataWithMime
+from ..tracing.data.blob import DataWithMime
 
 
 def capture_figure(figure=None, file_format: str = "png", **kwargs):

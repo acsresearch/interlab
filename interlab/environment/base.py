@@ -3,7 +3,7 @@ from copy import copy
 from typing import Any, Sequence
 
 from interlab.actor import BaseActor
-from interlab.context import Context
+from interlab.tracing import TracingNode
 
 
 class BaseEnvironment(abc.ABC):
@@ -29,9 +29,9 @@ class BaseEnvironment(abc.ABC):
             return env
 
     If environment has a distinguished "actor" each step, you may override "current_actor",
-    to get coloring of context for the step from this actor.
+    to get coloring of tracing for the step from this actor.
 
-    You may also override "current_step_style" to set style for step context.
+    You may also override "current_step_style" to set style for step tracing.
     """
 
     def __init__(self, actors: Sequence[BaseActor]):
@@ -68,7 +68,7 @@ class BaseEnvironment(abc.ABC):
         actor = self.current_actor()
         if actor is not None:
             name += f"; {actor.name}"
-        with Context(name, meta=self.current_step_style()):
+        with TracingNode(name, meta=self.current_step_style()):
             self._result = self._step()
 
     def run_until_end(self, max_steps: int = None, verbose=False):
