@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Any
 
-from .base import BaseEnvironment
 from ..context import Context
+from .base import BaseEnvironment
 
 
 @dataclass(frozen=True)

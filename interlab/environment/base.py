@@ -1,6 +1,6 @@
-from typing import Sequence, Any
 import abc
 from copy import copy
+from typing import Any, Sequence
 
 from interlab.actor import ActorBase
 from interlab.context import Context

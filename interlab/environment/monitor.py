@@ -1,7 +1,7 @@
 from typing import Any
 
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
 
 from .base import BaseEnvironment
 

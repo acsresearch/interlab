@@ -1,14 +1,13 @@
-from typing import Sequence, Literal
-
-import numpy as np
-from pydantic.dataclasses import dataclass, Field
-import matplotlib.pyplot as plt
-
 from enum import Enum
+from typing import Literal, Sequence
 
-from .monitor import Monitor
+import matplotlib.pyplot as plt
+import numpy as np
+from pydantic.dataclasses import Field, dataclass
+
 from ..actor import ActorBase
 from .base import BaseEnvironment
+from .monitor import Monitor
 
 
 class CommunicateAndPlayGame(BaseEnvironment):
