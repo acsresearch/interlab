@@ -44,8 +44,6 @@ class BaseEnvironment(abc.ABC):
 
     @property
     def result(self):
-        if self._result is None:
-            raise ValueError("Environment is not finished yet")
         return self._result
 
     @property
@@ -53,8 +51,8 @@ class BaseEnvironment(abc.ABC):
         return len(self._actors)
 
     @property
-    def actors(self) -> list[BaseActor]:
-        return self._actors
+    def actors(self) -> tuple[BaseActor]:
+        return tuple(self._actors)
 
     @property
     def current_step_id(self) -> int:
@@ -72,20 +70,14 @@ class BaseEnvironment(abc.ABC):
             self._result = self._step()
 
     def run_until_end(self, max_steps: int = None, verbose=False):
-        if max_steps is not None:
-            if self.is_finished():
-                return self._result
-            for _ in range(max_steps):
-                if verbose:
-                    print("Step", self._step_counter)
-                self.step()
-                if self.is_finished():
-                    break
-        else:
-            while not self.is_finished():
-                if verbose:
-                    print("Step", self._step_counter)
-                self.step()
+        while not self.is_finished():
+            if max_steps is not None:
+                if max_steps <= 0:
+                    self._result
+                max_steps -= 1
+            if verbose:
+                print("Step", self._step_counter)
+            self.step()
         return self._result
 
     def everyone_observe(self, observation, origin=None):
