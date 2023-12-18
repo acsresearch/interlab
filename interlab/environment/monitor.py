@@ -24,7 +24,7 @@ class Monitor:
 
     def trace(self, name, value):
         x, y = self.get(name)
-        x.append(self.env.current_step_id)
+        x.append(self.env.current_step)
         y.append(value)
 
     def line_chart(

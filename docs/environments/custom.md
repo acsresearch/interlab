@@ -28,8 +28,3 @@ Default copy methods makes a shallow copy of all attributes (except actors). A s
             env.my_list = self.my_list[:]   # Make a copy of the list.
             return env
 ```
-
-### Additional Overrides
-
-- `current_actor` - If there's a clear "actor" for each step, you can override this property to indicate who the current actor is.
-- `current_step_style` - You may customize the style for the context of each step by overriding this property.
