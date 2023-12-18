@@ -103,8 +103,6 @@ export function TreeNode(props: { env: NodeViewEnv, node: TracingNode, depth: nu
 
 
     let icon: React.ReactNode;
-    let small = false;
-
     const iconStyle = { pr: 0.5, color: mainColor };
 
     if (c.state === "open") {
@@ -120,8 +118,7 @@ export function TreeNode(props: { env: NodeViewEnv, node: TracingNode, depth: nu
     } else if (c.kind === "action") {
         icon = <GamepadIcon sx={iconStyle} />
     } else if (c.kind === "observation") {
-        icon = <VisibilityIcon sx={iconStyle} fontSize="small" />
-        small = true;
+        icon = <VisibilityIcon sx={iconStyle} />
     } else {
         icon = <AccountTreeIcon sx={iconStyle} />
     }
@@ -209,7 +206,7 @@ export function TreeNode(props: { env: NodeViewEnv, node: TracingNode, depth: nu
                 width: "100%",
             }}>
                 <IconButton size="small" onClick={() => props.env.setOpen(c.uid, OpenerMode.Toggle)}>{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}</IconButton>{icon}
-                <Box component="span" sx={{ color: mainColor, fontSize: small ? "75%" : undefined }}>{c.name}</Box> {short_result && <><ArrowRightAltIcon /> {short_result}</>} {/*c.kind ? " [" + c.kind + "]" : ""*/}
+                <Box component="span" sx={{ color: mainColor }}>{c.name}</Box> {short_result && <><ArrowRightAltIcon /> {short_result}</>} {/*c.kind ? " [" + c.kind + "]" : ""*/}
                 {dur && dur > 0 ? <Box component="span" sx={{ color: "#999", marginLeft: 1 }}>{humanReadableDuration(dur)}</Box> : ""}
                 {c.tags?.map((t, i) => <Box component="span" sx={{ marginLeft: 0.5 }} key={i}><TagChip tag={t} /></Box>)}
             </Box>
@@ -218,7 +215,7 @@ export function TreeNode(props: { env: NodeViewEnv, node: TracingNode, depth: nu
     }
 
     if (themeWithBoxes) {
-        return <Item sx={{ backgroundColor, paddingTop: small ? 0 : undefined, paddingBottom: small ? 0 : undefined, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
+        return <Item sx={{ backgroundColor, border: borderColor ? `2px ${borderColor} solid` : undefined }}>
             <>
                 {header()}
                 {open && body()}
