@@ -2,10 +2,10 @@ import abc
 import random
 from abc import ABC
 from copy import copy
-from typing import Any
+from typing import Any, Sequence, Type
 
 from treetrace import TracingNode, HtmlColor, shorten_str
-from ..utils import text
+from .affordance import Affordance
 from . import memory as memory_module
 from .event import Event
 from .memory import format
@@ -34,7 +34,39 @@ class BaseActor(abc.ABC):
     def copy(self):
         raise NotImplementedError
 
-    def query(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
+    def act(
+        self,
+        affordances: Sequence[Affordance],
+        *,
+        prompt: Any = None,
+        **kwargs,
+    ) -> Event:
+        """Calls self._act to determine the action, wraps the action in Event, and wraps the call in TracingNode.
+        Query does not modify the actor's memory. Call .observe(event) on actor if agent should observe the result.
+        """
+        if prompt:
+            name = f"{self.name} acts, prompt: {text.shorten_str(str(prompt))!r}"
+            inputs = {"prompt": prompt}
+        else:
+            name = f"{self.name} acts"
+            inputs = {}
+        if affordances is not None:
+            inputs["affordances"] = [aff.name for aff in affordances]
+        inputs.update(**kwargs)
+
+        with TracingNode(name, kind="action", meta=self.style, inputs=inputs) as ctx:
+            action = self._act(prompt=prompt, affordances=affordances, **kwargs)
+            ctx.set_result(action)
+            # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification
+        return action
+
+    def query(
+        self,
+        prompt: Any = None,
+        *,
+        expected_type: Type | None = None,
+        **kwargs,
+    ) -> Event:
         """Calls self._query to determine the action, wraps the action in Event, and wraps the call in TracingNode.
         Query does not modify the actor's memory. Call .observe(event) on actor if agent should observe the result.
         """
@@ -60,6 +92,12 @@ class BaseActor(abc.ABC):
     @abc.abstractmethod
     def _query(self, prompt: Any = None, **kwargs) -> Any:
         raise NotImplementedError("Implement _query in a derived actor class")
+
+    @abc.abstractmethod
+    def _act(
+        self, affordances: Sequence[Affordance], prompt: Any = None, **kwargs
+    ) -> Any:
+        raise NotImplementedError("Implement _act in a derived actor class")
 
     def observe(self, event: Event | Any, origin: str | None = None):
         """Observe the given Event.

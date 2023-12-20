@@ -1,6 +1,7 @@
-from typing import Any
+from typing import Any, Type, Sequence
 
 from treetrace import FormatStr
+from .affordance import Affordance, query_for_action
 from ..lang_models import query_model
 from ..queries import query_for_json
 from .base import ActorWithMemory
@@ -23,7 +24,7 @@ class OneShotLLMActor(ActorWithMemory):
         self.query_with_example = query_with_example
         self.query_with_cot = query_with_cot
 
-    def _query(self, prompt: str = None, *, expected_type=None) -> str:
+    def _make_prompt(self, prompt):
         if prompt is None:
             prompt = FormatStr("As {name}, what is your next action?").format(
                 name=self.name
@@ -37,9 +38,16 @@ class OneShotLLMActor(ActorWithMemory):
             hist_fmt = "[No past events]"
         # This preserves FormatStrs if passed in as either initial or current prompt
         # Note that neither initial_prompt nor prompt will be further highlighted here
-        q = FormatStr("") + self.initial_prompt + "\n\n" + hist_fmt + "\n\n" + prompt
+        return FormatStr("") + self.initial_prompt + "\n\n" + hist_fmt + "\n\n" + prompt
 
-        if expected_type is str or expected_type is None:
+    def _act(self, affordances: Sequence[Affordance], prompt: Any = None, **kwargs):
+        q = self._make_prompt(prompt)
+        return query_for_action(self.model, q, affordances, origin=self)
+
+    def _query(self, prompt: str = None, *, expected_type: Type | None) -> Any:
+        q = self._make_prompt(prompt)
+
+        if expected_type is None:
             return query_model(self.model, q)
         else:
             return query_for_json(

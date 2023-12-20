@@ -1,1 +1,1 @@
-from .base import BaseEnvironment  # noqa
+from .base import BaseEnvironment, DelayedEnvironment  # noqa

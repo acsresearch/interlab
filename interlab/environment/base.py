@@ -1,9 +1,10 @@
 import abc
+from abc import ABC
 from copy import copy
 from typing import Sequence
 
-from interlab.actor import BaseActor
 from treetrace import TracingNode
+from ..actor import BaseActor
 
 
 class BaseEnvironment(abc.ABC):
@@ -29,10 +30,24 @@ class BaseEnvironment(abc.ABC):
             return env
     """
 
-    def __init__(self, actors: Sequence[BaseActor]):
+    def __init__(
+        self, actors: Sequence[BaseActor], parent_env: "BaseEnvironment" = None
+    ):
         self._actors = list(actors)
         self._step_counter = 0
         self._result = None
+        self._parent_env = parent_env
+
+    def perform_action(self, action):
+        if action.affordance.environment == self:
+            return self._process_action(action)
+        elif self._parent_env is None:
+            raise Exception(f"Action for unknown environment: {action.environment}")
+        else:
+            return self._parent_env.perform_action(action)
+
+    def _process_action(self, action):
+        raise NotImplementedError()
 
     def is_finished(self) -> bool:
         return self._result is not None
@@ -72,6 +87,14 @@ class BaseEnvironment(abc.ABC):
             self.step()
         return self._result
 
+    def add_actor(self, actor):
+        assert actor not in self._actors
+        self._actors.append(actor)
+
+    def remove_actor(self, actor):
+        assert actor in self._actors
+        self._actors.remove(actor)
+
     def everyone_observe(self, observation, origin=None):
         for actor in self.actors:
             actor.observe(observation, origin)
@@ -86,3 +109,19 @@ class BaseEnvironment(abc.ABC):
         env = copy(self)
         env._actors = [actor.copy() for actor in self._actors]
         return env
+
+
+class DelayedEnvironment(BaseEnvironment, ABC):
+    def __init__(
+        self, actors: Sequence[BaseActor], parent_env: "BaseEnvironment" = None
+    ):
+        super().__init__(actors, parent_env)
+        self.action_buffer = []
+
+    def _process_action(self, action):
+        self.action_buffer.append(action)
+
+    def take_delayed_actions(self):
+        buffer = self.action_buffer
+        self.action_buffer = []
+        return buffer
