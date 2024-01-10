@@ -21,6 +21,17 @@ def load_people(path: str) -> list[Person]:
     return result
 
 
+@dataclass
+class Experiment:
+    prompt: str
+    message_header: str
+    agreement_topic: str
+    max_messages: int
+
+    actors_file: str
+    pairs: str
+
+
 def make_actor(model, person, other):
     prompt = (
         f"You are {person.name}\n\n"
@@ -30,16 +41,6 @@ def make_actor(model, person, other):
         f"Public information about {other.name}: {other.public}\n\n"
     )
     return OneShotLLMActor(person.name, model, initial_prompt=prompt)
-
-
-@dataclass
-class ObserverAction:
-    agreement: int = Field(
-        description="1 if and only if both sides made an agreement on the same movie. Otherwise 0",
-    )
-    movie_name: str | None = Field(
-        description="Name of the movie that both parties agreed on; otherwise null",
-    )
 
 
 @dataclass
@@ -112,6 +113,15 @@ def resolve(model, person1, person2):
         model,
         f"You are observing emails between {person1.name} and {person2.name}.",
     )
+
+    @dataclass
+    class ObserverAction:
+        agreement: int = Field(
+            description="1 if and only if both sides made an agreement on the same movie. Otherwise 0",
+        )
+        movie_name: str | None = Field(
+            description="Name of the movie that both parties agreed on; otherwise null",
+        )
 
     max_steps = 10
     for i in range(max_steps):
