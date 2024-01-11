@@ -1,5 +1,5 @@
-from interlab.tracing import TracingNode
-from interlab.tracing.storage import current_storage
+from treetrace import TracingNode
+from treetrace import current_storage
 
 
 def test_file_storage(storage):

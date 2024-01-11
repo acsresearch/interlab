@@ -9,7 +9,7 @@ import openai
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 
-from ....tracing.data import FormatStr
+from treetrace import FormatStr
 from ....lang_models import count_tokens, query_model
 from ...event import Event
 from ..base import BaseMemory

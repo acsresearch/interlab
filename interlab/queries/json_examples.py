@@ -1,6 +1,6 @@
 import json
 
-from ..tracing import with_tracing
+from treetrace import with_trace
 from ..lang_models.query_model import query_model
 from .json_parsing import find_and_parse_json_block
 
@@ -29,7 +29,7 @@ def generate_json_example(json_schema: dict, model=None, max_repeats=3) -> dict 
         )
     prompt = _GENERATE_JSON_EXAMPLE_PROMPT.format(schema=json.dumps(json_schema))
 
-    @with_tracing(name="generate example JSON for JSON schema", kind="query")
+    @with_trace(name="generate example JSON for JSON schema", kind="query")
     def generate_json_example_inner(_schema):
         for i in range(max_repeats):
             res = query_model(model, prompt)

@@ -1,6 +1,6 @@
 import requests
 
-from interlab.tracing import TracingNode
+from treetrace import TracingNode
 
 
 def test_server(storage):

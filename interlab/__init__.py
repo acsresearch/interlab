@@ -22,4 +22,6 @@ Note that this package does not contain more complex and concrete implementation
 LLM-based algorithms. You can find a growing collection of these in `interlab_zoo`.
 """
 
-from . import actor, tracing, lang_models, queries, utils  # noqa: F401
+from . import actor, lang_models, queries, utils
+
+__all__ = ["actor", "lang_models", "queries", "utils"]

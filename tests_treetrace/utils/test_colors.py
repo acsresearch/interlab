@@ -1,13 +1,13 @@
-from interlab.utils.html_color import HTMLColor
+from treetrace.utils.html_color import HtmlColor
 
 
 def test_colors():
     for s in ["#000000", "#00000000", "#ffffff", "#ffffffff", "#12345678", "#fedcba98"]:
-        assert str(HTMLColor(s)) == s
+        assert str(HtmlColor(s)) == s
     for s0, s1 in [("000", "#000000"), ("#fff1", "#ffffff11"), ("f926", "#ff992266")]:
-        assert str(HTMLColor(s0)) == s1
+        assert str(HtmlColor(s0)) == s1
 
-    c = HTMLColor("#72e812")
+    c = HtmlColor("#72e812")
     assert str(c.darker(1.0)) == "#000000"
     assert str(c.lighter(1.0)) == "#ffffff"
     assert str(c.darker()) == "#5bba0e"
@@ -16,5 +16,5 @@ def test_colors():
 
     # Testing hash functionality and stability
     # NOTE: may also be unstable due to float errors
-    assert str(HTMLColor.random_color("Alice")) == "#2e49e1"
-    assert str(HTMLColor.random_color(42)) == "#25c3aa"
+    assert str(HtmlColor.random_color("Alice")) == "#2e49e1"
+    assert str(HtmlColor.random_color(42)) == "#25c3aa"

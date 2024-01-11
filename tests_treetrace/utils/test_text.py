@@ -1,4 +1,4 @@
-from interlab.utils.text import ensure_newline, generate_uid, validate_uid
+from treetrace.utils.text import ensure_newline, generate_uid, validate_uid
 
 
 def test_ensure_new_lines():

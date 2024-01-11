@@ -4,7 +4,7 @@ from functools import partial
 
 import pytest
 
-from interlab.tracing.data import FormatStr
+from treetrace import FormatStr
 from interlab.queries.query_for_json import query_for_json
 
 

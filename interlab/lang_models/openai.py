@@ -7,8 +7,8 @@ from typing import Any, Optional
 import backoff
 import openai
 
-from ..tracing import TracingNode
-from ..utils.text import group_newlines, remove_leading_spaces, shorten_str
+from treetrace import TracingNode, shorten_str
+from ..utils.text import group_newlines, remove_leading_spaces
 from .base import LangModelBase
 
 _LOG = logging.getLogger(__name__)

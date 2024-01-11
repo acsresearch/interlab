@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Any
 
-from ..tracing import TracingNode
+
+from treetrace import TracingNode
 from .base import BaseEnvironment
 
 

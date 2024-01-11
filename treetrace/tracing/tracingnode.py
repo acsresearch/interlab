@@ -9,10 +9,9 @@ from threading import Lock
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 from ..utils.text import generate_uid, shorten_str
-from ..version import VERSION
 from .serialization import Data, serialize_with_type
 
-TRACING_FORMAT_VERSION = "2.0"
+TRACING_FORMAT_VERSION = "3.0"
 
 _LOG = logging.getLogger(__name__)
 
@@ -201,7 +200,6 @@ class TracingNode:
             result = {"_type": "TracingNode", "name": self.name, "uid": self.uid}
             if root:
                 result["version"] = TRACING_FORMAT_VERSION
-                result["interlab"] = VERSION
             if self.state != TracingNodeState.FINISHED:
                 result["state"] = self.state.value
             for name in ["kind", "result", "error", "tags"]:
@@ -390,7 +388,7 @@ class TracingNode:
         display(HTML(html))
 
 
-def with_tracing(
+def with_trace(
     fn: Callable = None, *, name=None, kind=None, tags: Optional[List[str | Tag]] = None
 ):
     """
@@ -402,11 +400,11 @@ def with_tracing(
     *Usage:*
 
     ```python
-    @with_tracing
+    @with_trace
     def func():
         pass
 
-    @with_tracing(name="custom_name", kind="custom_kind", tags=['tag1', 'tag2'])
+    @with_trace(name="custom_name", kind="custom_kind", tags=['tag1', 'tag2'])
     def func():
         pass
     ```

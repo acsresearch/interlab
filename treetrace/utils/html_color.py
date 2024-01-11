@@ -5,7 +5,7 @@ import re
 from typing import Any
 
 
-class HTMLColor:
+class HtmlColor:
     """Helper class representing RGB color. Accepts HTML hex notation (3, 4, 6 or 8 hex digits, with optional '#')."""
 
     def __init__(self, color: str):
@@ -38,7 +38,7 @@ class HTMLColor:
         return cf
 
     @classmethod
-    def from_floats(cls, r: float, g: float, b: float, a: float = None) -> "HTMLColor":
+    def from_floats(cls, r: float, g: float, b: float, a: float = None) -> "HtmlColor":
         """Returns (r,g,b) or (r,g,b,a), with all values 0.0 .. 1.0."""
         c = cls("000000")
         c.r = round(r * 255)
@@ -61,22 +61,22 @@ class HTMLColor:
     def copy(self):
         return copy.copy(self)
 
-    def _blend_lightness(self, tgt: float, rate: float) -> "HTMLColor":
+    def _blend_lightness(self, tgt: float, rate: float) -> "HtmlColor":
         hue, light, sat = colorsys.rgb_to_hls(*self.as_floats())
         light = rate * tgt + (1 - rate) * light
         c = self.from_floats(*colorsys.hls_to_rgb(hue, light, sat))
         c.a = self.a
         return c
 
-    def lighter(self, rate=0.2) -> "HTMLColor":
+    def lighter(self, rate=0.2) -> "HtmlColor":
         "Returns a lighter copy of the color: rate=1.0 returns white, rate=0 returns the same color."
         return self._blend_lightness(1.0, rate)
 
-    def darker(self, rate=0.2) -> "HTMLColor":
+    def darker(self, rate=0.2) -> "HtmlColor":
         "Returns a darker copy of the color: rate=1.0 returns black, rate=0 returns the same color."
         return self._blend_lightness(0.0, rate)
 
-    def with_alpha(self, a: float) -> "HTMLColor":
+    def with_alpha(self, a: float) -> "HtmlColor":
         "Returns a copy of the color with given alpha: float 0.0-1.0"
         assert isinstance(a, (float, int)) and a <= 1.0 and a >= 0.0
         c = self.copy()

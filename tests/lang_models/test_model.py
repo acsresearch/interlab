@@ -4,10 +4,10 @@ from typing import Type
 
 import pytest
 
-from interlab.tracing import TracingNode
-from interlab.tracing.serialization import serialize_with_type
+from treetrace import TracingNode
+from treetrace.tracing.serialization import serialize_with_type
 from interlab.lang_models import AnthropicModel, LangModelBase, OpenAiChatModel
-from tests.testutils import strip_tree
+from tests_treetrace.testutils import strip_tree
 
 
 def test_serialize_models():

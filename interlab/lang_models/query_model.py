@@ -1,8 +1,7 @@
 from typing import Any
 
-from interlab.tracing.data.format_str import FormatStr
+from treetrace import FormatStr, TracingNode
 
-from ..tracing import TracingNode
 from .base import LangModelBase
 
 
@@ -50,12 +49,12 @@ def _prepare_model(model: Any, model_kwargs: dict = None, call_async: bool = Fal
 
 
 def query_model(
-    model: Any, prompt: str | FormatStr, kwargs: dict = None, with_tracing=True
+    model: Any, prompt: str | FormatStr, kwargs: dict = None, with_trace=True
 ) -> str:
     if not isinstance(prompt, (str, FormatStr)):
         raise TypeError("query_model accepts only str and FormatStr as prompt")
     name, conf, call = _prepare_model(model, model_kwargs=kwargs, call_async=False)
-    if with_tracing:
+    if with_trace:
         with TracingNode(
             name, kind="query", inputs=dict(prompt=prompt, conf=conf)
         ) as c:

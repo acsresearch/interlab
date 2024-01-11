@@ -2,12 +2,12 @@ import re
 import warnings
 from typing import Any
 
-from ..tracing import with_tracing
-from ..tracing.data.format_str import FormatStr
+from treetrace import with_trace
+from treetrace import FormatStr
 from ..lang_models import count_tokens, query_model
 
 
-@with_tracing(name="Summarize with limit")
+@with_trace(name="Summarize with limit")
 def summarize_with_limit(
     text: str, model: Any, token_limit: int = 300, length_request: str = None
 ):

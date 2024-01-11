@@ -1,6 +1,6 @@
 from typing import Awaitable, Callable
 
-from ...tracing import TracingNode
+from treetrace import TracingNode
 from ...queries import QueryFailure
 
 

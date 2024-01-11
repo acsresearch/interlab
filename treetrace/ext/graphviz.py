@@ -1,6 +1,6 @@
 import subprocess
 
-from interlab.tracing.data import DataWithMime
+from ..tracing.data import DataWithMime
 
 
 def dot_to_png(dot_content: str) -> DataWithMime:

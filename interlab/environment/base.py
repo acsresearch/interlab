@@ -1,9 +1,9 @@
 import abc
 from copy import copy
-from typing import Any, Sequence
+from typing import Sequence
 
 from interlab.actor import BaseActor
-from interlab.tracing import TracingNode
+from treetrace import TracingNode
 
 
 class BaseEnvironment(abc.ABC):

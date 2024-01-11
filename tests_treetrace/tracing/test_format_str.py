@@ -1,6 +1,6 @@
 import pytest
 
-from interlab.tracing.data.format_str import FormatStr
+from treetrace.tracing.data.format_str import FormatStr
 
 
 def test_fmtstring():

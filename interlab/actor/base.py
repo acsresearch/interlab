@@ -4,8 +4,8 @@ from abc import ABC
 from copy import copy
 from typing import Any
 
-from ..tracing import TracingNode
-from ..utils import html_color, text
+from treetrace import TracingNode, HtmlColor, shorten_str
+from ..utils import text
 from . import memory as memory_module
 from .event import Event
 from .memory import format
@@ -28,9 +28,7 @@ class BaseActor(abc.ABC):
         self.style = style if style is not None else {}
         if self.style.get("color") is None:
             self.style["color"] = str(
-                html_color.HTMLColor.random_color(
-                    self.name, saturation=0.5, lighness=0.3
-                )
+                HtmlColor.random_color(self.name, saturation=0.5, lighness=0.3)
             )
 
     def copy(self):
@@ -41,7 +39,7 @@ class BaseActor(abc.ABC):
         Query does not modify the actor's memory. Call .observe(event) on actor if agent should observe the result.
         """
         if prompt:
-            name = f"{self.name} acts, prompt: {text.shorten_str(str(prompt))!r}"
+            name = f"{self.name} acts, prompt: {shorten_str(str(prompt))!r}"
             inputs = {"prompt": prompt}
         else:
             name = f"{self.name} acts"
@@ -71,7 +69,7 @@ class BaseActor(abc.ABC):
         if not isinstance(event, Event):
             event = Event(data=event, origin=origin)
         with TracingNode(
-            f"{self.name} observes {text.shorten_str(str(event))!r}",
+            f"{self.name} observes {shorten_str(str(event))!r}",
             kind="observation",
             meta=self.style,
             inputs={"origin": event.origin, "observation": event.data},

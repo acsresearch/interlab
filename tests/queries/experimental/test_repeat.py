@@ -1,8 +1,8 @@
 import pytest
 
-from interlab.tracing import TracingNode
+from treetrace import TracingNode
 from interlab.queries.experimental.repeat import QueryFailure, repeat_on_failure
-from tests.testutils import strip_tree
+from tests_treetrace.testutils import strip_tree
 
 
 def test_repeat_pass():

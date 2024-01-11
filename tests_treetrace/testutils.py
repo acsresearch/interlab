@@ -1,5 +1,4 @@
-from interlab.tracing.tracingnode import TRACING_FORMAT_VERSION
-from interlab.version import VERSION
+from treetrace.tracing.tracingnode import TRACING_FORMAT_VERSION
 
 
 def strip_tree(obj, erase_error_details=False, root=True):
@@ -14,7 +13,6 @@ def strip_tree(obj, erase_error_details=False, root=True):
                 assert isinstance(obj.pop("end_time"), str)
             if root:
                 assert obj.pop("version") == TRACING_FORMAT_VERSION
-                assert obj.pop("interlab") == VERSION
         elif t == "$traceback":
             if erase_error_details:
                 obj.pop("frames")

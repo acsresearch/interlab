@@ -5,8 +5,7 @@ from typing import Any, TypeVar
 import pydantic
 from fastapi.encoders import jsonable_encoder
 
-from ..tracing import TracingNode
-from ..tracing.data import FormatStr
+from treetrace import TracingNode, FormatStr
 from ..lang_models.query_model import query_model
 from .json_examples import generate_json_example
 from .json_parsing import find_and_parse_json_block

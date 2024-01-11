@@ -6,16 +6,16 @@ from dataclasses import dataclass
 from html import escape as _esc
 from typing import Any, Iterable
 
-from ...utils.html_color import HTMLColor
+from ...utils.html_color import HtmlColor
 
 _formatter = string.Formatter()
 
 
-def _gen_bg_color(name: str, color: str | HTMLColor | None = None) -> HTMLColor:
+def _gen_bg_color(name: str, color: str | HtmlColor | None = None) -> HtmlColor:
     if color is not None:
-        color = HTMLColor(color)
+        color = HtmlColor(color)
     else:
-        color = HTMLColor.random_color(name, saturation=0.8, lighness=0.5)
+        color = HtmlColor.random_color(name, saturation=0.8, lighness=0.5)
     if color.a is None:
         color = color.with_alpha(0.2)
     else:

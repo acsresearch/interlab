@@ -3,7 +3,7 @@ from typing import Any
 
 import numpy as np
 
-from interlab.tracing.serialization import (
+from treetrace.tracing.serialization import (
     register_custom_serializer,
     serialize_with_type,
     unregister_custom_serializer,

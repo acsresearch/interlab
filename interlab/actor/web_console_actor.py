@@ -4,7 +4,7 @@ from typing import Any
 import dirtyjson
 
 from ..queries import get_pydantic_model
-from ..ui.console_server import ConsoleServer
+from treetrace import ConsoleServer
 from .base import BaseActor
 from .event import Event
 

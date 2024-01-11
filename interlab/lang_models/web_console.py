@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-from ..ui.console_server import ConsoleServer
+from treetrace import ConsoleServer
 from ..utils.text import group_newlines, remove_leading_spaces
 from .base import LangModelBase
 

@@ -4,9 +4,9 @@ import json
 
 import pytest
 
-from interlab.tracing import TracingNode, Tag, current_tracing_node, with_tracing
-from interlab.tracing.tracingnode import TracingNodeState
-from tests.testutils import strip_tree
+from treetrace import TracingNode, Tag, current_tracing_node, with_trace
+from treetrace.tracing.tracingnode import TracingNodeState
+from tests_treetrace.testutils import strip_tree
 
 
 def serialization_check(node: TracingNode):
@@ -18,10 +18,10 @@ def test_tracing_node_basic():
     class TestException(Exception):
         pass
 
-    @with_tracing
+    @with_trace
     def func1(param1, param2):
-        assert with_tracing(lambda x: x)("abc") == "abc"
-        assert with_tracing(lambda x: x, name="myfn")("abc") == "abc"
+        assert with_trace(lambda x: x)("abc") == "abc"
+        assert with_trace(lambda x: x, name="myfn")("abc") == "abc"
         return param1 + param2
 
     root_node = TracingNode("Test", kind="root")
@@ -250,7 +250,7 @@ def test_tracing_node_events():
 
 @pytest.mark.asyncio
 async def test_async_tracing_node():
-    @with_tracing
+    @with_trace
     async def make_queries():
         return "a"
 

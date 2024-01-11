@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from interlab.ui.staticfiles import PATH_TO_STATIC_FILES
+from .staticfiles import PATH_TO_STATIC_FILES
 
 
 class ServerHandle:

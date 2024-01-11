@@ -2,12 +2,12 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
+from treetrace import TracingNode, current_tracing_node, shorten_str
 
 from interlab.actor.event import Event
-from interlab.tracing import TracingNode, current_tracing_node
 from interlab.lang_models.count_tokens import count_tokens
 from interlab.queries.summarize import summarize_with_limit
-from interlab.utils.text import shorten_str
+
 
 from ..list_memory import ListMemory
 
