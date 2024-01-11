@@ -1,0 +1,6 @@
+{
+  "communication_type": "chat",
+  "prompt": "Write an email to $receiver. You have to agree on the same movie that you will watch together.",
+  "message_header": "Message from $sender to $receiver",
+
+}

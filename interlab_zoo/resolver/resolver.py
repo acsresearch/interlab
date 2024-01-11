@@ -111,7 +111,7 @@ def resolve(model, person1, person2):
     observer = OneShotLLMActor(
         "Observer",
         model,
-        f"You are observing emails between {person1.name} and {person2.name}.",
+        f"You are observing communication between {person1.name} and {person2.name}.",
     )
 
     @dataclass
@@ -130,7 +130,7 @@ def resolve(model, person1, person2):
 
         prompt = f"Write an email to {receiver.name}. You have to agree on the same movie that you will watch together."
         evt = sender.query(prompt)
-        origin = f"Email from {sender.name} to {receiver.name}"
+        origin = f"Message from {sender.name} to {receiver.name}"
         actor1.observe(evt.data, origin=origin)
         actor2.observe(evt.data, origin=origin)
         observer.observe(evt.data, origin=origin)
