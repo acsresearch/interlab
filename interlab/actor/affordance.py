@@ -1,10 +1,10 @@
 import re
 from dataclasses import dataclass
 from typing import Type, Any, Sequence
+from treetrace import TracingNode
 
 from ..lang_models import query_model
 from ..queries import query_for_json
-from ..tracing import TracingNode
 
 
 @dataclass

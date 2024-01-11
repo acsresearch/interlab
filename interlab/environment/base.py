@@ -30,27 +30,20 @@ class BaseEnvironment(abc.ABC):
             return env
     """
 
-    def __init__(
-        self, actors: Sequence[BaseActor], parent_env: "BaseEnvironment" = None
-    ):
+    def __init__(self, actors: Sequence[BaseActor]):
         self._actors = list(actors)
         self._step_counter = 0
+        self._has_result = False
         self._result = None
-        self._parent_env = parent_env
-
-    def perform_action(self, action):
-        if action.affordance.environment == self:
-            return self._process_action(action)
-        elif self._parent_env is None:
-            raise Exception(f"Action for unknown environment: {action.environment}")
-        else:
-            return self._parent_env.perform_action(action)
-
-    def _process_action(self, action):
-        raise NotImplementedError()
 
     def is_finished(self) -> bool:
-        return self._result is not None
+        return self._has_result
+
+    def set_result(self, result):
+        if self._has_result:
+            raise Exception("Environment already has an result")
+        self._has_result = True
+        self._result = result
 
     @property
     def result(self):
@@ -68,13 +61,13 @@ class BaseEnvironment(abc.ABC):
     def current_step(self) -> int:
         return self._step_counter
 
-    def step(self):
+    def advance(self):
         if self.is_finished():
-            raise Exception("Calling 'step' on finished environment")
+            raise Exception("Calling 'advance' on finished environment")
         self._step_counter += 1
         name = f"step {self._step_counter}"
         with TracingNode(name):
-            self._result = self._step()
+            return self._advance()
 
     def run_until_end(self, max_steps: int = None, verbose=False):
         while not self.is_finished():
@@ -84,7 +77,7 @@ class BaseEnvironment(abc.ABC):
                 max_steps -= 1
             if verbose:
                 print("Step", self._step_counter)
-            self.step()
+            self.advance()
         return self._result
 
     def add_actor(self, actor):
@@ -102,26 +95,10 @@ class BaseEnvironment(abc.ABC):
     # Methods to overload
 
     @abc.abstractmethod
-    def _step(self):
+    def _advance(self):
         raise NotImplementedError
 
     def copy(self):
         env = copy(self)
         env._actors = [actor.copy() for actor in self._actors]
         return env
-
-
-class DelayedEnvironment(BaseEnvironment, ABC):
-    def __init__(
-        self, actors: Sequence[BaseActor], parent_env: "BaseEnvironment" = None
-    ):
-        super().__init__(actors, parent_env)
-        self.action_buffer = []
-
-    def _process_action(self, action):
-        self.action_buffer.append(action)
-
-    def take_delayed_actions(self):
-        buffer = self.action_buffer
-        self.action_buffer = []
-        return buffer

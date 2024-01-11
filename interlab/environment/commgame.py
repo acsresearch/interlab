@@ -68,7 +68,7 @@ class CommunicateAndPlayGame(BaseEnvironment):
     def game_round(self):
         return len(self.history) + 1
 
-    def _step(self):
+    def _advance(self):
         observations = [
             actor.query(self.comm_prompt, expected_type=self.comm_action).data.message
             for actor in self.actors

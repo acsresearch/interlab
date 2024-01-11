@@ -1,11 +1,11 @@
 from interlab.environment import BaseEnvironment
 
 
-def test_environment():
+def test_environment_until_end():
     class SimpleEnv(BaseEnvironment):
-        def _step(self):
+        def _advance(self):
             if self.current_step == 3:
-                return "Result"
+                self.set_result("Result")
 
     env = SimpleEnv([])
     assert not env.is_finished()
@@ -26,3 +26,16 @@ def test_environment():
     assert not env.is_finished()
     assert env.current_step == 2
     assert env.result is None
+
+
+def test_environment_advance_result():
+    class SimpleEnv(BaseEnvironment):
+        def _advance(self):
+            return self.current_step * 10
+
+    env = SimpleEnv([])
+    assert not env.is_finished()
+
+    assert env.advance() == 10
+    assert env.advance() == 20
+    assert env.advance() == 30
