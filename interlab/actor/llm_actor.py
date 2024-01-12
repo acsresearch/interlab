@@ -1,8 +1,8 @@
 from typing import Any
 
 from treetrace import FormatStr
-from ..lang_models import query_model
-from ..queries import query_for_json
+
+from ..queries import query_for_json, query_model
 from .base import ActorWithMemory
 
 

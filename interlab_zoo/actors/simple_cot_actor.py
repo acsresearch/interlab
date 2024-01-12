@@ -1,9 +1,9 @@
 from typing import Any
 
 from interlab.actor import ActorWithMemory
-from interlab.lang_models import query_model
-from interlab.queries import query_for_json
+from interlab.queries import query_for_json, query_model
 
+## TODO(gavento): Rewrite to be closer to OneShotLLMActor; then include in interlab proper (with tests)
 
 class SimpleCoTLLMActor(ActorWithMemory):
     """Extension of `OneShotLLMActor` that does one extra query to do a simple chain-of-thought reasoning."""

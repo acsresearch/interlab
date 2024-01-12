@@ -10,8 +10,6 @@ import langchain.chat_models.base
 import langchain.llms.base
 import tiktoken
 
-from .base import LangModelBase
-
 
 @cachetools.cached(cache=cachetools.LRUCache(maxsize=32))
 def _get_tiktoken_tokenizer_for_model(name: str):
@@ -19,7 +17,7 @@ def _get_tiktoken_tokenizer_for_model(name: str):
 
 
 @cachetools.cached(
-    cache=cachetools.LRUCache(maxsize=256), key=lambda t, m: (t, str(m)), info=True
+    cache=cachetools.LRUCache(maxsize=256), key=lambda t, m: (str(t), str(m)), info=True
 )
 def count_tokens(text: str, model: str | Any) -> int:
     """
@@ -45,6 +43,4 @@ def count_tokens(text: str, model: str | Any) -> int:
     ):
         return model.get_num_tokens(text)
 
-    if isinstance(model, LangModelBase):
-        return count_tokens(text, model.model)
     raise TypeError(f"Unknown model class {model.__class__.__name__}")

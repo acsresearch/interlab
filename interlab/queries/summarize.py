@@ -4,7 +4,7 @@ from typing import Any
 
 from treetrace import with_trace
 from treetrace import FormatStr
-from ..lang_models import count_tokens, query_model
+from . import count_tokens, query_model
 
 
 @with_trace(name="Summarize with limit")

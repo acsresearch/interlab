@@ -6,7 +6,7 @@ import pydantic
 from fastapi.encoders import jsonable_encoder
 
 from treetrace import TracingNode, FormatStr
-from ..lang_models.query_model import query_model
+from .query_model import query_model
 from .json_examples import generate_json_example
 from .json_parsing import find_and_parse_json_block
 from .json_schema import get_json_schema, get_pydantic_model

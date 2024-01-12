@@ -2,7 +2,7 @@ from typing import Any
 
 from treetrace import FormatStr, TracingNode
 
-from .base import LangModelBase
+from .web_console import WebConsoleModel
 
 
 def _prepare_model(model: Any, model_kwargs: dict = None, call_async: bool = False):
@@ -31,10 +31,10 @@ def _prepare_model(model: Any, model_kwargs: dict = None, call_async: bool = Fal
         call = lambda c: model(  # noqa: E731
             [langchain.schema.HumanMessage(content=c)], **model_kwargs
         ).content
-    elif isinstance(model, LangModelBase):
+    elif isinstance(model, WebConsoleModel): ## TODO: add some common base, or otherwise allow adding other model classes
         name, cfg = model.prepare_conf(**model_kwargs)
         conf.update(cfg)
-        call = lambda c: model._query(c, conf)  # noqa: E731
+        call = lambda c: model.query(c, conf)  # noqa: E731
     elif callable(model):
         if hasattr(model, "__qualname__"):
             name = f"query function {getattr(model, '__module__', '<unknown>')}.{model.__qualname__}"

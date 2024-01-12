@@ -1,8 +1,9 @@
 import json
 
 from treetrace import with_trace
-from ..lang_models.query_model import query_model
+
 from .json_parsing import find_and_parse_json_block
+from .query_model import query_model
 
 _GENERATE_JSON_EXAMPLE_PROMPT = """\
 Create a minimal example JSON object conforming to the following JSON schema:\n

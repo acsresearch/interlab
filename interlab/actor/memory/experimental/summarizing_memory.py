@@ -3,8 +3,7 @@ from typing import Any
 
 import numpy as np
 
-from interlab.lang_models.count_tokens import count_tokens
-from interlab.queries.summarize import summarize_with_limit
+from interlab.queries import count_tokens, summarize_with_limit
 from treetrace import TracingNode, current_tracing_node, shorten_str
 
 from ..list_memory import BaseMemoryItem, ListMemory
@@ -106,7 +105,9 @@ class SummarizingMemory(ListMemory):
         raise Exception("Error: summarization failed")
 
     def add_memory(self, memory: str, time: Any = None, data: Any = None):
-        with TracingNode("SummarizingMemory.add_event", inputs=dict(event=event), kind="debug") as c:
+        with TracingNode(
+            "SummarizingMemory.add_event", inputs=dict(event=event), kind="debug"
+        ) as c:
             if not isinstance(memory, str):
                 warnings.warn(
                     f"{self.__type__.__name__} converts all memories to str (got {type(memory)})."

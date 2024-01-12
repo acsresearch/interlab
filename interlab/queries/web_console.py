@@ -1,11 +1,11 @@
 from typing import Any, Optional
 
 from treetrace import ConsoleServer
+
 from ..utils.text import group_newlines, remove_leading_spaces
-from .base import LangModelBase
 
 
-class WebConsoleModel(LangModelBase):
+class WebConsoleModel:
     def __init__(self, name: str, port: Optional[int] = 0):
         self.name = name
         self.server = ConsoleServer(name, port=port)
@@ -13,7 +13,7 @@ class WebConsoleModel(LangModelBase):
     def prepare_conf(self, **kwargs) -> (str, dict[str, Any]):
         return "query web console", {"name": self.name, "url": self.server.url}
 
-    def _query(self, prompt: str, conf: dict[str, Any]) -> str:
+    def query(self, prompt: str, conf: dict[str, Any]) -> str:
         strip = conf.get("strip")
         if strip:
             prompt = remove_leading_spaces(group_newlines(prompt.strip()))
