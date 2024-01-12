@@ -4,10 +4,9 @@ from abc import ABC
 from copy import copy
 from typing import Any
 
-from treetrace import TracingNode, HtmlColor, shorten_str
-from ..utils import text
+from treetrace import HtmlColor, TracingNode, shorten_str
+
 from . import memory as memory_module
-from .event import Event
 
 
 class BaseActor(abc.ABC):
@@ -16,8 +15,7 @@ class BaseActor(abc.ABC):
 
     Override methods _query and _observe in derived classes.
 
-    Note: The interface is intentionally not async (for now, for usability reasons),
-    use multi-threading for parallel inquiries. (Helpers for this are WIP.)
+    Note: The interface is intentionally not async (for usability reasons), use multi-threading for parallel inquiries.
     """
 
     def __init__(self, name: str = None, *, style: dict[str, Any] = None):
@@ -31,17 +29,26 @@ class BaseActor(abc.ABC):
             )
 
     def copy(self):
-        raise NotImplementedError
+        """
+        Full copy of the actor and all its data (memories etc.).
 
-    def query(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Event:
-        """Calls self._query to determine the action, wraps the action in Event, and wraps the call in TracingNode.
-        Query does not modify the actor's memory. Call .observe(event) on actor if agent should observe the result.
+        The copy must be independent from the original instance. May be copy-on-write for efficiency, or via serialization/deserialization.
+        """
+        raise NotImplementedError()
+
+    def query(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Any:
+        """
+        Query the actor for an answer to prompt, optionally requesting a dataclass.
+
+        Prompt may be a string in case of LLM actors, or any structure in game-theoretic and other contexts.
+        In case of LLM agents, this can be used both for taking actions and asking auxiliary questions.
+        In general, query does not update the agent of its own answers or actions - use `observe` for that!
         """
         if prompt:
-            name = f"{self.name} acts, prompt: {shorten_str(str(prompt))!r}"
+            name = f"{self.name} queried with {shorten_str(str(prompt))!r}"
             inputs = {"prompt": prompt}
         else:
-            name = f"{self.name} acts"
+            name = f"{self.name} queried"
             inputs = {}
         if expected_type is not None:
             inputs[
@@ -50,33 +57,40 @@ class BaseActor(abc.ABC):
         inputs.update(**kwargs)
 
         with TracingNode(name, kind="action", meta=self.style, inputs=inputs) as ctx:
-            action = self._query(prompt, expected_type=expected_type, **kwargs)
-            ctx.set_result(action)
-            # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification
-            ev = Event(origin=self.name, data=action)
-        return ev
+            reply = self._query(prompt, expected_type=expected_type, **kwargs)
+            # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification            
+            ctx.set_result(reply)
+        return reply
 
     @abc.abstractmethod
     def _query(self, prompt: Any = None, **kwargs) -> Any:
         raise NotImplementedError("Implement _query in a derived actor class")
 
-    def observe(self, event: Event | Any, origin: str | None = None):
-        """Observe the given Event.
-
-        Instead of given Event object, you can also pass in observation and origin directly.
+    def observe(self, observation: str | Any, time: Any = None, data: Any = None):
         """
-        if not isinstance(event, Event):
-            event = Event(data=event, origin=origin)
-        with TracingNode(
-            f"{self.name} observes {shorten_str(str(event))!r}",
-            kind="observation",
-            meta=self.style,
-            inputs={"origin": event.origin, "observation": event.data},
-        ):
-            self._observe(event)
+        Update the agent with an observation.
+
+        In general, the observation should be from the point of view of the actor.
+        This is especially relevant in the case of LLMs: The observation may be e.g.
+        "Bob sent you this message: ..." or "You wrote Alice this email: ...".
+
+        Note that The `observation` is interpreted as str by many agents and memory systems.
+        Non-str observations may
+
+        `time` and `data` are optional user-attributes preserved but ignored by many algorithms,
+        though e.g. time may be relevant for associative memory.
+        """
+        inputs = {"observation": observation}
+        if data is not None:
+            inputs["data"] = data
+        if time is not None:
+            inputs["time"] = time
+        msg = f"{self.name} observed {shorten_str(str(observation))!r}"
+        with TracingNode(msg, kind="observation", meta=self.style, inputs=inputs):
+            self._observe(observation, time=time, data=data)
 
     @abc.abstractmethod
-    def _observe(self, event: Event):
+    def _observe(self, observation: str | Any, time: Any = None, data: Any = None):
         raise NotImplementedError("Implement _observe in a derived actor class")
 
     def __repr__(self):
@@ -85,8 +99,9 @@ class BaseActor(abc.ABC):
 
 class ActorWithMemory(BaseActor, ABC):
     """
-    Actor with an instance of MemoryBase recording all observations.
+    Actor with an instance of MemoryBase recording all observations in their memory.
 
+    Agents with memory inject the context of their memories to all `query` calls.
     You still need to implement _query if you inherit from this actor.
     """
 
@@ -94,14 +109,14 @@ class ActorWithMemory(BaseActor, ABC):
 
     def __init__(self, name=None, *, memory: memory_module.BaseMemory = None, **kwargs):
         super().__init__(name, **kwargs)
+        if memory is None:
+            memory = self.DEFAULT_MEMORY()
         self.memory = memory
-        if self.memory is None:
-            self.memory = self.DEFAULT_MEMORY()
 
-    def _observe(self, event: Event):
-        self.memory.add_memory(event)
+    def _observe(self, observation: str | Any, time: Any = None, data: Any = None):
+        self.memory.add_memory(observation, time=time, data=data)
 
     def copy(self):
-        actor = copy(self)
+        actor = copy(self)  ## TODO(gavento): this seems hacky
         actor.memory = self.memory.copy()
         return actor

@@ -32,6 +32,14 @@ class BaseMemory(abc.ABC):
         """
         raise NotImplementedError()
 
+    def count(self) -> int:
+        """
+        Return the current number of held memories.
+        
+        Note this is informational and specific to every memory implementation. 
+        In particular, it does not have to correspond to the number of memories added."""
+        raise NotImplementedError()
+
     @abc.abstractmethod
     def add_memory(self, memory: str, time: Any = None, data: Any = None):
         raise NotImplementedError()

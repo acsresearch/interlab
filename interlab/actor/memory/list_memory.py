@@ -17,6 +17,9 @@ class ListMemory(BaseMemory):
         m = ListMemory()
         m.items = list(self.items)
         return m
+    
+    def count(self) -> int:
+        return len(self.items)
 
     def add_memory(self, memory: str, time: Any = None, data: Any = None):
         self.items.append(BaseMemoryItem(memory=memory, time=time, data=data))
@@ -29,7 +32,7 @@ class ListMemory(BaseMemory):
     ) -> str:
         if query is not None and query:
             warnings.warn(
-                f"{self.__type__.__name__}.format_memories() ignores the query parameter but received a non-empty query."
+                f"{self.__class__.__name__}.format_memories() ignores the query parameter but received a non-empty query."
             )
         return self._format_memories_helper(
             self.items, separator=separator, formatter=formatter

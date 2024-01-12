@@ -3,19 +3,21 @@ from typing import Any
 
 import dirtyjson
 
-from ..queries import get_pydantic_model
 from treetrace import ConsoleServer
+
+from ..queries import get_pydantic_model
 from .base import BaseActor
-from .event import Event
 
 
 class WebConsoleActor(BaseActor):
-    def __init__(self, name: str, port: int = 0):
-        super().__init__(name=name)
+    def __init__(self, name: str, port: int = 0, **kwargs):
+        super().__init__(name=name, **kwargs)
         self.server = ConsoleServer(f"Actor: {name}", port)
 
-    def _observe(self, event: Event):
-        self.server.add_message(event.data_as_string())
+    def _observe(self, observation: str | Any, time: Any = None, data: Any = None):
+        self.server.add_message(
+            observation
+        )  ## TODO(gavento): Somehow add time and data to the console?
 
     def _query(self, prompt: Any = None, expected_type=None):
         self.server.add_message(str(prompt))
