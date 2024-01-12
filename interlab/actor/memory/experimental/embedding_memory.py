@@ -37,7 +37,7 @@ class RelevanceTextMemory(BaseMemory):
         self.summary_request = "100 words"
         self.events = []
 
-    def add_event(self, event: Event):
+    def add_memory(self, event: Event):
         # TODO: Consider less naive text to embed - e.g. formatted
         text = str(event)
         tc = count_tokens(text)

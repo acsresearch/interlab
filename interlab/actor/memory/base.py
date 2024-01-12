@@ -1,29 +1,56 @@
 import abc
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Callable, Iterable
 
-from ..event import Event
-from .format import FormatBase
+
+@dataclass(frozen=True)
+class BaseMemoryItem:
+    """
+    Common class for memory items, may be extended by subclassing for each BaseMemory subclasses.
+
+    `time` and `data` are optional and may be ignored by the memory system; they are also not contained
+    in the textual representation of the memories by default.
+    Note that if `content` is not of type `str`, it will be converted to `str` by most memories.
+
+    In general, the items are assumed to be immutable once created and should not refer to complex
+    InterLab structures (Actors, Environments, ...).
+    """
+
+    memory: str | Any
+    time: Any = None
+    data: Any = None
 
 
 class BaseMemory(abc.ABC):
-    """Base class for memory systems; formatter may be None for unformatted events"""
+    """
+    Base class for memory systems; formatter may be None for unformatted events.
+    """
 
-    def __init__(self, *, format: FormatBase = None):
-        self.format = format
-
-    def copy(self):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def add_event(self, event: Event):
+    def copy(self) -> "BaseMemory":
+        """
+        Full copy of the memory. The copy must be independent from the original instance. May be copy-on-write for efficiency.
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_events(self, query: Any = None) -> tuple[Event]:
+    def add_memory(self, memory: str, time: Any = None, data: Any = None):
         raise NotImplementedError()
 
-    def get_formatted(self, *args, **kwargs) -> Any:
-        """Convenience wrapper for get_event with formatting"""
-        assert self.format is not None
-        events = self.get_events(*args, **kwargs)
-        return self.format.format_events(events)
+    @abc.abstractmethod
+    def format_memories(
+        self,
+        query: str = None,
+        separator: str = "\n\n",
+        formatter: Callable[[BaseMemoryItem], str] = None,
+    ) -> str:
+        raise NotImplementedError()
+
+    def _format_memories_helper(
+        self,
+        memories: Iterable[BaseMemoryItem],
+        separator: str = "\n\n",
+        formatter: Callable[[BaseMemoryItem], str] = None,
+    ) -> str:
+        return separator.join(
+            str(m.memory) if formatter is None else str(formatter(m)) for m in memories
+        )

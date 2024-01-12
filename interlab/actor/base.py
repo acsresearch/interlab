@@ -8,7 +8,6 @@ from treetrace import TracingNode, HtmlColor, shorten_str
 from ..utils import text
 from . import memory as memory_module
 from .event import Event
-from .memory import format
 
 
 class BaseActor(abc.ABC):
@@ -91,17 +90,16 @@ class ActorWithMemory(BaseActor, ABC):
     You still need to implement _query if you inherit from this actor.
     """
 
-    DEFAULT_FORMAT = format.DefaultTextFormat
     DEFAULT_MEMORY = memory_module.ListMemory
 
     def __init__(self, name=None, *, memory: memory_module.BaseMemory = None, **kwargs):
         super().__init__(name, **kwargs)
         self.memory = memory
         if self.memory is None:
-            self.memory = self.DEFAULT_MEMORY(format=self.DEFAULT_FORMAT())
+            self.memory = self.DEFAULT_MEMORY()
 
     def _observe(self, event: Event):
-        self.memory.add_event(event)
+        self.memory.add_memory(event)
 
     def copy(self):
         actor = copy(self)

@@ -2,21 +2,18 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
-from treetrace import TracingNode, current_tracing_node, shorten_str
 
-from interlab.actor.event import Event
 from interlab.lang_models.count_tokens import count_tokens
 from interlab.queries.summarize import summarize_with_limit
+from treetrace import TracingNode, current_tracing_node, shorten_str
 
-
-from ..list_memory import ListMemory
+from ..list_memory import BaseMemoryItem, ListMemory
 
 _LOG = __import__("logging").getLogger(__name__)
 
 
-@dataclass
-class _SummarizingMemoryItem:
-    text: str
+@dataclass(frozen=True)
+class SummarizingMemoryItem(BaseMemoryItem):
     tokens: int
     level: int = 0
 
@@ -28,40 +25,49 @@ class SummarizingMemory(ListMemory):
         token_limit=2000,
         one_message_limit=500,
         summary_limit=250,
-        **kwargs,
     ):
-        super().__init__(**kwargs)
+        super().__init__()
         self.model = model
         self.token_limit = token_limit
         self.one_message_limit = one_message_limit
         self.summary_limit = summary_limit
-        self.items = []
 
     def total_tokens(self) -> int:
         """Upper-bound of total tokens of the memory text (including separator newlines etc.)."""
         return sum(i.tokens for i in self.items)
 
+    def copy(self) -> "SummarizingMemory":
+        m = SummarizingMemory(
+            model=self.model,
+            token_limit=self.token_limit,
+            one_message_limit=self.one_message_limit,
+            summary_limit=self.summary_limit,
+        )
+        m.items = list(self.items)
+        return m
+
     def summarize(self):
         """
-        Perform one step of summarization, decreaasing the total token count.
+        Perform one step of summarization, decreasing the total token count.
 
-        May need to be run repeatedly."""
+        May need to be run repeatedly.
+        """
         # First, are there any non-last long level-0 items?
         for i, item in enumerate(self.items[:-1]):
             if item.level == 0 and item.tokens > self.summary_limit:
                 # Found one; summarize it
                 msg = (
                     f"summarize: shortening {item.tokens} token message to {self.summary_limit}: "
-                    f"{shorten_str(item.text)!r}"
+                    f"{shorten_str(item.memory)!r}"
                 )
                 _LOG.debug(msg)
                 current_tracing_node().add_event(msg)
-                item.text = summarize_with_limit(
-                    item.text,
+                item.memory = summarize_with_limit(
+                    item.memory,
                     model=self.model,
                     token_limit=self.summary_limit - 5,
                 )
-                item.tokens = count_tokens(item.text, self.model) + 5
+                item.tokens = count_tokens(item.memory, self.model) + 5
                 return
 
         # Find most abundant level and summarize two consecutive items of that level
@@ -82,23 +88,36 @@ class SummarizingMemory(ListMemory):
                 _LOG.debug(msg)
                 current_tracing_node().add_event(msg)
                 text = summarize_with_limit(
-                    f"{i1.text}\n\n{i2.text}",
+                    f"{i1.memory}\n\n{i2.memory}",
                     model=self.model,
                     token_limit=self.summary_limit - 5,
                 )
                 tokens = count_tokens(text, self.model)
                 self.items[i : i + 2] = [
-                    _SummarizingMemoryItem(
-                        text, tokens + 5, level=max(i1.level, i2.level) + 1
+                    SummarizingMemoryItem(
+                        memory,
+                        tokens + 5,
+                        level=max(i1.level, i2.level) + 1,
+                        time=i1.time,
                     )
                 ]
 
                 return
-        raise Exception("Bug: summarization failed")
+        raise Exception("Error: summarization failed")
 
-    def add_event(self, event: Event | str):
+    @abc.abstractmethod
+    def add_memory(self, memory: str, time: Any = None, data: Any = None):
         with TracingNode("SummarizingMemory.add_event", inputs=dict(event=event)) as c:
-            text = str(event)
+            if not isinstance(memory, str):
+                warnings.warn(
+                    f"{self.__type__.__name__} converts all memories to str (got {type(memory)})."
+                )
+            if data is not None:
+                warnings.warn(
+                    f"{self.__type__.__name__} ignores memory `data` field but got nonempty `data`."
+                )
+
+            text = str(memory)
             tokens = count_tokens(text, self.model)  # Estimate for newlines etc.
             if tokens > self.one_message_limit:
                 msg = f"add_event: shortening {tokens} token message to {self.one_message_limit}: {shorten_str(text)!r}"
@@ -111,10 +130,6 @@ class SummarizingMemory(ListMemory):
                 )
                 tokens = count_tokens(text, self.model)  # Estimate for newlines etc.
 
-            self.items.append(_SummarizingMemoryItem(text, tokens + 5))
+            self.items.append(_SummarizingMemoryItem(text, tokens + 5, time=time))
             while self.total_tokens() > self.token_limit:
                 self.summarize()
-
-    def get_events(self, query: Any = None) -> tuple[Event]:
-        assert query is None, "Query not supported by this memory"
-        return tuple(Event(i.text) for i in self.items)

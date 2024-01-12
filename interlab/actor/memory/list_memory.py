@@ -1,25 +1,36 @@
-from typing import Any
+import warnings
+from typing import Any, Callable
 
-from ..event import Event
-from .base import BaseMemory
+from .base import BaseMemory, BaseMemoryItem
 
 
 class ListMemory(BaseMemory):
-    """Simple memory that is effectively just a list of Events"""
+    """
+    A simple memory cosisting of a list of `BaseMemoryItem`s.
+    """
 
-    def __init__(self, events=None, **kwargs):
-        super().__init__(**kwargs)
-        if events is None:
-            events = []
-        self.events = events
+    def __init__(self):
+        super().__init__()
+        self.items = []
 
-    def add_event(self, event: Event):
-        self.events.append(event)
+    def copy(self) -> "ListMemory":
+        m = ListMemory()
+        m.items = list(self.items)
+        return m
 
-    def get_events(self, query: Any = None, limit_events: int = None) -> tuple[Event]:
-        return tuple(
-            self.events[(-limit_events if limit_events is not None else None) :]
+    def add_memory(self, memory: str, time: Any = None, data: Any = None):
+        self.items.append(BaseMemoryItem(memory=memory, time=time, data=data))
+
+    def format_memories(
+        self,
+        query: str = None,
+        separator: str = "\n\n",
+        formatter: Callable[[BaseMemoryItem], str] = None,
+    ) -> str:
+        if query is not None and query:
+            warnings.warn(
+                f"{self.__type__.__name__}.format_memories() ignores the query parameter but received a non-empty query."
+            )
+        return self._format_memories_helper(
+            self.items, separator=separator, formatter=formatter
         )
-
-    def copy(self):
-        return ListMemory(self.events[:], format=self.format)
