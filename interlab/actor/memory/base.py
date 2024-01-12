@@ -1,5 +1,5 @@
 import abc
-from dataclasses import dataclass
+from dataclasses import KW_ONLY, dataclass
 from typing import Any, Callable, Iterable
 
 
@@ -17,6 +17,7 @@ class BaseMemoryItem:
     """
 
     memory: str | Any
+    _: KW_ONLY
     time: Any = None
     data: Any = None
 
@@ -28,16 +29,18 @@ class BaseMemory(abc.ABC):
 
     def copy(self) -> "BaseMemory":
         """
-        Full copy of the memory. The copy must be independent from the original instance. May be copy-on-write for efficiency.
+        Full copy of the memory. The copy must be independent from the original instance.
+        May be copy-on-write for efficiency.
         """
         raise NotImplementedError()
 
     def count(self) -> int:
         """
         Return the current number of held memories.
-        
-        Note this is informational and specific to every memory implementation. 
-        In particular, it does not have to correspond to the number of memories added."""
+
+        Note this is informational and specific to every memory implementation.
+        In particular, it does not have to correspond to the number of memories added.
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod

@@ -5,12 +5,13 @@ from typing import Any, TypeVar
 import pydantic
 from fastapi.encoders import jsonable_encoder
 
-from treetrace import TracingNode, FormatStr
-from .query_model import query_model
+from treetrace import FormatStr, TracingNode
+
 from .json_examples import generate_json_example
 from .json_parsing import find_and_parse_json_block
 from .json_schema import get_json_schema, get_pydantic_model
 from .query_failure import ParsingFailure
+from .query_model import query_model
 
 _FORMAT_PROMPT = """\
 # Instructions to format the answer:\n

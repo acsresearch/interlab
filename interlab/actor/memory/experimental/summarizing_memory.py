@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+import warnings
+from dataclasses import KW_ONLY, dataclass
 from typing import Any
 
 import numpy as np
@@ -13,6 +14,7 @@ _LOG = __import__("logging").getLogger(__name__)
 
 @dataclass(frozen=True)
 class SummarizingMemoryItem(BaseMemoryItem):
+    _: KW_ONLY
     tokens: int = 0
     level: int = 0
 
@@ -94,8 +96,8 @@ class SummarizingMemory(ListMemory):
                 tokens = count_tokens(text, self.model)
                 self.items[i : i + 2] = [
                     SummarizingMemoryItem(
-                        memory,
-                        tokens + 5,
+                        memory=text,
+                        tokens=tokens + 5,
                         level=max(i1.level, i2.level) + 1,
                         time=i1.time,
                     )
@@ -106,7 +108,9 @@ class SummarizingMemory(ListMemory):
 
     def add_memory(self, memory: str, time: Any = None, data: Any = None):
         with TracingNode(
-            "SummarizingMemory.add_event", inputs=dict(event=event), kind="debug"
+            "SummarizingMemory.add_memory",
+            inputs=dict(memory=memory, time=time),
+            kind="debug",
         ) as c:
             if not isinstance(memory, str):
                 warnings.warn(
@@ -114,7 +118,7 @@ class SummarizingMemory(ListMemory):
                 )
             if data is not None:
                 warnings.warn(
-                    f"{self.__type__.__name__} ignores memory `data` field but got nonempty `data`."
+                    f"{self.__type__.__name__} discards memory `data` field but got nonempty `data`."
                 )
 
             text = str(memory)
@@ -130,6 +134,8 @@ class SummarizingMemory(ListMemory):
                 )
                 tokens = count_tokens(text, self.model)  # Estimate for newlines etc.
 
-            self.items.append(_SummarizingMemoryItem(text, tokens + 5, time=time))
+            self.items.append(
+                SummarizingMemoryItem(text, tokens=tokens + 5, level=0, time=time)
+            )
             while self.total_tokens() > self.token_limit:
                 self.summarize()

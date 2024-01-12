@@ -1,7 +1,7 @@
-from pydantic.dataclasses import dataclass, Field
+from pydantic.dataclasses import Field, dataclass
 
-from .base import BaseEnvironment
 from ..actor import BaseActor
+from .base import BaseEnvironment
 
 
 class PriceNegotiation(BaseEnvironment):

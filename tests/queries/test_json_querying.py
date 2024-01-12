@@ -4,8 +4,8 @@ from functools import partial
 
 import pytest
 
-from treetrace import FormatStr
 from interlab.queries.query_for_json import query_for_json
+from treetrace import FormatStr
 
 
 @dataclass

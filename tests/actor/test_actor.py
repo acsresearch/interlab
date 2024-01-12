@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 
-from interlab.actor.base import BaseActor, ActorWithMemory
+from interlab.actor.base import ActorWithMemory, BaseActor
 
 
 @patch.multiple(BaseActor, __abstractmethods__=set())

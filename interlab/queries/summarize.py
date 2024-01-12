@@ -2,8 +2,8 @@ import re
 import warnings
 from typing import Any
 
-from treetrace import with_trace
-from treetrace import FormatStr
+from treetrace import FormatStr, with_trace
+
 from . import count_tokens, query_model
 
 

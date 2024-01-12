@@ -31,7 +31,9 @@ def _prepare_model(model: Any, model_kwargs: dict = None, call_async: bool = Fal
         call = lambda c: model(  # noqa: E731
             [langchain.schema.HumanMessage(content=c)], **model_kwargs
         ).content
-    elif isinstance(model, WebConsoleModel): ## TODO: add some common base, or otherwise allow adding other model classes
+    elif isinstance(
+        model, WebConsoleModel
+    ):  # TODO: add some common base, or otherwise allow adding other model classes
         name, cfg = model.prepare_conf(**model_kwargs)
         conf.update(cfg)
         call = lambda c: model.query(c, conf)  # noqa: E731

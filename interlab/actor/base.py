@@ -32,7 +32,8 @@ class BaseActor(abc.ABC):
         """
         Full copy of the actor and all its data (memories etc.).
 
-        The copy must be independent from the original instance. May be copy-on-write for efficiency, or via serialization/deserialization.
+        The copy must be independent from the original instance. May be copy-on-write for efficiency, or via
+        serialization/deserialization.
         """
         raise NotImplementedError()
 
@@ -58,7 +59,7 @@ class BaseActor(abc.ABC):
 
         with TracingNode(name, kind="action", meta=self.style, inputs=inputs) as ctx:
             reply = self._query(prompt, expected_type=expected_type, **kwargs)
-            # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification            
+            # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification
             ctx.set_result(reply)
         return reply
 
@@ -117,6 +118,6 @@ class ActorWithMemory(BaseActor, ABC):
         self.memory.add_memory(observation, time=time, data=data)
 
     def copy(self):
-        actor = copy(self)  ## TODO(gavento): this seems hacky
+        actor = copy(self)  # TODO(gavento): this seems hacky
         actor.memory = self.memory.copy()
         return actor

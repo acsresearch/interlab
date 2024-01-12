@@ -17,7 +17,7 @@ class WebConsoleActor(BaseActor):
     def _observe(self, observation: str | Any, time: Any = None, data: Any = None):
         self.server.add_message(
             observation
-        )  ## TODO(gavento): Somehow add time and data to the console?
+        )  # TODO(gavento): Somehow add time and data to the console?
 
     def _query(self, prompt: Any = None, expected_type=None):
         self.server.add_message(str(prompt))
