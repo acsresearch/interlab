@@ -13,11 +13,6 @@ class ListMemory(BaseMemory):
         super().__init__(**kwargs)
         self.items = []
 
-    def copy(self) -> "ListMemory":
-        m = ListMemory()
-        m.items = list(self.items)
-        return m
-
     def count_memories(self) -> int:
         return len(self.items)
 

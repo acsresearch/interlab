@@ -36,16 +36,6 @@ class SummarizingMemory(ListMemory):
         """Upper-bound of total tokens of the memory text (including separator newlines etc.)."""
         return sum(i.token_count + 5 for i in self.items)
 
-    def copy(self) -> "SummarizingMemory":
-        m = SummarizingMemory(
-            model=self.model,
-            token_limit=self.token_limit,
-            one_message_limit=self.one_message_limit,
-            summary_limit=self.summary_limit,
-        )
-        m.items = list(self.items)
-        return m
-
     def summarize(self):
         """
         Perform one step of summarization, decreasing the total token count.

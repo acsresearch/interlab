@@ -1,8 +1,10 @@
 import abc
+import copy
 from dataclasses import KW_ONLY, dataclass
 from typing import Any, Callable, Iterable
 
 import numpy as np
+from typing_extensions import Self
 
 from ...queries.count_tokens import count_tokens
 
@@ -16,8 +18,9 @@ class BaseMemoryItem:
     in the textual representation of the memories by default.
     Note that if `content` is not of type `str`, it will be converted to `str` by most memories.
 
-    In general, the items are assumed to be immutable once created and should not refer to complex
-    InterLab structures (Actors, Environments, ...).
+    These objects (as well as any derived classes) must be immutable once created, including any referred data!
+    In particular, the `data` attribute should not refer to any complex InterLab structures
+    (e.g. Actors, Environments, ...).
     """
 
     memory: str | Any
@@ -25,6 +28,10 @@ class BaseMemoryItem:
     token_count: Any = None
     time: Any = None
     data: Any = None
+
+    def __deepcopy__(self, memo):
+        "The object and its contents are assumed to be immutable."
+        return self
 
 
 class BaseMemory(abc.ABC):
@@ -47,12 +54,12 @@ class BaseMemory(abc.ABC):
     def _count_tokens(self, text: str) -> int:
         return count_tokens(text, self.count_tokens_model)
 
-    def copy(self) -> "BaseMemory":
+    def copy(self) -> Self:
         """
         Full copy of the memory. The copy must be independent from the original instance.
-        May be copy-on-write for efficiency.
+        May be implemented as copy-on-write for efficiency etc.
         """
-        raise NotImplementedError()
+        return copy.deepcopy(self)
 
     def count_memories(self) -> int:
         """

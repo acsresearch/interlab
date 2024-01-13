@@ -9,7 +9,8 @@ from typing import Any, Callable
 import numpy as np
 import openai
 
-from ..base import BaseMemory, BaseMemoryItem
+from ..base import BaseMemoryItem
+from ..list_memory import ListMemory
 
 
 @dataclass(frozen=True)
@@ -18,8 +19,10 @@ class SimpleAssociativeMemoryItem(BaseMemoryItem):
     embedding: np.ndarray = None
 
 
-class SimpleAssociativeMemory(BaseMemory):
-    DEAULT_EMBED_MODEL_FACTORY = lambda: openai.Embedding("text-embedding-ada-002")
+class SimpleAssociativeMemory(ListMemory):
+    DEAULT_EMBED_MODEL_FACTORY = lambda: openai.Embedding(  # noqa: E731
+        "text-embedding-ada-002"
+    )
 
     def __init__(self, embed_model=None):
         if embed_model is None:
@@ -32,13 +35,15 @@ class SimpleAssociativeMemory(BaseMemory):
 
     def add_memory(self, memory: str, time: Any = None, data: Any = None):
         memory = str(memory)
+        emb = self._embed(memory)
+        emb.flags.writeable = False  # Make it closer to being fully immutable
         self.items.append(
             SimpleAssociativeMemoryItem(
                 memory=memory,
                 token_count=self._count_tokens(memory),
                 time=time,
                 data=data,
-                embedding=self._embed(memory),
+                embedding=emb,
             )
         )
 
