@@ -69,7 +69,7 @@ class BaseMemory(abc.ABC):
         In particular, it does not have to correspond to the number of all emories added over time.
         """
         raise NotImplementedError()
-    
+
     def total_tokens(self) -> int:
         """
         Return the total number of tokens of all memories currently in memory, not including separators.
@@ -77,7 +77,6 @@ class BaseMemory(abc.ABC):
         Note this is informational and may be specific to every memory implementation.
         """
         raise NotImplementedError()
-        
 
     @abc.abstractmethod
     def add_memory(self, memory: str, time: Any = None, data: Any = None):
@@ -107,25 +106,42 @@ class BaseMemory(abc.ABC):
         self,
         memories: Iterable[BaseMemoryItem],
         *,
-        priorities: np.ndarray = None,  # TODO(gavento): WIP!
         separator: str = "\n\n",
         formatter: Callable[[BaseMemoryItem], str] = None,
         item_limit: int = None,
         token_limit: int = None,
+        priorities: np.ndarray = None,
     ) -> str:
+        """
+        Helper for formatting memories, used by most memory systems.
+
+        When employing any limits, the memories are returned in their original order,
+        but are selected from the end of the list (i.e. the latest memories), or from
+        the ones with the highest priority when provided. Both limis can be used at the same time.
+        """
         if formatter is None:
             items = [(m.memory, m.token_count) for m in memories]
         else:
-            fmts = [formatter(m) for m in memories]
+            fmts = [str(formatter(m)) for m in memories]
             items = [(text, self._count_tokens(text)) for text in fmts]
+
+        # This is in order to handle both limits and priorities, while preserving the original ordering
+        include = np.ones(len(items), dtype=bool)
+        if priorities is not None:
+            priority_order = np.argsort(priorities)
+        else:
+            priority_order = np.arange(len(items))
+
+        # Mask out all but `item_limit` highest-prority items
         if item_limit is not None:
-            items = items[-item_limit:]
+            include[priority_order[:-item_limit]] = False
+
+        # Mask out all but highest-prority items of up to `token_limit` tokens
         if token_limit is not None:
             tc_sep = self._count_tokens(separator)
-            for i, (_, tc) in reversed(enumerate(items)):
-                if token_limit < tc:
-                    items = items[i:]
-                    break
-                token_limit -= tc + tc_sep
+            for i in priority_order[::-1]:
+                if token_limit < items[i][1]:
+                    include[i] = False
+                token_limit -= items[1][1] + tc_sep
 
-        return separator.join(item[0] for item in items)
+        return separator.join(item[0] for i, item in enumerate(items) if include[i])
