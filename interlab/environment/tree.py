@@ -22,7 +22,7 @@ def expand_tree(
             for i in range(n_children):
                 with TracingNode(f"{i + 1}. child") as ctx:
                     e = env.copy()
-                    e.step()
+                    e.advance()
                     ctx.add_input("environment", e)
                     child = helper(e, depth + 1)
                     children.append(child)

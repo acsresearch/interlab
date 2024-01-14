@@ -32,14 +32,10 @@ class BaseEnvironment(abc.ABC):
     def __init__(self, actors: Sequence[BaseActor]):
         self._actors = list(actors)
         self._step_counter = 0
-        self._result = None
+        self._is_finished = False
 
     def is_finished(self) -> bool:
-        return self._result is not None
-
-    @property
-    def result(self):
-        return self._result
+        return self._is_finished
 
     @property
     def n_actors(self) -> int:
@@ -53,24 +49,27 @@ class BaseEnvironment(abc.ABC):
     def current_step(self) -> int:
         return self._step_counter
 
-    def step(self):
+    def advance(self):
         if self.is_finished():
             raise Exception("Calling 'step' on finished environment")
         self._step_counter += 1
         name = f"step {self._step_counter}"
-        with TracingNode(name):
-            self._result = self._step()
+        with TracingNode(name) as node:
+            result = self._advance()
+            node.set_result(result)
+            return result
 
-    def run_until_end(self, max_steps: int = None, verbose=False):
+    def run_until_end(self, max_steps: int = None):
         while not self.is_finished():
             if max_steps is not None:
                 if max_steps <= 0:
-                    return self._result
+                    return self._is_finished
                 max_steps -= 1
-            if verbose:
-                print("Step", self._step_counter)
-            self.step()
-        return self._result
+            self.advance()
+        return self._is_finished
+
+    def set_finished(self):
+        self._is_finished = True
 
     def everyone_observe(self, observation, origin=None):
         for actor in self.actors:
@@ -79,7 +78,7 @@ class BaseEnvironment(abc.ABC):
     # Methods to overload
 
     @abc.abstractmethod
-    def _step(self):
+    def _advance(self):
         raise NotImplementedError
 
     def copy(self):
