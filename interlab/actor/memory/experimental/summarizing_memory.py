@@ -4,7 +4,7 @@ from typing import Any, Callable
 
 import numpy as np
 
-from interlab.queries import summarize_with_limit
+import interlab.queries
 from treetrace import TracingNode, current_tracing_node, shorten_str
 
 from ..list_memory import BaseMemoryItem, ListMemory
@@ -25,16 +25,15 @@ class SummarizingMemory(ListMemory):
         token_limit=2000,
         one_message_limit=500,
         summary_limit=250,
+        separator="\n\n",
     ):
         super().__init__(count_tokens_model=model)
         self.model = model
         self.token_limit = token_limit
-        self.one_message_limit = one_message_limit
-        self.summary_limit = summary_limit
-
-    def _total_tokens_ub(self) -> int:
-        """Upper-bound of total tokens of the memory text (including separator newlines etc.)."""
-        return sum(i.token_count + 5 for i in self.items)
+        self.summary_limit = min(summary_limit, token_limit)
+        self.one_message_limit = min(one_message_limit, token_limit)
+        self.separator = separator
+        self._sep_tokens = self._count_tokens(separator)
 
     def summarize(self):
         """
@@ -52,10 +51,10 @@ class SummarizingMemory(ListMemory):
                 )
                 _LOG.debug(msg)
                 current_tracing_node().add_event(msg)
-                new_text = summarize_with_limit(
+                new_text = interlab.queries.summarize_with_limit(
                     item.memory,
                     model=self.model,
-                    token_limit=self.summary_limit - 5,
+                    token_limit=self.summary_limit - self._sep_tokens,
                 )
                 self.items[i] = SummarizingMemoryItem(
                     memory=new_text,
@@ -84,10 +83,10 @@ class SummarizingMemory(ListMemory):
                 current_tracing_node().add_event(
                     msg
                 )  # This is the tracing node from add_memory()
-                text = summarize_with_limit(
-                    f"{i1.memory}\n\n{i2.memory}",
+                text = interlab.queries.summarize_with_limit(
+                    f"{i1.memory}{self.separator}{i2.memory}",
                     model=self.model,
-                    token_limit=self.summary_limit - 5,
+                    token_limit=self.summary_limit - self._sep_tokens,
                 )
                 self.items[i : i + 2] = [
                     SummarizingMemoryItem(
@@ -121,25 +120,31 @@ class SummarizingMemory(ListMemory):
                 )
                 c.add_event(msg)
                 _LOG.debug(msg)
-                memory = summarize_with_limit(
+                memory = interlab.queries.summarize_with_limit(
                     memory,
                     model=self.model,
-                    token_limit=self.one_message_limit - 5,
+                    token_limit=self.one_message_limit - self._sep_tokens,
                 )
                 token_count = self._count_tokens(memory)  # Estimate for newlines etc.
 
             self.items.append(
                 SummarizingMemoryItem(
-                    memory, token_count=token_count + 5, level=0, time=time
+                    memory,
+                    token_count=token_count + self._sep_tokens,
+                    level=0,
+                    time=time,
                 )
             )
-            while self._total_tokens_ub() > self.token_limit:
+            while (
+                self.total_tokens() + self._sep_tokens * (self.count_memories() - 1)
+                > self.token_limit
+            ):
                 self.summarize()
 
     def format_memories(
         self,
         query: str = None,
-        separator: str = "\n\n",
+        separator: str = None,
         formatter: Callable[[BaseMemoryItem], str] = None,
         item_limit: int = None,
         token_limit: int = None,
@@ -151,7 +156,7 @@ class SummarizingMemory(ListMemory):
             )
         return super().format_memories(
             query=query,
-            separator=separator,
+            separator=separator if separator is not None else self.separator,
             formatter=formatter,
             item_limit=item_limit,
             token_limit=token_limit,
