@@ -69,6 +69,15 @@ class BaseMemory(abc.ABC):
         In particular, it does not have to correspond to the number of all emories added over time.
         """
         raise NotImplementedError()
+    
+    def total_tokens(self) -> int:
+        """
+        Return the total number of tokens of all memories currently in memory, not including separators.
+
+        Note this is informational and may be specific to every memory implementation.
+        """
+        raise NotImplementedError()
+        
 
     @abc.abstractmethod
     def add_memory(self, memory: str, time: Any = None, data: Any = None):

@@ -16,6 +16,9 @@ class ListMemory(BaseMemory):
     def count_memories(self) -> int:
         return len(self.items)
 
+    def total_tokens(self) -> int:
+        return sum(m.token_count for m in self.items)
+
     def add_memory(self, memory: str, time: Any = None, data: Any = None):
         self.items.append(
             BaseMemoryItem(
