@@ -10,6 +10,8 @@ TEXT = (
 
 
 def test_count_tokens():
+    count_tokens.cache_clear()  # To have clean hit counting below
+
     assert count_tokens(TEXT, "gpt2") == 56
     assert count_tokens(TEXT, "text-curie-001") == 56
     assert count_tokens(TEXT, "claude-2") == 57

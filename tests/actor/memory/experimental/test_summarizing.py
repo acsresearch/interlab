@@ -1,12 +1,10 @@
 from unittest.mock import patch
 
-import interlab.queries
 from interlab.actor.memory.experimental.summarizing_memory import SummarizingMemory
 
 
 @patch("interlab.queries.summarize_with_limit")
 def test_summarizing_memory(swl):
-    print(interlab.queries.summarize_with_limit)
     m = SummarizingMemory("davinci", token_limit=90, separator=" ")
     assert m.count_memories() == 0
     ma = "A " * 30
@@ -24,6 +22,6 @@ def test_summarizing_memory(swl):
     swl.return_value = "ZZ"
     m.add_memory(mc, time=2)
     swl.assert_called_with(ma + " " + mb, model="davinci", token_limit=89)
-    m.format_memories() == "ZZ " + mc
+    assert m.format_memories() == "ZZ " + mc
     assert m.count_memories() == 2
     assert m2.format_memories(separator="X") == ma + "X" + mb

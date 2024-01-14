@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from interlab.actor.base import ActorWithMemory, BaseActor
 
 
@@ -22,15 +24,15 @@ def test_memory_actor():
     a1.observe(o1)
     assert a1.memory.format_memories() == "Bar!"
     a1.observe("I noticed Baz")
-    assert (
-        a1.memory.format_memories("ignored", separator="---") == "Bar!---I noticed Baz"
-    )
-    assert (
-        a1.memory.format_memories(
-            "ignored", separator="\n", formatter=lambda m: m.memory.upper()
+    assert a1.memory.format_memories(separator="---") == "Bar!---I noticed Baz"
+    # ListMemory ignores the query, but we pass it deliberately to get a warning
+    with pytest.warns(UserWarning):
+        assert (
+            a1.memory.format_memories(
+                "query is ignored", separator="\n", formatter=lambda m: m.memory.upper()
+            )
+            == "BAR!\nI NOTICED BAZ"
         )
-        == "BAR!\nI NOTICED BAZ"
-    )
 
 
 @patch.multiple(ActorWithMemory, __abstractmethods__=set())

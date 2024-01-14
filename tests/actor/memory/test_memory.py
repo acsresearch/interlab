@@ -29,10 +29,23 @@ def test_format_memories_helper():
     assert m._format_memories_helper(m.items, separator="") == "ABCDEF"
     assert m._format_memories_helper(m.items[1:], separator="") == "BCDEF"
     assert (
-        m._format_memories_helper(m.items[:3], formatter=lambda x: x.time) == "2\n\n4\n\n6"
+        m._format_memories_helper(m.items[:3], formatter=lambda x: x.time)
+        == "2\n\n4\n\n6"
     )
     assert m._format_memories_helper(m.items, item_limit=3) == "D\n\nE\n\nF"
     assert m._format_memories_helper(m.items, token_limit=4) == "E\n\nF"
-    assert m._format_memories_helper(m.items, item_limit=4, token_limit=5) == "D\n\nE\n\nF"
-    assert m._format_memories_helper(m.items, item_limit=4, token_limit=6, priorities=[6,2,5,4,3,1]) == "A\n\nC\n\nD"
-    assert m._format_memories_helper(m.items, item_limit=4, token_limit=10, priorities=[6,2,5,4,3,1]) == "A\n\nC\n\nD\n\nE"
+    assert (
+        m._format_memories_helper(m.items, item_limit=4, token_limit=5) == "D\n\nE\n\nF"
+    )
+    assert (
+        m._format_memories_helper(
+            m.items, item_limit=4, token_limit=6, priorities=[6, 2, 5, 4, 3, 1]
+        )
+        == "A\n\nC\n\nD"
+    )
+    assert (
+        m._format_memories_helper(
+            m.items, item_limit=4, token_limit=10, priorities=[6, 2, 5, 4, 3, 1]
+        )
+        == "A\n\nC\n\nD\n\nE"
+    )
