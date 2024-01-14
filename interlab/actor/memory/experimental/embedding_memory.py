@@ -14,17 +14,18 @@ from ..list_memory import ListMemory
 
 
 @dataclass(frozen=True)
-class SimpleAssociativeMemoryItem(BaseMemoryItem):
+class SimpleEmbeddingMemoryItem(BaseMemoryItem):
     _: KW_ONLY
     embedding: np.ndarray = None
 
 
-class SimpleAssociativeMemory(ListMemory):
+class SimpleEmbeddingMemory(ListMemory):
     DEAULT_EMBED_MODEL_FACTORY = lambda: openai.Embedding(  # noqa: E731
         "text-embedding-ada-002"
     )
 
-    def __init__(self, embed_model=None):
+    def __init__(self, embed_model=None, **kwargs):
+        super().__init__(**kwargs)
         if embed_model is None:
             embed_model = self.DEAULT_EMBED_MODEL_FACTORY()
         self.embed_model = embed_model
@@ -38,7 +39,7 @@ class SimpleAssociativeMemory(ListMemory):
         emb = self._embed(memory)
         emb.flags.writeable = False  # Make it closer to being fully immutable
         self.items.append(
-            SimpleAssociativeMemoryItem(
+            SimpleEmbeddingMemoryItem(
                 memory=memory,
                 token_count=self._count_tokens(memory),
                 time=time,
