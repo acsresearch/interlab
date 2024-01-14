@@ -37,6 +37,8 @@ class PriceNegotiation(BaseEnvironment):
         # Last acceptable price by the other player
         self.other_acceptable_price = None
 
+        self.result = None
+
     @property
     def minimizer(self):
         return self.actors[0]
@@ -80,12 +82,16 @@ class PriceNegotiation(BaseEnvironment):
         other_ap = self.other_acceptable_price
 
         if action_result.walk_away_stop_trading:
-            return "NO DEAL"
+            self.result = "NO DEAL"
+            self.set_finished()
         if my_ap is not None and other_ap is not None:
             if me == self.minimizer and my_ap >= other_ap:
-                return other_ap, my_ap
+                self.result = (other_ap, my_ap)
+                self.set_finished()
             if me == self.maximizer and my_ap <= other_ap:
-                return my_ap, other_ap
+                self.result = (my_ap, other_ap)
+                self.set_finished()
         if current >= self.n_rounds:
-            return "TIMEOUT"
+            self.result = "TIMEOUT"
+            self.set_finished()
         self.other_acceptable_price = my_ap

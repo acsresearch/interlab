@@ -104,7 +104,7 @@ class CommunicateAndPlayGame(BaseEnvironment):
         self.history.append(observations)
 
         if self.game_round > self.n_rounds:
-            return self.history
+            self.set_finished()
 
     def payoff_chart(self, cumsum=False):
         colors = [actor.style["color"] for actor in self.actors]
