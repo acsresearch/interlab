@@ -8,7 +8,7 @@ from .base import ActorWithMemory
 
 class LLMActor(ActorWithMemory):
     """
-    A common class for actors based on a language model with a memory system.
+    A common abstract class for actors based on a language model with a memory system.
     """
 
     def __init__(self, name: str, model: Any, system_prompt: str = None, **kwargs):

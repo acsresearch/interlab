@@ -36,7 +36,7 @@ def test_memory_actor():
 @patch.multiple(ActorWithMemory, __abstractmethods__=set())
 def test_memory_actor_copy():
     a1 = ActorWithMemory("Barbara")
-    a1.observe("Foo")
+    a1.observe("Foo", data=42, time=0.1)
     a2 = a1.copy()
     assert a2.name == "Barbara"
     a1.observe("Hello!")
@@ -45,3 +45,4 @@ def test_memory_actor_copy():
     a2.observe("New event")
     assert a1.memory.count_memories() == 2
     assert a2.memory.count_memories() == 2
+    assert a2.memory.items[0].data == 42
