@@ -22,7 +22,7 @@ class LLMActor(ActorWithMemory):
         """
         q = FormatStr("{system_prompt}\n\n{memory#5274d026}\n\n{prompt}").format(
             system_prompt=self.system_prompt,
-            memory=self.memory.get_formatted(query=prompt),
+            memory=self.memory.format_memories(query=prompt),
             prompt=prompt,
         )
         if expected_type is str or expected_type is None:
