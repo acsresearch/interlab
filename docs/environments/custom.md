@@ -1,14 +1,14 @@
 ## Subclassing BaseEnvironment
 
-To create custom environments, you must inherit from `BaseEnvironment` and implement the `_step()` method:
+To create custom environments, you must inherit from `BaseEnvironment` and implement the `_advance()` method:
 
 ```python
 class MyEnv(BaseEnvironment):
-    def _step(self):
+    def _advance(self):
         # Implement the logic for a single step.
-        # Should return None if the environment isn't finished.
-        # Otherwise, return a result object.
 ```
+
+Value returns of
 
 ### Implementing the "copy" method
 

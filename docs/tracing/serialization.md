@@ -1,9 +1,9 @@
 # Serialization to JSON
 
-`TracingNode` can be serialized into JSON via [to_dict](pdoc:interlab.tracing.TracingNode.to_dict) method:
+`TracingNode` can be serialized into JSON via [to_dict](pdoc:treetrace.TracingNode.to_dict) method:
 
 ```python
-from interlab.tracing import TracingNode
+from treetrace import TracingNode
 
 with TracingNode("my node", inputs={"x": 42}) as node:
     node.set_result("my_result")
@@ -32,12 +32,15 @@ When inputs or a result are not directly serializable into JSON options are prov
 Dataclasses are serialized as `dict`:
 
 ```python
+from dataclasses import dataclass
+from treetrace import TraceNode, with_trace
+
 @dataclass
 class Person:
     name: str
     age: int
 
-@with_tracing
+@with_trace
 def say_hi(person):
     return f"Hi {person.name}!"
 
@@ -110,7 +113,7 @@ When `person` is serialized, the following dictionary is produced:
 Sometimes we do not or we cannot modify a class. Registration a serializer for a given type is there for this purpose.
 
 ```python
-from interlab.tracing.serialization import register_custom_serializer
+from treetrace import register_custom_serializer
 
 
 class MyClass:

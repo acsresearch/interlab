@@ -1,4 +1,8 @@
 from .tracing.tracingnode import TracingNode, Tag, current_tracing_node, with_trace
+from treetrace.tracing.serialization import (
+    register_custom_serializer,
+    unregister_custom_serializer,
+)
 from .tracing.data.format_str import FormatStr
 from .tracing.data.blob import DataWithMime
 from .tracing.data.html import Html
@@ -23,4 +27,6 @@ __all__ = [
     "HtmlColor",
     "shorten_str",
     "ConsoleServer",
+    "register_custom_serializer",
+    "unregister_custom_serializer",
 ]

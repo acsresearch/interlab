@@ -8,12 +8,14 @@ There two main ways how visualize a `TracingNode`:
   Visulation is not updated when the nodes evolves.
 * *Dynamic* (live) - it dynamically reflects the current state of the node. It needs a running storage server ([Storage](storage.md));
 
+
 ## Static view
 
 To create a static view you can call `.create_html(path)` that create a HTML file that contains a visualization of the node.
 
 In Jypter notebook you can directly call `.display()` on a node to create a static view of the node
 that is immediately shown in Jupyter.
+
 
 ## Live Data Browser as a stand-alone page
 
@@ -22,6 +24,8 @@ Live data browser works only when node is stored in a storage.
 Method `.start_server()` returns a handle where a HTTP server is running.
 
 ```python
+from treetrace import TracingNode, FileStorage
+
 storage = FileStorage("./my-directory")
 storage.start_server()  # returns <ServerHandle http://localhost:PORT>
 ```

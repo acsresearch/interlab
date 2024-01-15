@@ -5,10 +5,10 @@ The current implementation allows to store nodes as (compresed) files into a dir
 
 ## Basics
 
-Storage can be initialized by instantiating [](pdoc:interlab.tracing.FileStorage)
+Storage can be initialized by instantiating [](pdoc:treetrace.FileStorage)
 
 ```python
-from interlab.tracing import FileStorage
+from treetrace import FileStorage
 
 storage = FileStorage("/path/to/a/directory")
 ```
@@ -40,7 +40,7 @@ Storage can be used as a context manager, in such a case all root nodes are auto
 into the storage.
 
 ```python
-from interlab.tracing import FileStorage
+from treetrace import FileStorage, TracingNode
 
 storage = FileStorage("/path/to/a/directory")
 with storage:

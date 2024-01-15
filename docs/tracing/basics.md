@@ -1,11 +1,12 @@
 # Tracing
 
-InterLab tracing nodes are a framework for logging, tracing, storing results and
+Independendent part of Interlab project is TreeTrace module.
+TreeTrace is framework for logging, tracing, storing results and
 and visualisation of nested computations and actor interactions.
 They are designed to support large textual and structured (e.g. JSON) inputs and outputs, as well as generic and custom visualisations.
 custom visualisations.
 
-An instance of [TracingNode](pdoc:interlab.tracing.TracingNode) is a core object of InterLab logging infrastructure and
+An instance of [TracingNode](pdoc:treetrace.TracingNode) is a core object of InterLab logging infrastructure and
 represents a single (sub)task in a nested hierarchy.
 
 
@@ -14,12 +15,13 @@ represents a single (sub)task in a nested hierarchy.
 To utilize a TracingNode within your code, here's a pattern involving `with` statements:
 
 ```python
-from interlab.tracing import TracingNode
+from treetrace import TracingNode
 
 with TracingNode("my node", inputs={"x": 42}) as c:
     y = do_a_computation(x=42)
     c.set_result(y)
 ```
+
 
 ## Hierarchically nested tracing nodes
 
@@ -39,6 +41,7 @@ with TracingNode("root") as root:
 If this tracing nodes are visualized in [Data Browser](databrowser.md) or in Jupyter notebook via `root.display()`:
 
 ![Data browser screenshot](../assets/imgs/hierarchy.png)
+
 
 ## TracingNode states
 
@@ -67,12 +70,13 @@ with TracingNode("my node"):
 
 Alternatively, the `.set_error(error)` method can be called on a node to explicitly set the node to the ERROR state.
 
+
 ## Managing Inputs and Results
 
 Nodes may have one or more named inputs and at most one result
 
 ```python
-from interlab.tracing import TracingNode
+from treetracing import TracingNode
 
 with TracingNode("my node", inputs={"x": 42}) as node:  # Set inputs when tracing is created
     node.add_inputs({"y": 123, "z": 321})  # Add inputs dynamically
@@ -81,19 +85,21 @@ with TracingNode("my node", inputs={"x": 42}) as node:  # Set inputs when tracin
 
 The name of the input has to be string.
 
+
 ## Enhancing Functions with `with_tracing`
 
-A function can be annotated with [with_tracing](pdoc:interlab.tracing.with_tracing) decorator. It automatically
+A function can be annotated with [with_tracing](pdoc:treetrace.with_trace) decorator. It automatically
 creates a new `TracingNode` that captures inputs and the result when the function is called.
 
 ```python
-from interlab.tracing import with_tracing
+from treetrace import with_trace
 
 
-@with_tracing
+@with_trace
 def my_computation(x):
     ...
 ```
+
 
 ## Events
 
@@ -109,17 +115,18 @@ with TracingNode("root") as node:
 
 Utilizing Tags
 
-Tags are custom identifiers attachable to any TracingNode, facilitating subsequent filtering based on these tags. A tag is either directly a string or an instance of [`Tag`](pdoc:interlab.tracing.Tag).
+Tags are custom identifiers attachable to any TracingNode, facilitating subsequent filtering based on these tags. A tag is either directly a string or an instance of [`Tag`](pdoc:treetrace.Tag).
 
 Tag appearances in the Data Browser can be customized with an associated HTML color:
 
 ```python
-from interlab.tracing import TracingNode, Tag
+from treetrace import TracingNode, Tag
 
 with TracingNode("root", tags=["tag1", Tag("tag2")]) as node:
     node.add_tag("exp1")  # Add tag to a tracing node dynamically
     node.add_tag(Tag("success!", color="lightgreen"))  # Add a tag with custom color
 ```
+
 
 ## Attaching Meta information
 
