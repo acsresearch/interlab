@@ -2,8 +2,8 @@
 
 To create a subclass of `BaseActor`, the following methods should be overridden:
 
-### `_observe(self, event: Event)`
-This method handles the observation process. It should take an `Event` object as a parameter and handle it as necessary for the actor's functionality.
+### `_observe(self, observation: Any)`
+This method handles the observation process. It should take an observation and handle it as necessary for the actor's functionality.
 
 ```python
 from interlab import BaseActor, Event
@@ -28,7 +28,8 @@ class MyActor(BaseActor):
 
 ### `copy(self)`
 
-This method creates has to create a copy of the actor. 
+This method has to create a copy of the actor.
+
 
 ## `ActorWithMemory` Subclassing
 

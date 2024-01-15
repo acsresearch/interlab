@@ -28,6 +28,9 @@ You can then interact with the actor as demonstrated below:
 
 
 ```python
+from dataclasses import dataclass
+import enum
+
 class DogTitle(enum.Enum):
     GB = "Good boy"
     GG = "Good girl"
