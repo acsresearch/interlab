@@ -16,7 +16,7 @@ STATIC_NODE_TEMPLATE_HTML = """
 <script src="{cdn_url}{js_file}"></script>
 <link rel="stylesheet" href="{cdn_url}{css_file}">
 <script>
-import("{cdn_url}{js_file}").then(() => window.initInterlab("{id}", {tracing_node}))
+import("{cdn_url}{js_file}").then(() => window.initTreeTraceBrowser("{id}", {tracing_node}))
 </script>
 """
 

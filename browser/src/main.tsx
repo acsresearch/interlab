@@ -7,12 +7,12 @@ import { TracingNode } from './model/TracingNode.ts';
 
 declare global {
   interface Window {
-    initInterlab: unknown | undefined;
+    initTreeTraceBrowser: unknown | undefined;
   }
 }
 
 
-function initInterlab(root: string, node?: TracingNode) {
+function initTreeTraceBrowser(root: string, node?: TracingNode) {
   ReactDOM.createRoot(document.getElementById(root)!).render(
     <React.StrictMode>
       {node ? <SingleNodeScreen node={node} /> : <App />}
@@ -21,4 +21,4 @@ function initInterlab(root: string, node?: TracingNode) {
 }
 
 
-window.initInterlab = initInterlab
+window.initTreeTraceBrowser = initTreeTraceBrowser

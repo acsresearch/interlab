@@ -8,7 +8,7 @@ import { TracingNode } from './model/TracingNode';
 
 declare global {
   interface Window {
-    INTERLAB_ROOT_NODE: TracingNode | undefined;
+    TREETRACE_ROOT_NODE: TracingNode | undefined;
   }
 }
 
