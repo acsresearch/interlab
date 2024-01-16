@@ -48,7 +48,7 @@ class PriceNegotiation(BaseEnvironment):
         return self.actors[1]
 
     def _advance(self):
-        current = self.current_step
+        current = self.steps
 
         if not self.minimizer_starts_first:
             me = self.actors[current % 2]

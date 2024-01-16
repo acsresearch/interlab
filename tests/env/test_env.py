@@ -1,28 +1,24 @@
 from interlab.environment import BaseEnvironment
 
 
-def test_environment():
+def test_basic_environment():
     class SimpleEnv(BaseEnvironment):
-        def _advance(self):
-            if self.current_step == 3:
+        def _advance(self, foo=0):
+            if self.advance_counter == 3:  # Actually the 4th call
                 self.set_finished()
+            return foo + 1
 
-        def copy(self):
-            raise NotImplementedError
+    env = SimpleEnv(["Dummy agent"])
+    assert env.advance(41) == 42
+    assert env.advance_counter == 1
+    assert len(env.actors) == 1
+    env2 = env.copy()
 
-    env = SimpleEnv([])
-    assert not env.is_finished()
+    assert not env.is_finished
+    while not env.is_finished:
+        env.advance()
+    assert env.is_finished
+    assert env.advance_counter == 4  # 3 + 1
 
-    assert env.run_until_end()
-    assert env.is_finished()
-    assert env.current_step == 3
-
-    env = SimpleEnv([])
-    assert env.run_until_end(max_steps=10)
-    assert env.is_finished()
-    assert env.current_step == 3
-
-    env = SimpleEnv([])
-    assert not env.run_until_end(max_steps=2)
-    assert not env.is_finished()
-    assert env.current_step == 2
+    assert not env2.is_finished
+    assert env2.advance_counter == 1
