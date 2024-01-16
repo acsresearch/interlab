@@ -22,6 +22,7 @@ Note that this package does not contain more complex and concrete implementation
 LLM-based algorithms. You can find a growing collection of these in `interlab_zoo`.
 """
 
-from . import actor, lang_models, queries, utils
+from . import actor, environment, queries, utils
+from .__version__ import __version__
 
-__all__ = ["actor", "lang_models", "queries", "utils"]
+__all__ = ["actor", "environment", "queries", "utils", "__version__"]
