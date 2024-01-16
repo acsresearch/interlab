@@ -7,6 +7,9 @@ def test_environment():
             if self.current_step == 3:
                 self.set_finished()
 
+        def copy(self):
+            raise NotImplementedError
+
     env = SimpleEnv([])
     assert not env.is_finished()
 

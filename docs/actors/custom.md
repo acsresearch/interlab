@@ -48,23 +48,3 @@ class MyMemoryActor(ActorWithMemory):
         # Access the memory and process the query
         return some_result
 ```
-
-### Custom `copy(self)` Behavior
-The default `copy` implementation creates a shallow copy of the actor, including its memory. If your actor has additional attributes that should not be shared (not properly copied by a shallow copy), you must override the `copy` method to handle them.
-
-```python
-class MyMemoryActor(ActorWithMemory):
-    # ... (other methods)
-
-    def __init__(self, name, my_list: list[str]):
-        super().__init__(name)
-        self.my_non_sharable_list = my_list
-
-    def copy(self):
-        actor_copy = super().copy()
-        # Ensure a deep copy of custom attributes
-        actor_copy.my_non_sharable_list = self.my_non_sharable_list[:]
-        return actor_copy
-```
-
-Note: The examples in this manual use a hypothetical library named Interlab and are meant to serve as guidelines. The library's actual implementation details such as class and method names could differ.

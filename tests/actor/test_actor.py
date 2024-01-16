@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from interlab.actor.base import ActorWithMemory, BaseActor
+from interlab.actor.llm_actor import OneShotLLMActor
 
 
 @patch.multiple(BaseActor, __abstractmethods__=set())
@@ -36,8 +37,8 @@ def test_memory_actor():
 
 
 @patch.multiple(ActorWithMemory, __abstractmethods__=set())
-def test_memory_actor_copy():
-    a1 = ActorWithMemory("Barbara")
+def test_oneshot_actor_copy():
+    a1 = OneShotLLMActor("Barbara", None, "Initial prompt")
     a1.observe("Foo", data=42, time=0.1)
     a2 = a1.copy()
     assert a2.name == "Barbara"

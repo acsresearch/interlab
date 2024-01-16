@@ -116,8 +116,3 @@ class ActorWithMemory(BaseActor, ABC):
 
     def _observe(self, observation: str | Any, time: Any = None, data: Any = None):
         self.memory.add_memory(observation, time=time, data=data)
-
-    def copy(self):
-        actor = copy(self)  # TODO(gavento): this seems hacky
-        actor.memory = self.memory.copy()
-        return actor

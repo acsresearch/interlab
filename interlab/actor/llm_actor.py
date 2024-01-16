@@ -54,3 +54,8 @@ class OneShotLLMActor(LLMActor):
                 name=self.name
             )
         return self.query_model(prompt, expected_type=expected_type, with_cot=with_cot)
+
+    def copy(self):
+        return OneShotLLMActor(
+            self.name, self.model, self.system_prompt, memory=self.memory.copy()
+        )

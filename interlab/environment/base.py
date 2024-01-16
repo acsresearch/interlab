@@ -81,7 +81,6 @@ class BaseEnvironment(abc.ABC):
     def _advance(self):
         raise NotImplementedError
 
+    @abc.abstractmethod
     def copy(self):
-        env = copy(self)
-        env._actors = [actor.copy() for actor in self._actors]
-        return env
+        raise NotImplementedError
