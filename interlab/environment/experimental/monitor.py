@@ -3,7 +3,7 @@ from typing import Any
 import numpy as np
 from matplotlib import pyplot as plt
 
-from .base import BaseEnvironment
+from interlab.environment.base import BaseEnvironment
 
 
 class Monitor:
