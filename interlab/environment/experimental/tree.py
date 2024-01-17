@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 
-from treetrace import TracingNode
-
 from interlab.environment.base import BaseEnvironment
+from treetrace import TracingNode
 
 
 @dataclass(frozen=True)

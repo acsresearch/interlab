@@ -1,8 +1,7 @@
 import abc
-import copy
-from typing import Sequence
 
-from interlab.actor import BaseActor
+from typing_extensions import Self
+
 from interlab.utils.copying import checked_deepcopy
 from treetrace import TracingNode
 
@@ -17,8 +16,8 @@ class BaseEnvironment(abc.ABC):
 
     ```
     class MyEnv(BaseEnvironment):
-        def __init__(self, ...):
-            super().__init__([actor1, actor2])
+        def __init__(self, actor1, actor2):
+            super().__init__()
             ...
 
         def _advance(self, ...):
@@ -36,18 +35,13 @@ class BaseEnvironment(abc.ABC):
     ```
     """
 
-    def __init__(self, actors: Sequence[BaseActor]):
-        self._actors = list(actors)
-        self._advance_counter = 0
+    def __init__(self):
+        self._steps_counter = 0
         self._is_finished = False
 
     @property
-    def actors(self) -> tuple[BaseActor]:
-        return tuple(self._actors)
-
-    @property
-    def advance_counter(self) -> int:
-        return self._advance_counter
+    def steps(self) -> int:
+        return self._steps_counter
 
     @property
     def is_finished(self) -> bool:
@@ -56,7 +50,7 @@ class BaseEnvironment(abc.ABC):
     def set_finished(self):
         self._is_finished = True
 
-    def advance(self, *args, **kwargs):
+    def step(self, *args, **kwargs):
         """
         Advance the environment state via `self._advance`.
 
@@ -69,18 +63,22 @@ class BaseEnvironment(abc.ABC):
         """
         if self.is_finished:
             raise Exception("Calling `advance` on a finished environment")
-        name = f"{self.__class__.__name__} (advance #{self.advance_counter})"
+        name = f"{self.__class__.__name__} [step {self.steps}]"
         with TracingNode(name) as node:
             if args:
                 node.add_input("args", args)
             if kwargs:
                 node.add_input("kwargs", kwargs)
-            result = self._advance(*args, **kwargs)
+            result = self._step(*args, **kwargs)
             node.set_result(result)
-            self._advance_counter += 1
+            self._steps_counter += 1
             return result
 
-    def copy(self):
+    @abc.abstractmethod
+    def _step(self):
+        raise NotImplementedError("Implement _step with the environment logic.")
+
+    def copy(self) -> Self:
         """
         Create an independent copy of the environment and any contained objects (actor, sub-environments).
 

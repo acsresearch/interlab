@@ -1,8 +1,9 @@
 import abc
 import random
 from abc import ABC
-from copy import copy
 from typing import Any
+
+from typing_extensions import Self
 
 from treetrace import HtmlColor, TracingNode, shorten_str
 
@@ -29,7 +30,7 @@ class BaseActor(abc.ABC):
                 HtmlColor.random_color(self.name, saturation=0.5, lighness=0.3)
             )
 
-    def copy(self):
+    def copy(self) -> Self:
         """
         Create an independent copy of the actor and its state (incl. memory).
 

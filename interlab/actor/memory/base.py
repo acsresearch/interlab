@@ -1,5 +1,4 @@
 import abc
-import copy
 from dataclasses import KW_ONLY, dataclass
 from typing import Any, Callable, Iterable
 
@@ -55,7 +54,7 @@ class BaseMemory(abc.ABC):
     def _count_tokens(self, text: str) -> int:
         return count_tokens(text, self.count_tokens_model)
 
-    def copy(self):
+    def copy(self) -> Self:
         """
         Create an independent copy of the memory state.
 
