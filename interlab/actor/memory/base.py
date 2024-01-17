@@ -7,6 +7,7 @@ import numpy as np
 from typing_extensions import Self
 
 from ...queries.count_tokens import count_tokens
+from ...utils.copying import checked_deepcopy
 
 
 @dataclass(frozen=True)
@@ -54,12 +55,25 @@ class BaseMemory(abc.ABC):
     def _count_tokens(self, text: str) -> int:
         return count_tokens(text, self.count_tokens_model)
 
-    def copy(self) -> Self:
+    def copy(self):
         """
-        Full copy of the memory. The copy must be independent from the original instance.
-        May be implemented as copy-on-write for efficiency etc.
+        Create an independent copy of the memory state.
+
+        Copying uses `copy.deepcopy` by default. You can simply use this implementation for
+        any derived classses, unless they refer to large, effectively
+        immutable objects (e.g. the weights of a local language model),
+        or refer to non-copyable objects (e.g. server sockets or database connections).
+        Note that those references may be indirect.
+
+        In those cases, you may want to modify the deepcopy behavior around that object, or disable
+        deep-copying of this object. See the documentation of `interlab.utis.checked_deepcopy` and the documentation
+        of [`__deepcopy__`](https://docs.python.org/3/library/copy.html) for details.
+        NB that overriding this method (`copy`) will not affect deep-copying of this object when contained
+        in other copied objects!
+
+        Note that individual `MemoryItem`s are already not duplicated upon copying.
         """
-        return copy.deepcopy(self)
+        return checked_deepcopy(self)
 
     def count_memories(self) -> int:
         """

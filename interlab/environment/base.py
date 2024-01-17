@@ -3,6 +3,7 @@ import copy
 from typing import Sequence
 
 from interlab.actor import BaseActor
+from interlab.utils.copying import checked_deepcopy
 from treetrace import TracingNode
 
 
@@ -81,14 +82,22 @@ class BaseEnvironment(abc.ABC):
 
     def copy(self):
         """
-        A deep copy of the environment, including all actors and sub-environemnts.
+        Create an independent copy of the environment and any contained objects (actor, sub-environments).
 
-        You can override this method to perform e.g. copy-on-write for efficiency if appropriate.
+        Copying uses `copy.deepcopy` by default. You can simply use this implementation for
+        any subclassses, unless they refer to large, effectively
+        immutable objects (e.g. the weights of a local language model),
+        or refer to non-copyable objects (e.g. server sockets or database connections).
+        Note that those references may be indirect.
+
+        In those cases, you may want to modify the deepcopy behavior around that object, or disable
+        deep-copying of this object. See the documentation of `interlab.utis.checked_deepcopy` and the documentation
+        of [`__deepcopy__`](https://docs.python.org/3/library/copy.html) for details.
+        NB that overriding this method (`copy`) will not affect deep-copying of this object when contained
+        in other copied objects!
+
+        Note that e.g. langchain API models are thin wrappers that are cheap to copy, and e.g.
+        individual `MemoryItem`s are already not duplicated upon copying the actor and its memory.
+        Also note that strings are immutable in Python and so are also not duplicated.
         """
-        return copy.deepcopy(self)
-
-    # Methods to overload
-
-    @abc.abstractmethod
-    def _advance(self):
-        raise NotImplementedError("Implement _advance with the environment logic.")
+        return checked_deepcopy(self)

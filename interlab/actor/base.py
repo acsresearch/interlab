@@ -6,6 +6,7 @@ from typing import Any
 
 from treetrace import HtmlColor, TracingNode, shorten_str
 
+from ..utils.copying import checked_deepcopy
 from . import memory as memory_module
 
 
@@ -30,12 +31,25 @@ class BaseActor(abc.ABC):
 
     def copy(self):
         """
-        Full copy of the actor and all its data (memories etc.).
+        Create an independent copy of the actor and its state (incl. memory).
 
-        The copy must be independent from the original instance. May be copy-on-write for efficiency, or via
-        serialization/deserialization.
+        Copying uses `copy.deepcopy` by default. You can simply use this implementation for
+        any subclassses, unless they refer to large, effectively
+        immutable objects (e.g. the weights of a local language model),
+        or refer to non-copyable objects (e.g. server sockets or database connections).
+        Note that those references may be indirect.
+
+        In those cases, you may want to modify the deepcopy behavior around that object, or disable
+        deep-copying of this object. See the documentation of `interlab.utis.checked_deepcopy` and the documentation
+        of [`__deepcopy__`](https://docs.python.org/3/library/copy.html) for details.
+        NB that overriding this method (`copy`) will not affect deep-copying of this object when contained
+        in other copied objects!
+
+        Note that e.g. langchain API models are thin wrappers that are cheap to copy, and e.g.
+        individual `MemoryItem`s are already not duplicated upon copying the actor and its memory.
+        Also note that strings are immutable in Python and so are also not duplicated.
         """
-        raise NotImplementedError()
+        return checked_deepcopy(self)
 
     def query(self, prompt: Any = None, *, expected_type=None, **kwargs) -> Any:
         """
