@@ -14,13 +14,11 @@ If you use InterLab, want to share ideas, feedback or have any questions, please
 
 InterLab is composed of several core modules, each providing distinct functionalities:
 
-- `tracing` offers comprehensive structured logging of nested `TracingNodes`s, storage for traing nodes, and custom visualization of content such as Images, generic HTML, and tracking f-string-like field substitutions in larger text (with `FormatStr`).
 - `actor` provides framework for actor interactions, including a generic LLM single-shot agent and a web console for playing as an actor, along with actor memory systems. The agents may be queried for any JSON-like action type.
-- `lang_models` includes helpers for querying various language models (in particular both LangChain chat and base models), tokenization, summarization etc., all with structured `TracingNode` logging. It also includes a web-console "LLM" for debugging and user interaction, and several internal API wrappers (though those are mostly obsoleted by using langchain).
+- `environemnts` a framework in which actors may interact
 - `queries` presents powerful helpers for advanced queries to the models: querying the model for structured data for any dataclass or Pydantic model (incl. auto-generating example instances of a schema), and providing robust and comprehensive response parsing for JSON (with repeat and validation options). It also includes simple yet robust summarization.
-- `ui` contains a server for tracing node browser and web consoles (actor and model), along with pre-compiled web apps.
-- `utils` encompasses several text utilities, color handling, and other helpers.
-- `ext` includes extensions and integrations with other systems, currently Matplotlib and Google Colab.
+
+Interlab is also shipped with independenent module `TreeTrace` that offers comprehensive structured logging of nested `TracingNodes`s, storage for traing nodes, and custom visualization of content such as Images, generic HTML, and tracking f-string-like field substitutions in larger text (with `FormatStr`).
 
 Beyond that, you can find more less-tested and experimental code in `experimental` submodules accross the package.
 
