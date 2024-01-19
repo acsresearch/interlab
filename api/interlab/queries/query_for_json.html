@@ -61,13 +61,13 @@
 </span><span id="L-5"><a href="#L-5"><span class="linenos">  5</span></a><span class="kn">import</span> <span class="nn">pydantic</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos">  6</span></a><span class="kn">from</span> <span class="nn">fastapi.encoders</span> <span class="kn">import</span> <span class="n">jsonable_encoder</span>
 </span><span id="L-7"><a href="#L-7"><span class="linenos">  7</span></a>
-</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="kn">from</span> <span class="nn">..context</span> <span class="kn">import</span> <span class="n">Context</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a><span class="kn">from</span> <span class="nn">..context.data</span> <span class="kn">import</span> <span class="n">FormatStr</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="kn">from</span> <span class="nn">..lang_models.query_model</span> <span class="kn">import</span> <span class="n">query_model</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="kn">from</span> <span class="nn">.json_examples</span> <span class="kn">import</span> <span class="n">generate_json_example</span>
-</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="kn">from</span> <span class="nn">.json_parsing</span> <span class="kn">import</span> <span class="n">find_and_parse_json_block</span>
-</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="kn">from</span> <span class="nn">.json_schema</span> <span class="kn">import</span> <span class="n">get_json_schema</span><span class="p">,</span> <span class="n">get_pydantic_model</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">from</span> <span class="nn">.query_failure</span> <span class="kn">import</span> <span class="n">ParsingFailure</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos">  8</span></a><span class="kn">from</span> <span class="nn">treetrace</span> <span class="kn">import</span> <span class="n">FormatStr</span><span class="p">,</span> <span class="n">TracingNode</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos">  9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos"> 10</span></a><span class="kn">from</span> <span class="nn">.json_examples</span> <span class="kn">import</span> <span class="n">generate_json_example</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos"> 11</span></a><span class="kn">from</span> <span class="nn">.json_parsing</span> <span class="kn">import</span> <span class="n">find_and_parse_json_block</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos"> 12</span></a><span class="kn">from</span> <span class="nn">.json_schema</span> <span class="kn">import</span> <span class="n">get_json_schema</span><span class="p">,</span> <span class="n">get_pydantic_model</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos"> 13</span></a><span class="kn">from</span> <span class="nn">.query_failure</span> <span class="kn">import</span> <span class="n">ParsingFailure</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos"> 14</span></a><span class="kn">from</span> <span class="nn">.query_model</span> <span class="kn">import</span> <span class="n">query_model</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos"> 15</span></a>
 </span><span id="L-16"><a href="#L-16"><span class="linenos"> 16</span></a><span class="n">_FORMAT_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 </span><span id="L-17"><a href="#L-17"><span class="linenos"> 17</span></a><span class="s2"># Instructions to format the answer:</span><span class="se">\n</span>
@@ -140,8 +140,8 @@
 </span><span id="L-84"><a href="#L-84"><span class="linenos"> 84</span></a>
 </span><span id="L-85"><a href="#L-85"><span class="linenos"> 85</span></a><span class="sd">    *Notes:*</span>
 </span><span id="L-86"><a href="#L-86"><span class="linenos"> 86</span></a>
-</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="sd">    - Context logging: `query_for_json` logs one Context for its call, and uses `query_model` which</span>
-</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">      also logs Contexts for the LLM calls themselves by default.</span>
+</span><span id="L-87"><a href="#L-87"><span class="linenos"> 87</span></a><span class="sd">    - Tracing: `query_for_json` logs one TraceNode for its call, and uses `query_model` which</span>
+</span><span id="L-88"><a href="#L-88"><span class="linenos"> 88</span></a><span class="sd">      also logs TraceNodes for the LLM calls themselves by default.</span>
 </span><span id="L-89"><a href="#L-89"><span class="linenos"> 89</span></a>
 </span><span id="L-90"><a href="#L-90"><span class="linenos"> 90</span></a><span class="sd">    - Uses pydatinc under the hood to construction of JSON schemas, flexible conversion of types to schema,</span>
 </span><span id="L-91"><a href="#L-91"><span class="linenos"> 91</span></a><span class="sd">      validation etc.</span>
@@ -188,7 +188,7 @@
 </span><span id="L-132"><a href="#L-132"><span class="linenos">132</span></a>    <span class="k">else</span><span class="p">:</span>
 </span><span id="L-133"><a href="#L-133"><span class="linenos">133</span></a>        <span class="n">prompt_with_fmt</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">_FORMAT_VAR</span><span class="p">:</span> <span class="n">format_prompt</span><span class="p">})</span>
 </span><span id="L-134"><a href="#L-134"><span class="linenos">134</span></a>
-</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>    <span class="k">with</span> <span class="n">Context</span><span class="p">(</span>
+</span><span id="L-135"><a href="#L-135"><span class="linenos">135</span></a>    <span class="k">with</span> <span class="n">TracingNode</span><span class="p">(</span>
 </span><span id="L-136"><a href="#L-136"><span class="linenos">136</span></a>        <span class="sa">f</span><span class="s2">&quot;query for JSON of type </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
 </span><span id="L-137"><a href="#L-137"><span class="linenos">137</span></a>        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;query&quot;</span><span class="p">,</span>
 </span><span id="L-138"><a href="#L-138"><span class="linenos">138</span></a>        <span class="n">inputs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
@@ -215,7 +215,7 @@
 </span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 </span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_repeats</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
 </span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>                    <span class="k">continue</span>
-</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>                <span class="c1"># Errors on last turn get logged into context and propagated</span>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>                <span class="c1"># Errors on last turn get logged into tracing and propagated</span>
 </span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a>                <span class="k">raise</span> <span class="n">ParsingFailure</span><span class="p">(</span>
 </span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>                    <span class="sa">f</span><span class="s2">&quot;model repeatedly returned a response without a valid JSON instance of </span><span class="si">{</span><span class="n">T</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
@@ -278,8 +278,8 @@
 </span><span id="query_for_json-85"><a href="#query_for_json-85"><span class="linenos"> 85</span></a>
 </span><span id="query_for_json-86"><a href="#query_for_json-86"><span class="linenos"> 86</span></a><span class="sd">    *Notes:*</span>
 </span><span id="query_for_json-87"><a href="#query_for_json-87"><span class="linenos"> 87</span></a>
-</span><span id="query_for_json-88"><a href="#query_for_json-88"><span class="linenos"> 88</span></a><span class="sd">    - Context logging: `query_for_json` logs one Context for its call, and uses `query_model` which</span>
-</span><span id="query_for_json-89"><a href="#query_for_json-89"><span class="linenos"> 89</span></a><span class="sd">      also logs Contexts for the LLM calls themselves by default.</span>
+</span><span id="query_for_json-88"><a href="#query_for_json-88"><span class="linenos"> 88</span></a><span class="sd">    - Tracing: `query_for_json` logs one TraceNode for its call, and uses `query_model` which</span>
+</span><span id="query_for_json-89"><a href="#query_for_json-89"><span class="linenos"> 89</span></a><span class="sd">      also logs TraceNodes for the LLM calls themselves by default.</span>
 </span><span id="query_for_json-90"><a href="#query_for_json-90"><span class="linenos"> 90</span></a>
 </span><span id="query_for_json-91"><a href="#query_for_json-91"><span class="linenos"> 91</span></a><span class="sd">    - Uses pydatinc under the hood to construction of JSON schemas, flexible conversion of types to schema,</span>
 </span><span id="query_for_json-92"><a href="#query_for_json-92"><span class="linenos"> 92</span></a><span class="sd">      validation etc.</span>
@@ -326,7 +326,7 @@
 </span><span id="query_for_json-133"><a href="#query_for_json-133"><span class="linenos">133</span></a>    <span class="k">else</span><span class="p">:</span>
 </span><span id="query_for_json-134"><a href="#query_for_json-134"><span class="linenos">134</span></a>        <span class="n">prompt_with_fmt</span> <span class="o">=</span> <span class="n">prompt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">_FORMAT_VAR</span><span class="p">:</span> <span class="n">format_prompt</span><span class="p">})</span>
 </span><span id="query_for_json-135"><a href="#query_for_json-135"><span class="linenos">135</span></a>
-</span><span id="query_for_json-136"><a href="#query_for_json-136"><span class="linenos">136</span></a>    <span class="k">with</span> <span class="n">Context</span><span class="p">(</span>
+</span><span id="query_for_json-136"><a href="#query_for_json-136"><span class="linenos">136</span></a>    <span class="k">with</span> <span class="n">TracingNode</span><span class="p">(</span>
 </span><span id="query_for_json-137"><a href="#query_for_json-137"><span class="linenos">137</span></a>        <span class="sa">f</span><span class="s2">&quot;query for JSON of type </span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
 </span><span id="query_for_json-138"><a href="#query_for_json-138"><span class="linenos">138</span></a>        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;query&quot;</span><span class="p">,</span>
 </span><span id="query_for_json-139"><a href="#query_for_json-139"><span class="linenos">139</span></a>        <span class="n">inputs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
@@ -353,7 +353,7 @@
 </span><span id="query_for_json-160"><a href="#query_for_json-160"><span class="linenos">160</span></a>            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 </span><span id="query_for_json-161"><a href="#query_for_json-161"><span class="linenos">161</span></a>                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_repeats</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
 </span><span id="query_for_json-162"><a href="#query_for_json-162"><span class="linenos">162</span></a>                    <span class="k">continue</span>
-</span><span id="query_for_json-163"><a href="#query_for_json-163"><span class="linenos">163</span></a>                <span class="c1"># Errors on last turn get logged into context and propagated</span>
+</span><span id="query_for_json-163"><a href="#query_for_json-163"><span class="linenos">163</span></a>                <span class="c1"># Errors on last turn get logged into tracing and propagated</span>
 </span><span id="query_for_json-164"><a href="#query_for_json-164"><span class="linenos">164</span></a>                <span class="k">raise</span> <span class="n">ParsingFailure</span><span class="p">(</span>
 </span><span id="query_for_json-165"><a href="#query_for_json-165"><span class="linenos">165</span></a>                    <span class="sa">f</span><span class="s2">&quot;model repeatedly returned a response without a valid JSON instance of </span><span class="si">{</span><span class="n">T</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span id="query_for_json-166"><a href="#query_for_json-166"><span class="linenos">166</span></a>                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
@@ -397,8 +397,8 @@ Note there is no repetition on LLM model failure (the model is expected to take 
 <p><em>Notes:</em></p>
 
 <ul>
-<li><p>Context logging: <code><a href="#query_for_json">query_for_json</a></code> logs one Context for its call, and uses <code>query_model</code> which
-also logs Contexts for the LLM calls themselves by default.</p></li>
+<li><p>Tracing: <code><a href="#query_for_json">query_for_json</a></code> logs one TraceNode for its call, and uses <code>query_model</code> which
+also logs TraceNodes for the LLM calls themselves by default.</p></li>
 <li><p>Uses pydatinc under the hood to construction of JSON schemas, flexible conversion of types to schema,
 validation etc.</p></li>
 <li><p>The prompts ask the LLMs to wrap the JSON in markdown-style codeblocks for additional robustness
