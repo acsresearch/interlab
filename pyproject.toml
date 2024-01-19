@@ -5,7 +5,7 @@ name = "interlab"
 packages = [{include = "treetrace"}, {include = "interlab"}, {include = "interlab_zoo"}]
 include = ["requirements*.txt", "docs/assets/logo3-cut.webp"]
 readme = "README.md"
-version = "0.3.5"
+version = "0.4.0"
 
 [tool.poetry.dependencies]
 python = "^3.10"
