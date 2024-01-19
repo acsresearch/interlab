@@ -1,5 +1,3 @@
-from typing import Any
-
 import numpy as np
 from matplotlib import pyplot as plt
 

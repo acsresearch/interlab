@@ -27,6 +27,6 @@ def expand_tree(
                     children.append(child)
         return EnvNode(env, children)
 
-    with TracingNode(f"root") as ctx:
+    with TracingNode("root") as ctx:
         ctx.add_input("environment", environment)
         return helper(environment, 0)
