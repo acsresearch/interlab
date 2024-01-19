@@ -30,7 +30,7 @@ class BaseMemoryItem:
     data: Any = None
 
     def __deepcopy__(self, memo):
-        "The object and its contents are assumed to be immutable."
+        "The MemoryItem objects and its contents are assumed to be immutable."
         return self
 
 

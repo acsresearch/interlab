@@ -37,10 +37,6 @@ class ListMemory(BaseMemory):
         item_limit: int = None,
         token_limit: int = None,
     ) -> str:
-        if query is not None and query:
-            warnings.warn(
-                f"{self.__class__.__name__}.format_memories() ignores the query parameter but received one."
-            )
         return self._format_memories_helper(
             self.items,
             separator=separator,

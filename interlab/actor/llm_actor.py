@@ -25,7 +25,7 @@ class LLMActor(ActorWithMemory):
             memory=self.memory.format_memories(query=prompt),
             prompt=prompt,
         )
-        if expected_type is str or expected_type is None:
+        if expected_type is None:
             return query_model(self.model, q)
         else:
             return query_for_json(self.model, expected_type, q, with_cot=with_cot)
