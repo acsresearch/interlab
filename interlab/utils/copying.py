@@ -23,14 +23,12 @@ class ImmutableWrapper:
         return self
 
     def __getattr__(self, key):
-        print(key)
         if key == "_ImmutableWrapper_obj":
             super().__getattr__(key)
         else:
             return getattr(self._ImmutableWrapper_obj, key)
 
     def __setattr__(self, key, value):
-        print(key, value)
         if key == "_ImmutableWrapper_obj":
             super().__setattr__(key, value)
         else:
@@ -97,7 +95,6 @@ def checked_deepcopy(obj: Any, limit: int | str | None = "default") -> Any:
     finally:
         mem1 = tracemalloc.get_traced_memory()[0]
         tracemalloc.stop()
-        print(mem0, mem1)
         if mem1 - mem0 >= limit:
             warnings.warn(
                 f"Deepcopy of {obj} used {mem1 - mem0} bytes of memory. Make sure you are not copying large objects "
