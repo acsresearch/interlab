@@ -20,13 +20,15 @@ class CommunicateAndPlayGame(BaseEnvironment):
         action_names: Sequence[str],
         payoff_matrix: np.ndarray | None,
     ):
-        super().__init__(actors)
+        super().__init__()
+        self.actors = actors
+        n_actors = len(actors)
 
         if payoff_matrix is not None:
-            assert len(payoff_matrix.shape) == self.n_actors + 1
-            for i in range(self.n_actors):
+            assert len(payoff_matrix.shape) == n_actors + 1
+            for i in range(n_actors):
                 assert payoff_matrix.shape[i] == len(action_names)
-            assert payoff_matrix.shape[-1] == self.n_actors
+            assert payoff_matrix.shape[-1] == n_actors
 
         self.n_rounds = n_rounds
         self.action_names = action_names
@@ -67,21 +69,21 @@ class CommunicateAndPlayGame(BaseEnvironment):
     def game_round(self):
         return len(self.history) + 1
 
-    def _advance(self):
+    def _step(self):
         observations = [
-            actor.query(self.comm_prompt, expected_type=self.comm_action).data.message
+            actor.query(self.comm_prompt, expected_type=self.comm_action).message
             for actor in self.actors
         ]
 
         for actor, event in zip(self.actors, observations):
-            self.everyone_observe(
-                f"Message in round {self.game_round}: " + event,
-                origin=actor,
-            )
+            for a in self.actors:
+                a.observe(
+                    f"Message from {actor.name} in round {self.game_round}: " + event
+                )
 
         play_prompt = self.play_prompt.format(actions=",".join(self.action_names))
         observations = [
-            actor.query(play_prompt, expected_type=self.play_action).data.action
+            actor.query(play_prompt, expected_type=self.play_action).action
             for actor in self.actors
         ]
 
@@ -96,10 +98,10 @@ class CommunicateAndPlayGame(BaseEnvironment):
             self.action_monitor.trace(f"{actor.name}-{event}", 1)
             if payoffs is not None:
                 self.payoff_monitor.trace(actor.name, payoffs[i])
-            self.everyone_observe(
-                f"Action in round {self.game_round}: " + event,
-                origin=actor,
-            )
+            for a in self.actors:
+                a.observe(
+                    f"Action of {actor.name} in round {self.game_round}: " + event
+                )
         self.history.append(observations)
 
         if self.game_round > self.n_rounds:

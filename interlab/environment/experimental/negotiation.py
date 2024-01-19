@@ -13,7 +13,8 @@ class PriceNegotiation(BaseEnvironment):
         time_push_rounds: int | None = None,
         minimizer_starts_first: bool = True,
     ):
-        super().__init__([minimizer, maximizer])
+        super().__init__()
+        self.actors = [minimizer, maximizer]
 
         @dataclass
         class Action:
@@ -47,7 +48,7 @@ class PriceNegotiation(BaseEnvironment):
     def maximizer(self):
         return self.actors[1]
 
-    def _advance(self):
+    def _step(self):
         current = self.steps
 
         if not self.minimizer_starts_first:
@@ -69,7 +70,7 @@ class PriceNegotiation(BaseEnvironment):
         action_result = me.query(
             f"What message should I send to {other.name}, and what else do I think or should do?{time_push}",
             expected_type=self.action,
-        ).data
+        )
 
         me.observe(
             f"## Message from me ({me.name}) to {other.name}\n\n {action_result.email_text}"

@@ -17,16 +17,14 @@ def expand_tree(
 ) -> EnvNode:
     def helper(env, depth):
         children = []
-        if depth < max_depth and not env.is_finished():
+        if depth < max_depth and not env.is_finished:
             for i in range(n_children):
                 with TracingNode(f"{i + 1}. child") as ctx:
                     e = env.copy()
-                    e.advance()
+                    e.step()
                     ctx.add_input("environment", e)
                     child = helper(e, depth + 1)
                     children.append(child)
-                    if e.is_finished():
-                        ctx.set_result(e.result)
         return EnvNode(env, children)
 
     with TracingNode(f"root") as ctx:
