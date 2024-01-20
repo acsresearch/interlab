@@ -46,3 +46,4 @@ with TracingNode("negotiation", storage=storage) as ctx:
 `BaseEnvironment` provides the folowing attributes:
 
 - `.is_finished -> boolean` - Checks if the environment is in a terminal state and returns True if it is.
+- `.steps -> int` - The current number of step counter

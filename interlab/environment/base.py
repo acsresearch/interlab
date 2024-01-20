@@ -18,9 +18,10 @@ class BaseEnvironment(abc.ABC):
     class MyEnv(BaseEnvironment):
         def __init__(self, actor1, actor2):
             super().__init__()
+            self.actors = [actor1, actor2]
             ...
 
-        def _advance(self, ...):
+        def _step(self, ...):
             active = self.actors[self.steps % 2]
             other = self.actors[(self.steps + 1) % 2]
 
@@ -31,7 +32,7 @@ class BaseEnvironment(abc.ABC):
 
             if ...:
                 self.set_finished()
-            return action # advance can return value
+            return action # 'step' may return value
     ```
     """
 
@@ -52,7 +53,7 @@ class BaseEnvironment(abc.ABC):
 
     def step(self, *args, **kwargs):
         """
-        Advance the environment state via `self._advance`.
+        Advance the environment state via `self._step`.
 
         How much progress should be made is environment specific
         and can be e.g. specified by parameters).
