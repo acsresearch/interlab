@@ -6,9 +6,9 @@
 <a href="https://github.com/acsresearch/interlab/releases/latest/">
   <img alt="GitHub Release" src="https://img.shields.io/github/v/release/acsresearch/interlab" />
 </a>
-<a href="https://acsresearch.org/interlab/">
+<!-- <a href="https://acsresearch.org/interlab/">
   <img alt="Documentation" src="https://img.shields.io/badge/Documentation-blue" />
-</a>
+</a> -->
 <a href="https://github.com/acsresearch/interlab/actions/workflows/ci.yaml">
   <img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/acsresearch/interlab/ci.yaml" />
 </a>
@@ -27,9 +27,9 @@ If you use InterLab, want to share ideas, feedback or have any questions, please
 
 ## Overview
 
-InterLab is composed of three main parts:
+InterLab is composed of three main packages:
 
-* `interlab` with the core functionality and common abstractions of actors, environments, memory, and language model interactions, along with a few helpful scaffolds. The main modules there are:
+* `interlab` contains the core functionality and common abstractions of actors, environments, memory, and language model interactions, along with a few helpful scaffolds. The main modules there are:
   - `actor` provides framework for actor interactions, including a generic LLM single-shot agent and a web console for playing as an actor, along with actor memory systems. The agents may be queried for structured (typed JSON-like) or unstuctured actions.
   - `environment` providing abstraction over partially observable environments.
   - `queries` contains powerful helpers for querying the models, in particular querying for any dataclass or Pydantic model with robust response parsing and retries, summarization tools etc.
