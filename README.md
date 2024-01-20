@@ -3,10 +3,18 @@
 # InterLab - toolkit for multi-agent interactions
 
 <p align="center">
-[<img alt="GitHub Release" src="https://img.shields.io/github/v/release/acsresearch/interlab" />](https://github.com/acsresearch/interlab/releases/latest/)
-[<img alt="Documentation" src="https://img.shields.io/badge/Documentation-blue" />](https://acsresearch.org/interlab/)
-<img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/acsresearch/interlab/ci.yaml" />
-<a target="_blank" href="https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+<a href="https://github.com/acsresearch/interlab/releases/latest/">
+  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/acsresearch/interlab" />
+</a>
+<a href="https://acsresearch.org/interlab/">
+  <img alt="Documentation" src="https://img.shields.io/badge/Documentation-blue" />
+</a>
+<a href="https://github.com/acsresearch/interlab/actions/workflows/ci.yaml">
+  <img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/acsresearch/interlab/ci.yaml" />
+</a>
+<a target="_blank" href="https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
 </p>
 
 Welcome to InterLab, a research-focused toolkit created to facilitate study and experimentation in the realm of agent interactions, particularly those based on Language Learning Models (LLMs). Our primary objective is to simplify the process of crafting, deploying, and inspecting complex and structured queries within the context of agent interactions, while also providing robust support for interaction logging, UI and visualization. While we maintain a broad scope and plan to include game theoretic agents and a variety of scenarios, our main emphasis lies in the sphere of LLM interactions.
