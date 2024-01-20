@@ -5,9 +5,7 @@
 <p align="center">
 <a href="https://github.com/acsresearch/interlab/releases/latest/"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/acsresearch/interlab" /></a>
 <a href="https://pypi.org/project/interlab/"><img alt="PyPI Release" src="https://img.shields.io/pypi/v/interlab"></a>
-<!-- <a href="https://acsresearch.org/interlab/">
-  <img alt="Documentation" src="https://img.shields.io/badge/Documentation-blue" />
-</a> -->
+<a href="https://acsresearch.org/interlab/stable/"><img alt="Documentation" src="https://img.shields.io/badge/Documentation-blue" /></a>
 <a href="https://github.com/acsresearch/interlab/actions/workflows/ci.yaml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/acsresearch/interlab/ci.yaml" /></a>
 <a href="https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 <a href="https://github.com/acsresearch/interlab/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/acsresearch/interlab"></a>
