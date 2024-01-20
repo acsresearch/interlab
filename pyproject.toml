@@ -50,6 +50,7 @@ mkdocs-pdoc-plugin = { git = "https://github.com/spirali/mkdocs-pdoc-plugin.git"
 #mkdocs-pdoc-plugin = { path="/home/ada/projects/mkdocs-pdoc-plugin", develop = true }
 mkdocs-git-revision-date-localized-plugin = "^1.2.0"
 mike = "^1.1.2"
+setuptools = "^69.0.3"
 
 
 [build-system]

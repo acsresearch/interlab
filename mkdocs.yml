@@ -1,5 +1,6 @@
 site_name: InterLab
-site_description: Documentation of InterLab
+site_description: InterLab - toolkit for multi-agent interactions
+site_author: Ada Böhm, Tomáš Gavenčiak
 repo_url: https://github.com/acsresearch/interlab
 site_url: https://acsresearch.org/interlab/
 

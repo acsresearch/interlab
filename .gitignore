@@ -8,3 +8,4 @@ package-lock.json
 /notebooks/logs/
 /dist
 /node_modules
+/docs/api

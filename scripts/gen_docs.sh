@@ -2,7 +2,7 @@
 
 set -e
 
-DIRS="interlab interlab_zoo"
+DIRS="interlab interlab_zoo treetrace"
 API_DEST=docs/api
 
 cd `dirname $0`/..
