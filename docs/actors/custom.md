@@ -6,11 +6,11 @@ To create a subclass of `BaseActor`, the following methods should be overridden:
 This method handles the observation process. It should take an observation and handle it as necessary for the actor's functionality.
 
 ```python
-from interlab import BaseActor, Event
+from interlab import BaseActor
 
 class MyActor(BaseActor):
-    def _observe(self, event: Event):
-        # Process the event
+    def _observe(self, observation):
+        # Process the observation
         pass
 ```
 
@@ -28,12 +28,12 @@ class MyActor(BaseActor):
 
 ### `copy(self)`
 
-This method has to create a copy of the actor.
+Copy of an actor. By default it makes a deep copy but you can override it.
 
 
 ## `ActorWithMemory` Subclassing
 
-When subclassing `ActorWithMemory`, only the `_query` method is compulsory to override as it already provides implementations for `_observe` and `copy`.
+When subclassing `ActorWithMemory`, only the `_query` method is compulsory to override as it already provides implementations for `_observe`.
 
 ### `_query(self, prompt: Any = None, **kwargs) -> Any`
 Just like with the `BaseActor`, you need to implement query processing logic that suits your actor's role.

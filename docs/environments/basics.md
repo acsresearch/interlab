@@ -6,7 +6,7 @@ Environments in Interlab are scenarios that consist of communicating actors and 
 
 Every environment in Interlab must inherit from the `BaseEnvironment` abstract base class, which provides the necessary interface for managing the progression and state of the scenario. The environment can exist in one of two states: "running" or "finished". The "running" state indicates that the environment can proceed to the next state, whereas the "finished" state indicates the environment has reached its conclusion.
 
-An environment can be set to an finished by calling method `.set_finished()`. Method `.is_finished()` serves for testing if an environment is in a finished state.
+An environment can be set to an finished by calling method `.set_finished()`. Method `.is_finished` serves for testing if an environment is in a finished state.
 
 ## Example Usage of Environments
 
@@ -14,7 +14,7 @@ A specific environment called `PriceNegotiation` is provided by Interlab as a sa
 
 ```python
 from interlab import actor
-from interlba.environment.negotiation import PriceNegotiation
+from interlba.environment.experimantal.negotiation import PriceNegotiation
 from treetrace import TracingNode
 import langchain
 
@@ -30,21 +30,19 @@ env = PriceNegotiation(minimizer=pa, maximizer=pb, max_steps=10)
 
 # Run the simulation inside a tracing node, storing the result.
 with TracingNode("negotiation", storage=storage) as ctx:
-    result = env.run_until_end()
-    ctx.set_result(env.result)
+    while not env.is_finished:
+        env.step()
 ```
 
-## Methods of BaseEnvironment
+## Methods and attributes of BaseEnvironment
 
 `BaseEnvironment` provides the folowing methods:
 
-- `.advance()` - Proceeds a single step in the environment. Raises an exception if the environment has already finished. Each call to `.step()` creates a new context for that step.
+- `.step()` - Proceeds a single step in the environment. Raises an exception if the environment has already finished. Each call to `.step()` creates a new context for that step.
 - `.copy()` - Creates a stand-alone copy of the environment.
-- `.is_finished() -> boolean` - Checks if the environment is in a terminal state and returns True if it is.
 - `.set_finished()` - Puts the environment in finished state.
-- `.run_until_end(self, max_steps: int = None, verbose=False)` - Runs the `.advance()` method on the environment until it either finishes or reaches the specified maximum number of steps.
 
-## Attributes of BaseEnvironment
 
-- `.actors` - A list containing the current actors within the environment.
-- `.n_actors` - An integer representing the number of actors in the environment.
+`BaseEnvironment` provides the folowing attributes:
+
+- `.is_finished -> boolean` - Checks if the environment is in a terminal state and returns True if it is.
