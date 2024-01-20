@@ -1,26 +1,34 @@
 <p align="center"><img src="docs/assets/logo3-cut.webp" width="350" height="350"/></p>
 
-# InterLab: A research framework for artificial agent interactions
+# InterLab - toolkit for multi-agent interactions
+
+<p align="center">
+[<img alt="GitHub Release" src="https://img.shields.io/github/v/release/acsresearch/interlab" />](https://github.com/acsresearch/interlab/releases/latest/)
+[<img alt="Documentation" src="https://img.shields.io/badge/Documentation-blue" />](https://acsresearch.org/interlab/)
+<img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/acsresearch/interlab/ci.yaml" />
+<a target="_blank" href="https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+</p>
 
 Welcome to InterLab, a research-focused toolkit created to facilitate study and experimentation in the realm of agent interactions, particularly those based on Language Learning Models (LLMs). Our primary objective is to simplify the process of crafting, deploying, and inspecting complex and structured queries within the context of agent interactions, while also providing robust support for interaction logging, UI and visualization. While we maintain a broad scope and plan to include game theoretic agents and a variety of scenarios, our main emphasis lies in the sphere of LLM interactions.
 
 InterLab is developed at the [Alignment of Complex Systems Research Group](https://acsresearch.org/) and distributed under MIT license (see `LICENSE`).
 
-**Current status: InterLab is in open beta.** While we use InterLab internally for our research, it is also under active development and although we aim to limit any breaking changes to 0.x version changes, the API may change without notice. We plan to announce InterLab with a complete API, use-cases and documentation in Aug 2023, and while we encourage you to use it for your alignment research already, we also ask you not to propagate it widely in the next few weeks.
+**Current status: InterLab is in open beta.** InterLab is also active development, we use it internally for our experiments, and we want to make it available to the wider research community. Although we aim to limit the breaking changes between major versions, the API may change substantially as we refine the design and gather information about usage.
 
-If you use InterLab, want to share ideas, feedback or have any questions, please email us at `gavento@acsresearch.org`.
+If you use InterLab, want to share ideas, feedback or have any questions, please email us at `gavento@acsresearch.org` - we'd be happy to hear from you.
 
 ## Overview
 
-InterLab is composed of several core modules, each providing distinct functionalities:
+InterLab is composed of three main parts:
 
-- `actor` provides framework for actor interactions, including a generic LLM single-shot agent and a web console for playing as an actor, along with actor memory systems. The agents may be queried for any JSON-like action type.
-- `environemnts` a framework in which actors may interact
-- `queries` presents powerful helpers for advanced queries to the models: querying the model for structured data for any dataclass or Pydantic model (incl. auto-generating example instances of a schema), and providing robust and comprehensive response parsing for JSON (with repeat and validation options). It also includes simple yet robust summarization.
+* `interlab` with the core functionality and common abstractions of actors, environments, memory, and language model interactions, along with a few helpful scaffolds. The main modules there are:
+  - `actor` provides framework for actor interactions, including a generic LLM single-shot agent and a web console for playing as an actor, along with actor memory systems. The agents may be queried for structured (typed JSON-like) or unstuctured actions.
+  - `environment` providing abstraction over partially observable environments.
+  - `queries` contains powerful helpers for querying the models, in particular querying for any dataclass or Pydantic model with robust response parsing and retries, summarization tools etc.
+* `treetrace` offers comprehensive structured logging of nested `TracingNodes`s, storage for traing nodes, and custom visualization of content such as Images, generic HTML, and tracking f-string-like field substitutions in larger text.
+* `interlab_zoo` serves as a repository for specific and opinionated implementations of actors, scenarios, actor memory systems, tracing post-processing, and other tools that enhance the InterLab project. Its mission is to gather code that is both widely applicable and useful, while maintaining a compact and focused core package.
 
-Interlab is also shipped with independenent module `TreeTrace` that offers comprehensive structured logging of nested `TracingNodes`s, storage for traing nodes, and custom visualization of content such as Images, generic HTML, and tracking f-string-like field substitutions in larger text (with `FormatStr`).
-
-Beyond that, you can find more less-tested and experimental code in `experimental` submodules accross the package.
+Beyond that, some less-tested and experimental code can be found in `experimental` submodules accross the core package.
 
 ### Structured interaction log browser
 
@@ -35,29 +43,25 @@ Example screenshots (click to zoom in):
 
 You can find Jupyter notebooks with a few worked-out examples [here](https://github.com/acsresearch/interlab/tree/main/notebooks). The notebook [car_negotiation.ipynb](https://github.com/acsresearch/interlab/blob/main/notebooks/car_negotiation.ipynb) is a good starting point for a simple bargaining simulation.
 
-### InterLab Zoo
+## Installation
 
-The `interlab_zoo` package serves as a repository for specific and opinionated implementations of actors, scenarios, actor memory systems, tracing post-processing, and other tools that enhance the InterLab project. Its mission is to gather code that is both widely applicable and useful, while maintaining a compact and focused core package.
-
-## Install
-
-Install the package `interlab` from PyPI using `pip` or any other package manager.
+You can install the package `interlab` from PyPI using `pip` or any other package manager.
 
 ```commandline
 pip install interlab
 ```
 
-### Install with development tools
+### Installation with development tools
 
-**Poetry.** This repository utilizes [poetry](https://python-poetry.org/) for package management, which is recommended for dependency installation and is required for InterLab development. Poetry automatically generates and manages a virtual environment for you, and also installs `interlab` module itself. If you have poetry installed, running the following command inside this repository will install InterLab:
+This repository utilizes [**Poetry**](https://python-poetry.org/) package management, which is recommended for dependency installation and is required for InterLab development. Poetry automatically generates and manages a virtual environment for you, and also installs `interlab` module itself. If you have poetry installed, running the following command inside this repository will install InterLab:
 
 ```commandline
 poetry install
 ```
 
-**pip and `requirements.txt`.** Alternatively, `pip` can be used to install dependencies with `pip install -r requirements.txt` (core requirements) or `pip install -r requirements-full.txt` (including development tools, Jupyter Lab, etc.; equivalent to `poetry install`). This is also required to use InterLab in Google Colab (use `requirements-colab.txt` to get aroung some Colab versioning conflicts).
+**pip and `requirements.txt`.** Alternatively, `pip` can be used to install dependencies with `pip install -r requirements.txt` (core requirements) or `pip install -r requirements-full.txt` (including development tools, Jupyter Lab, etc.; equivalent to `poetry install`). To use InterLab in Google Colab, we use the requirements in `requirements-colab.txt` to get aroung some Colab versioning conflicts.
 
-## Run
+## Development and experiments
 
 Jupyter Lab provides the simplest way to interact with the code and design experiments:
 
@@ -71,7 +75,9 @@ After running the command, open the provided link in your browser. `notebooks/ca
 
 ### Google Colab
 
-Google Colab often offers a lightweight alternative to setting up InterLab locally on your computer. Interlab comes with built-in colab compatibility and we have prepared a [Template InterLab Colab notebook](https://colab.research.google.com/drive/1B4To_6W4qzlyiDQzwH4nWbzrc2ngn0Io) with common setup and a simple example experiment with two LLMs interacting on behalf of their users.
+<a target="_blank" href="https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+
+Google Colab often offers a lightweight alternative to setting up InterLab locally on your computer. Interlab comes with built-in colab compatibility and we have prepared a [Example InterLab Colab notebook](https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb) with common setup and a simple example experiment with two LLMs interacting on behalf of their users.
 
 ### Note: API Keys
 
@@ -92,51 +98,6 @@ You can then import these variables from the `.env` file into a Jupyter notebook
 import dotenv
 dotenv.load_dotenv()
 ```
-
-## Roadmap
-
-A rough overview where the project is heading in our minds, incomplete and subject to prioritization based on experimentor's needs. Contact us if you want to get involved in developing interlab with us.
-
-### Games, scenarios, game theory
-
-- Additional general agent implementations
-  - Deliberative agent, internal debate agent, constitutional agent, ...
-  - Subagent minds implementation
-- Additional memory systems
-  - Recall-based memory system
-- Support for counterfactual development and situation checkpointing
-  - A stateful scenario (game) system, storing state of games in progress (likely as a pickle)
-  - Markov-Chain Monte-Carlo agent strategy (later generalized to regret minimization)
-- Integration with Gymnasium environments (former OpenAI Gym), interactive OpenAI evals, and others (may need mostly wrappers)
-
-### Language models
-
-- Support for retrieving activation vectors from LLMs (e.g. HuggingFace ones), then support for influence vectors
-- Technical: Better support for token counting and limiting tokens of LLMs
-
-### More integrations
-
-- Experiment tracking and management (e.g. Hydra)
-- Visualizations, e.g. Plotly charts
-- Showcase and improve interactive (human player) interfaces
-
-
-
-### Research LLM sensitivity to framings and formulations in the framework
-
-Listing a few directly related to the framework:
-
-- How much does asking for JSON change the nature/properties of the responses (vs asking for response in natural language only)?
-  - If it tunrs it does, we can do all JSON requests in two steps: first answer in free-form text, then use a second independent request to just extract the response information into the JSON.
-  - The request for free-form text reply needs to ask about all the fields of the expected data type. Can this question creation be automated?
-- Other sensitivity to formulations: Use an LLM to generate variants of prompts (GPT-4 can do this) and evaluate differences in outcomes.
-- Evaluate memory recall quality (for vector-embedding memory systems, or other adaptive recall), to tune the systems and be sure information is not lost in longer interactions.
-
-
-### Other ideas and directions
-
-- Active actor interactions - actors decide _when_ to act instead of being prompted for action, either in simulated or in real time.
-- Network protocol for remote agents, connection to other actor frameworks, games, or UIs.
 
 ## Contributions and development
 
