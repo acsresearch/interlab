@@ -9,3 +9,4 @@ package-lock.json
 /dist
 /node_modules
 /docs/api
+/site
