@@ -16,12 +16,13 @@ nav:
       - Data Browser:  tracing/databrowser.md
   - Actors:
       - Basics: actors/basics.md
-      - Subclassing: actors/custom.md
+      - Implementing actors: actors/custom.md
+      - Memory systems: actors/memory.md
       - Web console actor: actors/webactor.md
   - Environments:
       - Basics: environments/basics.md
       - Subclassing: environments/custom.md
-  - API docs: apidoc.md
+  - API docs: api/
 
 theme:
   name: material
