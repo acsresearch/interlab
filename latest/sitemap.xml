@@ -2,72 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://acsresearch.org/interlab/stable/</loc>
-         <lastmod>2024-01-20</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://acsresearch.org/interlab/stable/apidoc/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/examples/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/installation/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/overview/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/actors/basics/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/actors/custom/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://acsresearch.org/interlab/stable/actors/memory/</loc>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/actors/webactor/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/environments/basics/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/environments/custom/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/tracing/basics/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/tracing/databrowser/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/tracing/serialization/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://acsresearch.org/interlab/stable/tracing/storage/</loc>
-         <lastmod>2024-01-20</lastmod>
+         <lastmod>2024-01-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
