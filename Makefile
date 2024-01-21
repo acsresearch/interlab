@@ -23,7 +23,7 @@ format:
 	scripts/format.sh
 
 docs:
-	script/gen_docs.sh
+	scripts/gen_docs.sh
 
 docs_publish_latest: docs
 	poetry run mike deploy -u -p latest
