@@ -8,6 +8,10 @@ Every environment in Interlab must inherit from the `BaseEnvironment` abstract b
 
 An environment can be set to an finished by calling method `.set_finished()`. Method `.is_finished` serves for testing if an environment is in a finished state.
 
+The only other state the BaseEnvironment keeps track of is the counter `env.steps`, counting number of steps calls. Note this
+is primarily for conveneince and debugging, as some environments may track simlated time or progression independently
+of the number of `step` calls.
+
 ## Example Usage of Environments
 
 A specific environment called `PriceNegotiation` is provided by Interlab as a sample implementation of environment. It simulates the scenario of two parties negotiating a price. Here's an example of how to use it:

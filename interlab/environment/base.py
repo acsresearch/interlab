@@ -1,4 +1,5 @@
 import abc
+from typing import Any
 
 from typing_extensions import Self
 
@@ -76,7 +77,7 @@ class BaseEnvironment(abc.ABC):
             return result
 
     @abc.abstractmethod
-    def _step(self):
+    def _step(self) -> Any:
         raise NotImplementedError("Implement _step with the environment logic.")
 
     def copy(self) -> Self:

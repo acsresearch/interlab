@@ -21,7 +21,7 @@ nav:
       - Web console actor: actors/webactor.md
   - Environments:
       - Basics: environments/basics.md
-      - Subclassing: environments/custom.md
+      - Implementing environments: environments/custom.md
   - API docs: api/
 
 theme:
