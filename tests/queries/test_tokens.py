@@ -1,4 +1,6 @@
-import langchain.chat_models
+import langchain_community.chat_models
+import langchain_community.llms
+import langchain_openai
 import pytest
 
 from interlab.queries.count_tokens import count_tokens
@@ -19,24 +21,35 @@ def test_count_tokens():
         count_tokens(TEXT, "foobar")
     assert (
         count_tokens(
-            TEXT, langchain.chat_models.ChatOpenAI(model="gpt-4", openai_api_key="Foo")
+            TEXT,
+            langchain_openai.ChatOpenAI(model="gpt-4", openai_api_key="Foo"),
         )
         == 40
     )
     assert (
-        count_tokens(TEXT, langchain.chat_models.ChatOpenAI(openai_api_key="Foo")) == 40
+        count_tokens(
+            TEXT,
+            langchain_openai.ChatOpenAI(openai_api_key="Foo"),
+        )
+        == 40
     )
     assert (
-        count_tokens(TEXT, langchain.chat_models.ChatAnthropic(anthropic_api_key="Foo"))
+        count_tokens(
+            TEXT, langchain_community.chat_models.ChatAnthropic(anthropic_api_key="Foo")
+        )
         == 57
     )
     assert (
-        count_tokens(TEXT, langchain.OpenAI(model="babbage", openai_api_key="Foo"))
+        count_tokens(
+            TEXT, langchain_openai.OpenAI(model="babbage", openai_api_key="Foo")
+        )
         == 56
     )
     assert count_tokens.cache_info().hits == 0
     assert (
-        count_tokens(TEXT, langchain.OpenAI(model="babbage", openai_api_key="Foo"))
+        count_tokens(
+            TEXT, langchain_openai.OpenAI(model="babbage", openai_api_key="Foo")
+        )
         == 56
     )
     assert count_tokens.cache_info().hits == 1

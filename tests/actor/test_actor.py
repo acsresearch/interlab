@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from interlab.actor.base import ActorWithMemory, BaseActor
 from interlab.actor.llm_actor import OneShotLLMActor
 
