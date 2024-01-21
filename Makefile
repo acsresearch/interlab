@@ -29,10 +29,10 @@ docs_publish_latest: docs
 	poetry run mike deploy -u -p latest
 
 check_requirements:
-	scripts/check_requirements.sh --check
+	scripts/requirements.sh --check
 
 update_requirements:
-	scripts/check_requirements.sh --update
+	scripts/requirements.sh --update
 
 lab:
 	poetry run jupyter lab
