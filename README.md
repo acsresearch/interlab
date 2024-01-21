@@ -79,7 +79,7 @@ After running the command, open the provided link in your browser. `notebooks/ca
 
 <a target="_blank" href="https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
 
-Google Colab often offers a lightweight alternative to setting up InterLab locally on your computer. Interlab comes with built-in colab compatibility and we have prepared a [Example InterLab Colab notebook](https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb) with common setup and a simple example experiment with two LLMs interacting on behalf of their users.
+Google Colab often offers a lightweight alternative to setting up InterLab locally on your computer. Interlab comes with built-in colab compatibility and we have prepared a [Example InterLab Colab experiment](https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb) with common setup and a simple example experiment with two LLMs interacting on behalf of their users.
 
 ### Note: API Keys
 
