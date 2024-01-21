@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/assets/logo3-cut.webp" width="350" height="350"/></p>
+<p align="center"><img src="https://github.com/acsresearch/interlab/raw/main/docs/assets/logo3-cut.webp" width="350" height="350"/></p>
 
 # InterLab - toolkit for multi-agent interactions
 
@@ -37,9 +37,9 @@ Beyond that, some less-tested and experimental code can be found in `experimenta
 In-notebook or independent browser for the structured logs, with live updates, support for JSON-like structured data and inline visualizations. Captures both high-level interaction structure and the low-level API calls for easy inspection and debugging.
 Example screenshots (click to zoom in):
 
-<p align="center"><img src="docs/assets/imgs/context-browser-2.png" alt= "Tracing browser screenshot" width="100%" ></p>
+<p align="center"><img src="https://github.com/acsresearch/interlab/raw/main/docs/assets/imgs/context-browser-1.png" alt= "Tracing browser screenshot 1" width="80%" ></p>
 
-<p align="center"><img src="docs/assets/imgs/context-browser-1.png" alt= "Tracing browser screenshot" width="90%" ></p>
+<p align="center"><img src="https://github.com/acsresearch/interlab/raw/main/docs/assets/imgs/context-browser-2.png" alt= "Tracing browser screenshot 2" width="80%" ></p>
 
 ### Example notebooks
 
