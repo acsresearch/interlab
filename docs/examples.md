@@ -5,7 +5,7 @@
 ### TreeTrace examples
 
 * [TracingNode intro](https://github.com/acsresearch/interlab/blob/main/notebooks/treetrace_intro.ipynb)
-* [Visualizations in TracinNodes](https://github.com/acsresearch/interlab/blob/main/notebooks/treetrace_visualization.ipynb)
+* [Visualizations in TracingNode](https://github.com/acsresearch/interlab/blob/main/notebooks/treetrace_visualization.ipynb)
 
 
 ### Interlab examples

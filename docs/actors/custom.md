@@ -2,8 +2,10 @@
 
 To create a subclass of `BaseActor`, the following methods should be overridden:
 
-### `_observe(self, observation: Any)`
-This method handles the observation process. It should take an observation and handle it as necessary for the actor's functionality.
+### `_observe(self, observation: str | Any, time: Any = None, data: Any = None)`
+
+This method handles the observation process. It should take an observation and handle it as necessary for the actor's functionality. `time` and `data` may contain optional additional attributes to be stored. Note that some agents may ignore
+either of these, and not all memory systems support them.
 
 ```python
 from interlab import BaseActor
@@ -15,6 +17,7 @@ class MyActor(BaseActor):
 ```
 
 ### `_query(self, prompt: Any = None, **kwargs) -> Any`
+
 This method processes a query and returns the result. The prompt and any keyword arguments can be used to tailor the query/response logic of the actor.
 
 ```python

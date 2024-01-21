@@ -31,7 +31,7 @@ After running the command, open the provided link in your browser. `notebooks/ca
 
 ## Google Colab
 
-Google Colab often offers a lightweight alternative to setting up InterLab locally on your computer. Interlab comes with built-in colab compatibility and we have prepared a [Template InterLab Colab notebook](https://colab.research.google.com/drive/1ncy02sdPse5KSxi5olbWb51dpW5IuVFq) with common setup and a simple example experiment with two LLMs interacting on behalf of their users.
+Google Colab often offers a lightweight alternative to setting up InterLab locally on your computer. Interlab comes with built-in colab compatibility and we have prepared a [example InterLab Colab notebook](https://colab.research.google.com/github/acsresearch/interlab/blob/main/notebooks/car_negotiation_colab.ipynb) with common setup and a simple example experiment with two LLMs interacting on behalf of their users.
 
 ## Note: API Keys
 
@@ -43,10 +43,9 @@ API keys can be stored in a `.env` file located in the notebook directory or you
 OPENAI_API_KEY=sk-...
 OPENAI_API_ORG=org-...
 ANTHROPIC_API_KEY=sk-ant-...
-...
 ```
 
-You can then import these variables from the `.env` file into a Jupyter notebook using the [dotenv](https://github.com/theskumar/python-dotenv) package:
+You can then import these variables from the `.env` file into a Jupyter notebook using the [dotenv](https://github.com/theskumar/python-dotenv) package.
 
 ```python
 import dotenv
