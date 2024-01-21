@@ -14,17 +14,17 @@ from .query_failure import ParsingFailure
 from .query_model import query_model
 
 _FORMAT_PROMPT = """\
-# Instructions to format the answer:\n
-{deliberation}Write your answer to the prompt as a single JSON conforming to the following JSON schema:\n
+# Format instructions:\n
+{deliberation}Write the answer as a single valid JSON value, conforming to the following JSON schema:\n
 ```json
 {schema}
 ```\n
-The answer should contain exactly one markdown JSON code block delimited by "```json" and "```".
+The answer should contain exactly one valid JSON code block delimited by "```json" and "```".
 """
 
 
 _FORMAT_PROMPT_DELIBERATE = """\
-1. Deliberate about the task at hand and write out your thoughts as free-form text containing no JSON.
+1. Deliberate about the problem and write your thoughts as free-form text containing no JSON.
 2. """
 
 
