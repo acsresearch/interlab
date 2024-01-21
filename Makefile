@@ -7,6 +7,7 @@ help:
 	@echo "  docs_publish_latest - generate and publish documentation to 'gh-pages' as the 'latest' version"
 	@echo "  check_requirements - check if requirements*.txt are up to date with poetry.lock"
 	@echo "  update_requirements - update requirements*.txt to match poetry.lock"
+	@echo "  lab - run Jupyter Lab server"
 	
 clean:
 	rm -rf site docs/api .pytest_cache dist
@@ -33,4 +34,7 @@ check_requirements:
 update_requirements:
 	scripts/check_requirements.sh --update
 
-.PHONY: help clean test docs docs_publish_latest check_requirements update_requirements
+lab:
+	poetry run jupyter lab
+
+.PHONY: help clean test docs docs_publish_latest check_requirements update_requirements lab
