@@ -42,7 +42,7 @@ class SummarizingMemory(ListMemory):
         May need to be run repeatedly.
         """
         # First, are there any non-last long level-0 items?
-        for i, item in enumerate(self.items[:-1]):
+        for i, item in enumerate(self._items[:-1]):
             if item.level == 0 and item.token_count > self.summary_limit:
                 # Found one; summarize it
                 msg = (
@@ -56,7 +56,7 @@ class SummarizingMemory(ListMemory):
                     model=self.model,
                     token_limit=self.summary_limit - self._sep_tokens,
                 )
-                self.items[i] = SummarizingMemoryItem(
+                self._items[i] = SummarizingMemoryItem(
                     memory=new_text,
                     token_count=self._count_tokens(new_text),
                     time=item.time,
@@ -67,14 +67,14 @@ class SummarizingMemory(ListMemory):
         # Find most abundant level and summarize two consecutive items of that level
         # (or that level and the following item, in sme extreme situations)
         level_counts = [0] * 20
-        for i, item in enumerate(self.items[:-1]):
+        for i, item in enumerate(self._items[:-1]):
             level_counts[item.level] += 1
         summary_level = np.argmax(level_counts)
 
         # Find the first item of that level
-        for i, item in enumerate(self.items[:-1]):
+        for i, item in enumerate(self._items[:-1]):
             if item.level == summary_level:
-                i1, i2 = self.items[i : i + 2]
+                i1, i2 = self._items[i : i + 2]
                 msg = (
                     f"summarize: summarizing {i1.token_count} tokens (level {i1.level}) and {i2.token_count} tokens "
                     f"(level {i2.level}) messages to {self.summary_limit} tokens"
@@ -88,7 +88,7 @@ class SummarizingMemory(ListMemory):
                     model=self.model,
                     token_limit=self.summary_limit - self._sep_tokens,
                 )
-                self.items[i : i + 2] = [
+                self._items[i : i + 2] = [
                     SummarizingMemoryItem(
                         memory=text,
                         token_count=self._count_tokens(text),
@@ -127,7 +127,7 @@ class SummarizingMemory(ListMemory):
                 )
                 token_count = self._count_tokens(memory)  # Estimate for newlines etc.
 
-            self.items.append(
+            self._items.append(
                 SummarizingMemoryItem(
                     memory,
                     token_count=token_count + self._sep_tokens,

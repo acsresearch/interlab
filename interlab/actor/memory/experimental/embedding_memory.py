@@ -38,7 +38,7 @@ class SimpleEmbeddingMemory(ListMemory):
         memory = str(memory)
         emb = self._embed(memory)
         emb.flags.writeable = False  # Make it closer to being fully immutable
-        self.items.append(
+        self._items.append(
             SimpleEmbeddingMemoryItem(
                 memory=memory,
                 token_count=self._count_tokens(memory),
@@ -59,12 +59,12 @@ class SimpleEmbeddingMemory(ListMemory):
     ):
         if query is not None:
             emb = self._embed(query)
-            scores = [np.dot(emb, e.embedding) for e in self.items]
+            scores = [np.dot(emb, e.embedding) for e in self._items]
             # TODO(gavento): Consider adding temporal scoring, and scoring relative to token count
         else:
             scores = None  # Default priority of preferring later messages
         return super()._format_memories_helper(
-            self.items,
+            self._items,
             priorities=scores,
             separator=separator,
             formatter=formatter,

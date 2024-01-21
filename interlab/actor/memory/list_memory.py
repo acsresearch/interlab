@@ -10,16 +10,19 @@ class ListMemory(BaseMemory):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.items = []
+        self._items = []
 
     def count_memories(self) -> int:
-        return len(self.items)
+        return len(self._items)
 
     def total_tokens(self) -> int:
-        return sum(m.token_count for m in self.items)
+        return sum(m.token_count for m in self._items)
 
-    def add_memory(self, memory: str, time: Any = None, data: Any = None):
-        self.items.append(
+    def add_memory(self, memory: str | Any, time: Any = None, data: Any = None):
+        """
+        Add a memory to the memory store.
+        """
+        self._items.append(
             BaseMemoryItem(
                 memory=memory,
                 time=time,
@@ -27,6 +30,13 @@ class ListMemory(BaseMemory):
                 token_count=self._count_tokens(memory),
             )
         )
+
+    @property
+    def items(self):
+        """
+        Return a tuple of all memories in the memory store.
+        """
+        return tuple(self._items)
 
     def format_memories(
         self,
@@ -37,7 +47,7 @@ class ListMemory(BaseMemory):
         token_limit: int = None,
     ) -> str:
         return self._format_memories_helper(
-            self.items,
+            self._items,
             separator=separator,
             formatter=formatter,
             item_limit=item_limit,

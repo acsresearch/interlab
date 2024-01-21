@@ -10,9 +10,9 @@ def test_summarizing_memory(swl):
     ma = "A " * 30
     mb = "B " * 30
     m.add_memory(ma, time=1)
-    assert m.items[0].token_count == 32
+    assert m._items[0].token_count == 32
     m.add_memory(mb, time=2)
-    assert m.items[1].token_count == 32
+    assert m._items[1].token_count == 32
     m.format_memories() == ma + " " + mb
     assert m.count_memories() == 2
     assert m.total_tokens() == 64  # Separators are not counted
