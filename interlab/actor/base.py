@@ -15,9 +15,10 @@ class BaseActor(abc.ABC):
     """
     Interface for generic actor, to be used with LLMs, game theory or otherwise.
 
-    Override methods _query and _observe in derived classes.
+    Override methods `_query` and `_observe` in derived classes.
 
-    Note: The interface is intentionally not async (for usability reasons), use multi-threading for parallel inquiries.
+    Note: The interface is intentionally not async for the sake of usability;
+    use multi-threading for parallel inquiries.
     """
 
     def __init__(self, name: str = None, *, style: dict[str, Any] = None):
@@ -80,6 +81,13 @@ class BaseActor(abc.ABC):
 
     @abc.abstractmethod
     def _query(self, prompt: Any = None, **kwargs) -> Any:
+        """
+        The actual agent-specific query implementation.
+
+        Any arguments are passed through from `query`, and they are actor-specific.
+        Override this method in derived classes.
+        @public
+        """
         raise NotImplementedError("Implement _query in a derived actor class")
 
     def observe(self, observation: str | Any, time: Any = None, data: Any = None):
@@ -107,6 +115,12 @@ class BaseActor(abc.ABC):
 
     @abc.abstractmethod
     def _observe(self, observation: str | Any, time: Any = None, data: Any = None):
+        """
+        The actual agent-specific implementation of an observation.
+
+        Override this method in derived classes.
+        @public
+        """
         raise NotImplementedError("Implement _observe in a derived actor class")
 
     def __repr__(self):
