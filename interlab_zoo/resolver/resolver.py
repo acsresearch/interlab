@@ -1,5 +1,5 @@
+from treetrace import TracingNode, FileStorage, with_trace
 from interlab.queries import query_for_json
-from interlab.tracing import TracingNode, FileStorage, with_tracing
 from interlab.actor import OneShotLLMActor
 from pydantic.dataclasses import dataclass, Field
 import json
@@ -40,7 +40,7 @@ def make_actor(model, person, other):
         f"You are communicating by email with {other.name}\n\n"
         f"Public information about {other.name}: {other.public}\n\n"
     )
-    return OneShotLLMActor(person.name, model, initial_prompt=prompt)
+    return OneShotLLMActor(person.name, model, prompt)
 
 
 @dataclass
@@ -97,11 +97,11 @@ def score_with_history(person1, person2, agreement_result, observer):
         score=observer.query(
             prompt,
             expected_type=Score,
-        ).data.score,
+        ).score,
     )
 
 
-@with_tracing()
+@with_trace()
 def resolve(model, person1, person2):
     actor1 = make_actor(model, person1, person2)
     actor2 = make_actor(model, person2, person1)
@@ -129,20 +129,20 @@ def resolve(model, person1, person2):
         receiver = actors[(i + 1) % 2]
 
         prompt = f"Write an email to {receiver.name}. You have to agree on the same movie that you will watch together."
-        evt = sender.query(prompt)
-        origin = f"Message from {sender.name} to {receiver.name}"
-        actor1.observe(evt.data, origin=origin)
-        actor2.observe(evt.data, origin=origin)
-        observer.observe(evt.data, origin=origin)
+        message = sender.query(prompt)
+        message = f"Message from {sender.name} to {receiver.name}: {message}"
+        actor1.observe(message)
+        actor2.observe(message)
+        observer.observe(message)
         if i > 1:
             result = observer.query(
                 "Do they make an agreement?", expected_type=ObserverAction
             )
-            if result.data.agreement:
+            if result.agreement:
                 break
     else:
         return Result(people=[person1, person2], steps=max_steps, agreement=None)
-    agreement_result = result.data.movie_name
+    agreement_result = result.movie_name
     scores = {"just_answer": [], "with_history": []}
     scores["just_answer"].append(
         score_just_answer(model, person1, person2, agreement_result)
