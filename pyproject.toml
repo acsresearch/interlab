@@ -50,7 +50,6 @@ mkdocs-pdoc-plugin = { git = "https://github.com/spirali/mkdocs-pdoc-plugin.git"
 pdoc = "^14.4.0"
 pytest = "^7.4.4"
 setuptools = "^69.0.3"
-toml = "^0.10.2"
 pytest-asyncio = "^0.23.3"
 
 
