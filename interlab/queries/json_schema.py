@@ -1,22 +1,24 @@
 import dataclasses
 import json
-from typing import Any
+from typing import Any, Type
 
 import jsonref
 import pydantic
 
 
-def get_pydantic_model(T: type) -> type:
+def get_pydantic_model(T: type) -> pydantic.TypeAdapter | pydantic.BaseModel:
     """
     Convert the type to pydantic BaseModel.
     """
     if not issubclass(T, pydantic.BaseModel):
-        if not dataclasses.is_dataclass(T):
+        if not pydantic.v1.dataclasses.is_builtin_dataclass(
+            T
+        ) and not pydantic.dataclasses.is_pydantic_dataclass(T):
             raise TypeError(
                 "Only pydantic Model, or pydantic or standard dataclasses are accepted"
             )
-        T = pydantic.dataclasses.create_pydantic_model_from_dataclass(T)
-    assert issubclass(T, pydantic.BaseModel)  # In lieu of a test
+        # T = pydantic.v1.dataclasses.create_pydantic_model_from_dataclass(T)
+        return pydantic.TypeAdapter(T)
     return T
 
 
@@ -53,9 +55,9 @@ def deref_jsonref(d: jsonref.JsonRef, check_json=True) -> Any:
     return d2
 
 
-def get_json_schema(T: type, strip_root=True) -> Any:
+def get_json_schema(pydantic_type: pydantic.TypeAdapter, strip_root=True) -> Any:
     # pydantic schema
-    schema = get_pydantic_model(T).schema()
+    schema = pydantic_type.json_schema()
     if strip_root:
         # remove root title and description (usually misleading to LLMs in dataclasses)
         schema.pop("title", None)
