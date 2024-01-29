@@ -24,7 +24,7 @@ python-dotenv = "^1.0.0"
 tiktoken = "^0.5.2"
 tqdm = "^4.65.0"
 uvicorn = {extras = ["standard"], version = "^0.26.0"}
-pydantic = ">=1.9.0,<2.0.0"
+pydantic = "^2.5"
 
 [tool.poetry.group.notebooks.dependencies]
 # Packages for notebook development: Jupyter, Pandas, etc.

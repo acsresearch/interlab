@@ -150,9 +150,9 @@ def query_for_json(
                 d = find_and_parse_json_block(res)
                 # TODO: Is the following conversion/validation working for nested fields as well?
                 # Convert to pydantic type for permissive conversion and validation
-                d = pdT(**d)
                 # Convert back to match expected type (nested types are ok)
-                d = T(**d.dict())
+                d = T(**d)
+                pdT.validate_python(d)
                 assert isinstance(d, T)
                 c.set_result(d)
                 return d

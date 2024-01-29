@@ -31,7 +31,7 @@ def test_query_for_json(with_example):
         raise Exception()
 
     query_for_json_ex = partial(query_for_json, with_example=with_example)
-
+    print("HERE")
     assert query_for_json_ex(test_model, Foo, "TEST_A") == Foo(z=False)
     assert query_for_json_ex(
         test_model, Foo, "{absent} TEST_B {FORMAT_PROMPT} zzz"

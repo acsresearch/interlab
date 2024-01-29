@@ -84,7 +84,7 @@ B_SCHEMA_DEREF_FULL = """{
 
 
 def test_json_schema():
-    sch = json_schema.get_json_schema(B)
+    sch = json_schema.get_json_schema(json_schema.get_pydantic_model(B))
     print(json.dumps(sch))
     assert sch == json.loads(B_SCHEMA_DEREF_FULL)
     with pytest.raises(TypeError):
