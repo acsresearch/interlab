@@ -12,7 +12,7 @@ CDN_URL = f"https://cdn.jsdelivr.net/gh/acsresearch/interlab@{CDN_VERSION}/treet
 # CDN_URL = f"http://localhost:2000/"
 
 STATIC_NODE_TEMPLATE_HTML = """
-<div id={id}></div>
+<div id="{id}"></div>
 <script src="{cdn_url}{js_file}"></script>
 <link rel="stylesheet" href="{cdn_url}{css_file}">
 <script>
