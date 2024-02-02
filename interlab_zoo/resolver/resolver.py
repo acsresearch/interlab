@@ -27,15 +27,9 @@ class Person:
     private: str
 
 
-def parse_people(data: dict) -> list[Person]:
-    result = []
-    for name, data in data.items():
-        result.append(Person(name=name, public=data["public"], private=data["private"]))
-    return result
-
-
 @dataclass
 class ActorDefinition:
+    name: str
     person: str
     model: Model
 

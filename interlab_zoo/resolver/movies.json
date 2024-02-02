@@ -1,6 +1,5 @@
 {
   "experiment_name": "movies-1",
-  "communication_type": "chat",
   "prompt": "Write a message to $receiver. You have to agree on the same movie that you will watch together.",
   "message_header": "Chat message from $sender to $receiver",
   "agreement_topic": "name of the same movie",
@@ -26,6 +25,12 @@
       "name": "Edward",
       "private": "Edward is a thoughtful, introverted, and intellectual individual with an unquenchable thirst for knowledge. He can come off as reserved at first, but once you get to know him, he’s quite warm and friendly. His analytical mind is always at work, observing people, pondering their motivations, and dissecting their interactions. In his leisure time, Edward enjoys playing chess, going on long walks, and attending philosophical debates at the local university. Movie Preferences: Edward uses films as a tool for intellectual stimulation - he much prefers the ones that provoke thought, offer complex character studies, or tease his mind with a good mystery. Films like \"Seven\", \"Inception\", \"Fight Club\", and \"The Sixth Sense\" captivate him because of the artful way they blend mind-bending plot twists with deep, abstract themes. He has a keen interest in detective movies such as \"The Usual Suspects\" and \"Zodiac\" as they engage his problem-solving skills. He is not a fan of simple, straightforward films or comedies that lack depth or fail to make a significant philosophical or social commentary.",
       "public": "age 44"
+    }
+  ],
+
+  "actors": [
+    {"name":  "Maria1"
+     "person": "Alice"
     }
   ],
 
