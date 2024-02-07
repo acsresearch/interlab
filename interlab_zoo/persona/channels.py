@@ -4,8 +4,8 @@ from dataclasses import dataclass
 @dataclass
 class Channel:
     name: str
-    message_name: str = "a message"
-    message_header: str = "Message from $sender to $receivers:"
+    message_name: str
+    message_header: str
 
     def _create_message(self, sender, receivers, body, me):
         header = self.message_header
@@ -36,4 +36,6 @@ class Channel:
                 actor.observe(self._create_message(sender, receivers, text, actor))
 
 
-ChatChannel = Channel("chat", "a chat message", "Message from $sender to $receiver:")
+ChatChannel = Channel(
+    "chat", "a chat message", "## A chat message from $sender to $receivers:\n"
+)

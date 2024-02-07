@@ -41,9 +41,10 @@ class ConfigFile:
 
 
 class Persona(BaseActor):
-    def __init__(self, config: PersonaConfig):
+    def __init__(self, config: PersonaConfig, goal: str | None = None):
         super().__init__(config.identity.name)
         self.config = config
+        self.goal = goal
         self.actor = self._create_actor()
 
     def _observe(self, observation, time=None, data=None):
@@ -82,7 +83,8 @@ class Persona(BaseActor):
             if identity.private
             else ""
         )
-        return f"You are {identity.name}\n{public}{private}"
+        goal = f"Your goal is: {self.goal}\n" if self.goal else ""
+        return f"You are {identity.name}\n{public}{private}{goal}"
 
     # def public_description(self, observer: Union[None, "Persona"] = None) -> str:
     #     return f"Public information about {self.config.identity.name}: {self.config.identity.public}\n"
@@ -96,15 +98,18 @@ class Factory:
     def from_yaml(path):
         with open(path) as f:
             data = f.read()
+
         config = from_yaml(ConfigFile, data)
         return Factory(config.personas)
 
     def create_persona(
         self,
         key: str,
+        *,
         name: str | None = None,
         public: str = "",
         private: str = "",
+        goal: str = "",
     ) -> Persona:
         person_cfg = self.personas.get(key)
         if person_cfg is None:
@@ -116,4 +121,4 @@ class Factory:
             person_cfg.identity.public += "\n" + public
         if private:
             person_cfg.identity.private += "\n" + private
-        return Persona(person_cfg)
+        return Persona(person_cfg, goal)
