@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from .utils import and_join
 
 
 @dataclass
@@ -26,7 +27,7 @@ class Channel:
         self.query_and_send_message_to_all(sender, [receiver], observers)
 
     def query_and_send_message_to_all(self, sender, receivers, observers=None):
-        names = ",".join(r.name for r in receivers)
+        names = and_join(r.name for r in receivers)
         text = sender.query(f"Create {self.message_name} to {names}.")
         sender.observe(self._create_message(sender, receivers, text, sender))
         for receiver in receivers:
