@@ -12,7 +12,7 @@ class Channel:
         header = self.message_header
         header = header.replace("$sender", self.make_name(sender, me))
         header = header.replace(
-            "$receivers", ",".join(self.make_name(r, me) for r in receivers)
+            "$receivers", and_join(self.make_name(r, me) for r in receivers)
         )
         return header + body
 

@@ -15,6 +15,14 @@ class Identity:
     public: str
     private: str
 
+    @property
+    def public_info(self):
+        return self.public.replace("$name", self.name)
+
+    @property
+    def private_info(self):
+        return self.private.replace("$name", self.name)
+
 
 @dataclass
 class ModelConfig:
@@ -54,7 +62,7 @@ class Persona(BaseActor):
         return self.actor.query(prompt, **kwargs)
 
     def public_info(self, observer=None):
-        return self.config.identity.public
+        return self.config.identity.public_info
 
     @staticmethod
     def _create_model(model: ModelConfig):
@@ -74,12 +82,12 @@ class Persona(BaseActor):
     def _system_prompt(self):
         identity = self.config.identity
         public = (
-            f"Your public information are: {identity.public}\n"
+            f"Your public information are: {identity.public_info}\n"
             if identity.public
             else ""
         )
         private = (
-            f"Your private information are: {identity.private}\n"
+            f"Your private information are: {identity.private_info}\n"
             if identity.private
             else ""
         )
