@@ -10,14 +10,14 @@ class Channel:
 
     def _create_message(self, sender, receivers, body, me):
         header = self.message_header
-        header = header.replace("$sender", self.make_name(sender, me))
+        header = header.replace("$sender", self.get_name(sender, me))
         header = header.replace(
-            "$receivers", and_join(self.make_name(r, me) for r in receivers)
+            "$receivers", and_join(self.get_name(r, me) for r in receivers)
         )
         return header + body
 
     @staticmethod
-    def make_name(persona, me) -> str:
+    def get_name(persona, me) -> str:
         if persona == me:
             return persona.name + " (me)"
         else:
