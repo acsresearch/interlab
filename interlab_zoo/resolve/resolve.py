@@ -61,7 +61,7 @@ class Resolver:
         names.insert(0, "You")
         prompt = (
             and_join(names)
-            + f" made an aggrement on {self.subject}: {self.agreement_result}. How are you satisfied?"
+            + f" made an agreement on {self.subject}: {self.agreement_result}. How are you satisfied?"
         )
         players = [self.factory.create_persona(key) for key in self.person_keys]
         link(players)
@@ -79,8 +79,11 @@ class Resolver:
     def score_result(self):
         result = []
         for idx, player in enumerate(self.players):
-            row = [self.person_keys[idx], self.agreement_result]
-            row.append(self.score_simple(idx))
-            row.append(self.score_with_history(idx))
+            row = (
+                self.person_keys[idx],
+                self.agreement_result,
+                self.score_simple(idx),
+                self.score_with_history(idx),
+            )
             result.append(row)
         return result
