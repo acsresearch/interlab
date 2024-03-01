@@ -8,7 +8,7 @@ from interlab_zoo.persona.contacts import link
 from interlab_zoo.persona.utils import and_join
 
 
-class Resolver:
+class Situation:
     def __init__(self, subject, factory, person_keys):
         self.factory = factory
         self.person_keys = person_keys
@@ -44,7 +44,6 @@ class Resolver:
         self.rating_cls = Rating
 
     def agreement_check(self):
-        players = self.players
         names = and_join(p.name for p in self.players)
         question = f"Do all sides ({names}) made an agreement on {self.subject}? If yes, what do they agree on?"
         response = self.judge.query(question)
@@ -70,7 +69,6 @@ class Resolver:
 
     def score_simple(self, idx):
         players = [self.factory.create_persona(key) for key in self.person_keys]
-        link(players)
         return self.query_player(players[idx], players)
 
     def score_with_history(self, idx):

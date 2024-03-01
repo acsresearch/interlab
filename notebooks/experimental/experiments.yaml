@@ -1,0 +1,6 @@
+- name: "movies"
+  subject: "a specific movie name they want to watch together"
+  people: "people-movies.yaml"
+  groups:
+      - ["Maria-gpt35", "Connor-gpt35"]
+      - ["Edward-gpt35", "Connor-gpt35"]
