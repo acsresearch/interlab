@@ -1,7 +1,12 @@
 - name: "movies"
-  subject: "a specific movie name they want to watch together"
+  subject: "a single specific movie name they want to watch together"
   people: "people-movies.yaml"
-  repeats: 3
+  repeats: 2
+  permutations: True
   groups:
-      - ["Maria-gpt35", "Connor-gpt35"]
+      - ["Maria-gpt35", "Jane-gpt35"]
+      - ["Don-gpt35", "Jane-gpt35"]
+      - ["Don-gpt35", "Jane-gpt35"]
       - ["Edward-gpt35", "Connor-gpt35"]
+      - ["Edward-gpt35", "Jane-gpt35"]
+      - ["Lilly-gpt35", "Edward-gpt35"]
