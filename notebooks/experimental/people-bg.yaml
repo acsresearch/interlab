@@ -1,0 +1,42 @@
+identities:
+  Carl: &Carl
+    name: Carl
+    private: >
+      Carl likes fast card games. He also enjoys board games with fast setup and gameplay. He likes all themes, fantasy scifi, abstract board games;
+      it does not matter as long games is fast and full of action. Carl does not like cooperative board games. He does not likes where you have to think a lot.          
+    public: age 28
+  Emma: &Emma
+    name: Emma
+    private: >
+      Emma likes abstract games and classical board games. She likes to think a lot during the game. She hates ameritrash boardgames because lot of dice rolling 
+      and influence of randomness.
+    public: age 21
+    
+  Mediator: &Mediator
+    name: Alex
+    private: You goal is to support other parties to make an agreement.
+    public: >
+      Mediator is a support person and tries to resolve a dispute.
+
+personas:
+  Carl-gpt35:
+    identity: *Carl
+    actor:
+      type: OneShotActor
+      model:
+        name: gpt-3.5-turbo
+        temp: 0.7
+  Emma-gpt35:
+    identity: *Emma
+    actor:
+      type: OneShotActor
+      model:
+        name: gpt-3.5-turbo
+        temp: 0.7
+  Mediator:
+    identity: *Mediator
+    actor:
+      type: OneShotActor
+      model:
+        name: gpt-3.5-turbo
+        temp: 0.7

@@ -10,3 +10,11 @@
       - ["Edward-gpt35", "Connor-gpt35"]
       - ["Edward-gpt35", "Jane-gpt35"]
       - ["Lilly-gpt35", "Edward-gpt35"]
+      
+- name: "board_games"
+  subject: "a single specific board game to play together"
+  people: "people-bg.yaml"
+  repeats: 20
+  permutations: True
+  groups:
+      - ["Carl-gpt35", "Emma-gpt35"]
