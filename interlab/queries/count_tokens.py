@@ -6,8 +6,9 @@ from typing import Any
 
 import anthropic
 import cachetools
-import langchain.chat_models.base
-import langchain.llms.base
+
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.language_models.llms import BaseLLM
 import tiktoken
 
 
@@ -38,9 +39,7 @@ def count_tokens(text: str, model: str | Any) -> int:
             return anthropic.Anthropic().count_tokens(text)
         raise ValueError(f"Unknown model name {model!r}")
 
-    if isinstance(
-        model, (langchain.llms.base.BaseLLM, langchain.chat_models.base.BaseChatModel)
-    ):
+    if isinstance(model, (BaseLLM, BaseChatModel)):
         return model.get_num_tokens(text)
 
     raise TypeError(f"Unknown model class {model.__class__.__name__}")

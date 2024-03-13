@@ -6,8 +6,7 @@ from .web_console import WebConsoleModel
 
 
 def _prepare_model(model: Any, model_kwargs: dict = None, call_async: bool = False):
-    import langchain
-    import langchain.schema
+    import langchain_core as lc
 
     if call_async:
         raise NotImplementedError()
@@ -16,20 +15,20 @@ def _prepare_model(model: Any, model_kwargs: dict = None, call_async: bool = Fal
 
     typename = model.__class__.__qualname__
     conf = {"class": f"{model.__class__.__module__}.{typename}"}
-    if isinstance(model, langchain.llms.base.BaseLLM):
+    if isinstance(model, lc.language_models.llms.BaseLLM):
         conf.update(model.dict())
         # For Anthropic (and maube other) langchain models:
         if "model_name" not in conf:
             conf["model_name"] = getattr(model, "model", None)
         name = f"Query langchain model {typename} ({conf['model_name']})"
         call = lambda c: model(c, **model_kwargs)  # noqa: E731
-    elif isinstance(model, langchain.chat_models.base.BaseChatModel):
+    elif isinstance(model, lc.language_models.chat_models.BaseChatModel):
         conf.update(model.dict())
         if "model_name" not in conf:
             conf["model_name"] = getattr(model, "model", None)
         name = f"query langchain chat model {typename} ({conf['model_name']})"
         call = lambda c: model(  # noqa: E731
-            [langchain.schema.HumanMessage(content=c)], **model_kwargs
+            [lc.messages.human.HumanMessage(content=c)], **model_kwargs
         ).content
     elif isinstance(
         model, WebConsoleModel
