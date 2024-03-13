@@ -8,10 +8,24 @@ identities:
   Emma: &Emma
     name: Emma
     private: >
-      Emma likes abstract games and classical board games. She likes to think a lot during the game. She hates ameritrash boardgames because lot of dice rolling 
-      and influence of randomness.
+      Emma likes abstract games and classical board games. She likes to think a lot during the game. She hates ameritrash boardgames because lot of dice rolling and influence of randomness.
     public: age 21
-    
+
+  John: &John
+    name: John
+    private: >
+      John loves cooperative board games. He also likes games where you build something and there is not much descruction of others. He hates
+      where you can eliminate a player from a game and they have to wait until end of the game.      
+    public: age 29
+
+  Sofia: &Sofia
+    name: Sofia
+    private: >
+      She loves games with hidden information and bluffing games where players are couraged to use deception to achieve their goals.
+      She likes games with high player interaction. She likes fantasy theme but it is not necessary.
+      She do not want to play games without any communication or player interaction.
+    public: age 18
+      
   Mediator: &Mediator
     name: Alex
     private: You goal is to support other parties to make an agreement.
@@ -33,6 +47,20 @@ personas:
       model:
         name: gpt-3.5-turbo
         temp: 0.7
+  John-gpt35:
+    identity: *John
+    actor:
+      type: OneShotActor
+      model:
+        name: gpt-3.5-turbo
+        temp: 0.7
+  Sofia-gpt35:
+    identity: *Sofia
+    actor:
+      type: OneShotActor
+      model:
+        name: gpt-3.5-turbo
+        temp: 0.7        
   Mediator:
     identity: *Mediator
     actor:

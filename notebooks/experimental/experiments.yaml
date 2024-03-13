@@ -14,7 +14,11 @@
 - name: "board_games"
   subject: "a single specific board game to play together"
   people: "people-bg.yaml"
-  repeats: 20
+  repeats: 5
   permutations: True
   groups:
       - ["Carl-gpt35", "Emma-gpt35"]
+      - ["John-gpt35", "Sofia-gpt35"]
+      - ["Carl-gpt35", "Sofia-gpt35"]
+      - ["Emma-gpt35", "Sofia-gpt35"]
+      - ["Carl-gpt35", "John-gpt35"]
