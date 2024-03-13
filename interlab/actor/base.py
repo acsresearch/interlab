@@ -68,9 +68,9 @@ class BaseActor(abc.ABC):
             name = f"{self.name} queried"
             inputs = {}
         if expected_type is not None:
-            inputs[
-                "expected_type"
-            ] = f"{expected_type.__module__}.{expected_type.__qualname__}"
+            inputs["expected_type"] = (
+                f"{expected_type.__module__}.{expected_type.__qualname__}"
+            )
         inputs.update(**kwargs)
 
         with TracingNode(name, kind="action", meta=self.style, inputs=inputs) as ctx:

@@ -14,17 +14,18 @@ fi
 cd `dirname $0`/..
 
 if [[ "$1" == "--check" ]]; then
-    poetry run isort --check-only --profile black $DIRS
-    poetry run black --check $DIRS
+    poetry run ruff format --check $DIRS
+    poetry run ruff check $DIRS
     # Lint Python code
     # By default, this is skipped in checking
     #poetry run flake8 tests interlab
     echo "All code checks completed successfully"
 else
     # Format Python code
-    poetry run isort --profile black $DIRS
-    poetry run black $DIRS
+    poetry run ruff format $DIRS
+
     # Lint Python code
-    poetry run flake8 $DIRS
+    poetry run ruff check $DIRS
+
 fi
 
