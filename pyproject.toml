@@ -38,9 +38,7 @@ pandas = "^2.2.0"
 langchain-openai = "^0.0.8"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.12.1"
-flake8 = "^7.0.0"
-isort = "^5.13.2"
+ruff = "0.3"
 mike = "^2.0.0"
 mkdocs = "^1.5.3"
 mkdocs-git-revision-date-localized-plugin = "^1.2.0"
