@@ -21,13 +21,13 @@ def _prepare_model(model: Any, model_kwargs: dict = None, call_async: bool = Fal
         if "model_name" not in conf:
             conf["model_name"] = getattr(model, "model", None)
         name = f"Query langchain model {typename} ({conf['model_name']})"
-        call = lambda c: model(c, **model_kwargs)  # noqa: E731
+        call = lambda c: model.invoke(c, **model_kwargs)  # noqa: E731
     elif isinstance(model, lc.language_models.chat_models.BaseChatModel):
         conf.update(model.dict())
         if "model_name" not in conf:
             conf["model_name"] = getattr(model, "model", None)
         name = f"query langchain chat model {typename} ({conf['model_name']})"
-        call = lambda c: model(  # noqa: E731
+        call = lambda c: model.invoke(  # noqa: E731
             [lc.messages.human.HumanMessage(content=c)], **model_kwargs
         ).content
     elif isinstance(
