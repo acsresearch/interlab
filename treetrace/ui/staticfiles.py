@@ -3,8 +3,8 @@ import os
 
 from . import browser
 
-with resources.path(browser, ".") as static_path:
-    PATH_TO_STATIC_FILES = static_path
+
+PATH_TO_STATIC_FILES = os.path.dirname(resources.files(browser).joinpath("assets"))
 
 
 def get_current_js_and_css_filenames():
