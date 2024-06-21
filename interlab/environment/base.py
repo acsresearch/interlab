@@ -4,7 +4,7 @@ from typing import Any
 from typing_extensions import Self
 
 from interlab.utils.copying import checked_deepcopy
-from treetrace import TracingNode
+from nicetrace import trace
 
 
 class BaseEnvironment(abc.ABC):
@@ -66,13 +66,13 @@ class BaseEnvironment(abc.ABC):
         if self.is_finished:
             raise Exception("Calling `advance` on a finished environment")
         name = f"{self.__class__.__name__} [step {self.steps}]"
-        with TracingNode(name) as node:
+        with trace(name) as node:
             if args:
                 node.add_input("args", args)
             if kwargs:
                 node.add_input("kwargs", kwargs)
             result = self._step(*args, **kwargs)
-            node.set_result(result)
+            node.add_output("", result)
             self._steps_counter += 1
             return result
 

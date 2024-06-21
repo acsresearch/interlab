@@ -1,6 +1,7 @@
 from typing import Any
 
-from treetrace import FormatStr, TracingNode
+from treetrace import FormatStr
+from nicetrace import trace
 
 from .web_console import WebConsoleModel
 
@@ -56,14 +57,12 @@ def query_model(
         raise TypeError("query_model accepts only str and FormatStr as prompt")
     name, conf, call = _prepare_model(model, model_kwargs=kwargs, call_async=False)
     if with_trace:
-        with TracingNode(
-            name, kind="query", inputs=dict(prompt=prompt, conf=conf)
-        ) as c:
+        with trace(name, kind="query", inputs=dict(prompt=prompt, conf=conf)) as c:
             if isinstance(prompt, FormatStr):
                 prompt = str(prompt)
             r = call(prompt)
             assert isinstance(r, str)
-            c.set_result(r)
+            c.add_output("", r)
             return r
     else:
         return call(prompt)

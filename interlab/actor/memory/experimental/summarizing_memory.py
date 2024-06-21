@@ -5,7 +5,8 @@ from typing import Any, Callable
 import numpy as np
 
 import interlab.queries
-from treetrace import TracingNode, current_tracing_node, shorten_str
+from treetrace import shorten_str
+from nicetrace import trace, current_tracing_node
 
 from ..list_memory import BaseMemoryItem, ListMemory
 
@@ -50,7 +51,7 @@ class SummarizingMemory(ListMemory):
                     f"{shorten_str(item.memory)!r}"
                 )
                 _LOG.debug(msg)
-                current_tracing_node().add_event(msg)
+                current_tracing_node().add_leaf(msg)
                 new_text = interlab.queries.summarize_with_limit(
                     item.memory,
                     model=self.model,
@@ -101,7 +102,7 @@ class SummarizingMemory(ListMemory):
         raise Exception("Error: summarization failed")
 
     def add_memory(self, memory: str, time: Any = None, data: Any = None):
-        with TracingNode(
+        with trace(
             "SummarizingMemory.add_memory",
             inputs=dict(memory=memory, time=time),
             kind="debug",

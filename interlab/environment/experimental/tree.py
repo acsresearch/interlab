@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from interlab.environment.base import BaseEnvironment
-from treetrace import TracingNode
+from nicetrace import trace
 
 
 @dataclass(frozen=True)
@@ -19,7 +19,7 @@ def expand_tree(
         children = []
         if depth < max_depth and not env.is_finished:
             for i in range(n_children):
-                with TracingNode(f"{i + 1}. child") as ctx:
+                with trace(f"{i + 1}. child") as ctx:
                     e = env.copy()
                     e.step()
                     ctx.add_input("environment", e)
@@ -27,6 +27,6 @@ def expand_tree(
                     children.append(child)
         return EnvNode(env, children)
 
-    with TracingNode("root") as ctx:
+    with trace("root") as ctx:
         ctx.add_input("environment", environment)
         return helper(environment, 0)

@@ -5,10 +5,12 @@ from typing import Any
 
 from typing_extensions import Self
 
-from treetrace import HtmlColor, TracingNode, shorten_str
+from treetrace import HtmlColor, shorten_str
+from nicetrace import trace, Metadata
 
 from ..utils.copying import checked_deepcopy
 from . import memory as memory_module
+from copy import copy
 
 
 class BaseActor(abc.ABC):
@@ -21,15 +23,30 @@ class BaseActor(abc.ABC):
     use multi-threading for parallel inquiries.
     """
 
-    def __init__(self, name: str = None, *, style: dict[str, Any] = None):
+    def __init__(self, name: str = None, *, style: Metadata | None = None):
         self.name = name
         if self.name is None:
             self.name = f"{self.__class__.__name__}{random.randint(0, 9999):i04}"
-        self.style = style if style is not None else {}
-        if self.style.get("color") is None:
-            self.style["color"] = str(
+        if style is None:
+            query_style = Metadata()
+            observation_style = Metadata()
+        else:
+            observation_style = copy(style)
+            query_style = copy(style)
+
+        if query_style.color is None:
+            query_style.color = str(
                 HtmlColor.random_color(self.name, saturation=0.5, lighness=0.3)
             )
+        if observation_style.color is None:
+            observation_style.color = query_style.color
+
+        if query_style.icon is None:
+            query_style.icon = "person"
+        observation_style.icon = "eye"
+        observation_style.collapse = "observations"
+        self.query_style = query_style
+        self.observation_style = observation_style
 
     def copy(self) -> Self:
         """
@@ -68,15 +85,15 @@ class BaseActor(abc.ABC):
             name = f"{self.name} queried"
             inputs = {}
         if expected_type is not None:
-            inputs["expected_type"] = (
-                f"{expected_type.__module__}.{expected_type.__qualname__}"
-            )
+            inputs[
+                "expected_type"
+            ] = f"{expected_type.__module__}.{expected_type.__qualname__}"
         inputs.update(**kwargs)
 
-        with TracingNode(name, kind="action", meta=self.style, inputs=inputs) as ctx:
+        with trace(name, kind="action", meta=self.query_style, inputs=inputs) as ctx:
             reply = self._query(prompt, expected_type=expected_type, **kwargs)
             # TODO: Consider conversion to expected_type (if a Pydantic type) or type verification
-            ctx.set_result(reply)
+            ctx.add_output("", reply)
         return reply
 
     @abc.abstractmethod
@@ -110,7 +127,7 @@ class BaseActor(abc.ABC):
         if time is not None:
             inputs["time"] = time
         msg = f"{self.name} observed {shorten_str(str(observation))!r}"
-        with TracingNode(msg, kind="observation", meta=self.style, inputs=inputs):
+        with trace(msg, kind="observation", meta=self.observation_style, inputs=inputs):
             self._observe(observation, time=time, data=data)
 
     @abc.abstractmethod

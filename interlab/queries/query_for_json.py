@@ -5,7 +5,8 @@ from typing import Any, TypeVar
 import pydantic
 from fastapi.encoders import jsonable_encoder
 
-from treetrace import FormatStr, TracingNode
+from treetrace import FormatStr
+from nicetrace import trace
 
 from .json_examples import generate_json_example
 from .json_parsing import find_and_parse_json_block
@@ -132,7 +133,7 @@ def query_for_json(
     else:
         prompt_with_fmt = prompt.format(**{_FORMAT_VAR: format_prompt})
 
-    with TracingNode(
+    with trace(
         f"query for JSON of type {T}",
         kind="query",
         inputs=dict(
@@ -154,7 +155,7 @@ def query_for_json(
                 # Convert back to match expected type (nested types are ok)
                 d = T(**d.dict())
                 assert isinstance(d, T)
-                c.set_result(d)
+                c.add_output("", d)
                 return d
             except (ValueError, pydantic.ValidationError) as e:
                 if i < max_repeats - 1:

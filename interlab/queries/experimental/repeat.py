@@ -1,6 +1,6 @@
 from typing import Awaitable, Callable
 
-from treetrace import TracingNode
+from nicetrace import trace
 
 from ...queries import QueryFailure
 
@@ -12,9 +12,9 @@ def repeat_on_failure(
         try:
             if with_tracing:
                 name = f"{fn.__name__}: {i + 1}/{max_repeats}"
-                with TracingNode(name=name, kind="repeat_on_failure") as c:
+                with trace(name=name, kind="repeat_on_failure") as c:
                     result = fn()
-                    c.set_result(result)
+                    c.add_output("", result)
                     return result
             else:
                 return fn()
@@ -33,9 +33,9 @@ async def async_repeat_on_failure(
         try:
             if with_tracing:
                 name = f"{i + 1}/{max_repeats}"
-                with TracingNode(name=name, kind="async_repeat_on_failure") as c:
+                with trace(name=name, kind="async_repeat_on_failure") as c:
                     result = await fn()
-                    c.set_result(result)
+                    c.add_output("", result)
                     return result
             else:
                 return await fn()
