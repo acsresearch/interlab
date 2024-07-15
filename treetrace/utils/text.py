@@ -9,7 +9,7 @@ UID_CHECK_REGEXP = re.compile(r"^[a-z0-9A-Z:\-\._]+$")
 ESCAPE_DATE_RE = re.compile(r"[:/\\]")
 
 
-def shorten_str(s: str | None, max_len=32) -> str:
+def shorten_str(s: str | None, max_len=24) -> str:
     if s is None:
         return "None"
     r = repr(s)

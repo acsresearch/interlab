@@ -24,8 +24,7 @@ tiktoken = "^0.7"
 tqdm = "^4.65.0"
 uvicorn = {extras = ["standard"], version = "^0.26.0"}
 pydantic = ">=1.9.0,<2.0.0"
-#nicetrace = {extras = ["server"], version = "^0.1.0"}
-nicetrace = {extras = ["server"]}
+nicetrace = {extras = ["server"], version="^0.3.0"}
 
 
 [tool.poetry.group.notebooks.dependencies]
@@ -39,6 +38,7 @@ notebook = "^7.0.7"
 numpy = "^1.26.3"
 pandas = "^2.2.0"
 langchain-openai = "^0.1"
+#replay_cache = "^0.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "0.3"
