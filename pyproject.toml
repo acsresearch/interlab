@@ -24,7 +24,7 @@ tiktoken = "^0.7"
 tqdm = "^4.65.0"
 uvicorn = {extras = ["standard"], version = "^0.26.0"}
 pydantic = ">=1.9.0,<2.0.0"
-nicetrace = {extras = ["server"], version="^0.4.1"}
+nicetrace = {extras = ["server"], version="^0.4.2"}
 
 
 [tool.poetry.group.notebooks.dependencies]

@@ -2358,13 +2358,13 @@ files = [
 
 [[package]]
 name = "nicetrace"
-version = "0.4.1"
+version = "0.4.2"
 description = ""
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "nicetrace-0.4.1-py3-none-any.whl", hash = "sha256:df616ffeec92d54e5428e155b05d7b102e3e8a73a57a1a958ff3f54c623b8e74"},
-    {file = "nicetrace-0.4.1.tar.gz", hash = "sha256:7007c7bce0c66b3d75fe9e04af15e20c5a5a881fb3ad6ac560394ff6539c206c"},
+    {file = "nicetrace-0.4.2-py3-none-any.whl", hash = "sha256:be204c60b67a7e046bb264b5dd065fc6cd87c71b7bd7283e7f496cdd2eca6de7"},
+    {file = "nicetrace-0.4.2.tar.gz", hash = "sha256:54aae1a1f3ea1f189a9ae9f0ce186d9562a9fd3020f51e10798681a20cdc345e"},
 ]
 
 [package.dependencies]
@@ -4556,4 +4556,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9cfadc6f449982840831449f614a22e6da82e7e75fb2e540f7b8b2865d361ca7"
+content-hash = "b1ebf93e64f181129121bd9ae2d69ac83318aa9ff6d441e77157d94900c2e6e9"
